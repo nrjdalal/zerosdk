@@ -1,3 +1,5 @@
+import { site } from "@packages/config/site"
+
 import type { DocsConfig } from "./src/lib/docs"
 
 const docsConfig = {
@@ -6,8 +8,7 @@ const docsConfig = {
       {
         "/docs": {
           title: "Overview",
-          description:
-            "ZeroSDK is an experimental multi-agent software factory, and this overview lists every page in its documentation.",
+          description: site.description,
         },
       },
     ],
