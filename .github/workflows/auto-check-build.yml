@@ -36,7 +36,10 @@ jobs:
           bun run lint
           bun run check-types
           bun run test
+          # Rebuilds the committed twoslash hovers from scratch, so a missing or stale one fails here rather than on a Bun deploy.
+          rm -rf web/next/twoslash-cache
           bun run build
+          test -z "$(git status --porcelain -- web/next/twoslash-cache)" || { git status --porcelain -- web/next/twoslash-cache; echo "web/next/twoslash-cache is stale: run bun run twoslash:cache and commit it"; exit 1; }
         env:
           # Builds the web as a full deploy has it, with an api.
           NEXT_PUBLIC_API_URL: http://localhost:4000
