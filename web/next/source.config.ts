@@ -81,7 +81,7 @@ function rehypeTwoslashCuts() {
       for (const child of node.children ?? [])
         if (child.type === "text" && child.value)
           child.value = child.value
-            .replace(/^(?:import\b[^\n]*\n)+\n*/, "$&// ---cut---\n")
+            .replace(/^(?:import\b[^"']*["'][^"'\n]*["'][^\n]*\n)+\n*/, "$&// ---cut---\n")
             .replace(
               /^([ \t]*)(\/\*\*[\s\S]*?\*\/)[ \t]*\n/gm,
               "$1// ---cut-start---\n$1$2\n$1// ---cut-end---\n",
