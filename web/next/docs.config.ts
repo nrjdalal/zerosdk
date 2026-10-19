@@ -12,11 +12,12 @@ const docsConfig = {
         },
       },
     ],
-    "Schema Definition": [
+    Reference: [
       {
-        "/docs/schema-definition/agent": {
+        "/docs/reference/agent": {
           title: "Agent",
-          description: "An agent in the factory.",
+          description:
+            "Reference for the Agent schema: the fields that identify an agent and tell other agents when to delegate to it.",
         },
       },
     ],
