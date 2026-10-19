@@ -388,7 +388,7 @@ describe("generate", () => {
       expect(mdx).toContain(
         "/** A schema class, as Effect declares one. */\ntype Info = {\n  /** What the agent does. */\n  description?: string\n  steps?: number\n}",
       )
-      for (const left of ["scheduler", "secret", "_internal", "send", "schemaId", "Encoded"])
+      for (const left of ["_internal", "Encoded", "scheduler", "schemaId", "secret", "send"])
         expect(mdx).not.toContain(` ${left}`)
       // Already formatted, so the repo's formatter has nothing left to change.
       const check = Bun.spawnSync(["bunx", "oxfmt", "--check", out], {
