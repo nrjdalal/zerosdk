@@ -8,6 +8,7 @@
     "web/*"
   ],
   "scripts": {
+    "agent:schemas": "bun packages/scripts/src/agent-schemas.ts",
     "auth:schema": "bun packages/scripts/src/auth-schema.ts",
     "build": "turbo run build --summarize && bun .github/scripts/build-sizes.ts",
     "check-types": "turbo run check-types --summarize && bun run check-types:scripts && bun run check-types:tests",
@@ -111,6 +112,7 @@
     "fontkit": "^2.0.4",
     "fumadocs-core": "^16.17.1",
     "fumadocs-mdx": "^15.4.7",
+    "fumadocs-twoslash": "^4.0.2",
     "fumadocs-ui": "^16.17.1",
     "globby": "^16.2.4",
     "hono": "^4.13.13",

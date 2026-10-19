@@ -8,6 +8,7 @@ bunx rimraf --glob \
   "**/.playwright-cli" \
   "**/.source" \
   "**/.turbo" \
+  "**/.twoslash" \
   "**/bundle" \
   "**/coverage" \
   "**/dist" \
