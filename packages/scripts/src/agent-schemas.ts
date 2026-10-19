@@ -61,8 +61,8 @@ const NPM: NpmSource[] = [
     module: "@opencode/schema/config/agent",
     pkg: "@opencode/schema",
     product: "Anomaly OpenCode",
-    target: '(typeof Info)["Encoded"]',
-    type: "Info",
+    target: '(typeof ConfigAgent.Info)["Encoded"]',
+    type: "ConfigAgent",
     url: "https://opencode.ai/v2/docs/agents/#options",
   },
   {
