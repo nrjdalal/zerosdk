@@ -8,7 +8,7 @@ const docsConfig = {
       {
         "/docs": {
           title: "Overview",
-          description: site.description,
+          description: `${site.description} This overview lists every page in its documentation.`,
         },
       },
     ],
