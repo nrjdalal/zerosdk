@@ -88,18 +88,21 @@ export interface AgentConfig {
     version: "1.2.3",
   },
   "zerosdk-fixture-schema": {
-    "index.d.ts": `/** A schema class, as Effect declares one. */
-export declare class Info {
-  /** The schema's id. */
-  static schemaId: string
-  /** What a config file holds. */
-  static readonly Encoded: {
-    /** What the agent does. */
-    readonly description?: string
+    "index.d.ts": `/** A config schema module, as OpenCode exports one. */
+export declare namespace ConfigAgent {
+  /** A schema class, as Effect declares one. */
+  export class Info {
+    /** The schema's id. */
+    static schemaId: string
+    /** What a config file holds. */
+    static readonly Encoded: {
+      /** What the agent does. */
+      readonly description?: string
+      readonly steps?: number
+    }
+    /** The decoded steps. */
     readonly steps?: number
   }
-  /** The decoded steps. */
-  readonly steps?: number
 }
 `,
     version: "2.0.0",
@@ -356,8 +359,8 @@ describe("generate", () => {
               module: "zerosdk-fixture-schema",
               pkg: "zerosdk-fixture-schema",
               product: "Fixture Schema",
-              target: '(typeof Info)["Encoded"]',
-              type: "Info",
+              target: '(typeof ConfigAgent.Info)["Encoded"]',
+              type: "ConfigAgent",
               url: `${origin}/config#options`,
             } satisfies NpmSource,
           ],
@@ -386,7 +389,7 @@ describe("generate", () => {
       )
       // A target reads as a type: the encoded fields, none of the class's statics.
       expect(mdx).toContain(
-        "/** A schema class, as Effect declares one. */\ntype Info = {\n  /** What the agent does. */\n  description?: string\n  steps?: number\n}",
+        "/** A config schema module, as OpenCode exports one. */\ntype ConfigAgent = {\n  /** What the agent does. */\n  description?: string\n  steps?: number\n}",
       )
       for (const left of ["_internal", "Encoded", "scheduler", "schemaId", "secret", "send"])
         expect(mdx).not.toContain(` ${left}`)
