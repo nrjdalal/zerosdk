@@ -8,6 +8,7 @@
     "web/*"
   ],
   "scripts": {
+    "agent:schemas": "bun packages/scripts/src/agent-schemas.ts",
     "auth:schema": "bun packages/scripts/src/auth-schema.ts",
     "build": "turbo run build --summarize && bun .github/scripts/build-sizes.ts",
     "check-types": "turbo run check-types --summarize && bun run check-types:scripts && bun run check-types:tests",
