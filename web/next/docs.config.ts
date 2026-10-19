@@ -1,3 +1,5 @@
+import { site } from "@packages/config/site"
+
 import type { DocsConfig } from "./src/lib/docs"
 
 const docsConfig = {
@@ -5,16 +7,17 @@ const docsConfig = {
     "Getting Started": [
       {
         "/docs": {
-          title: "Introduction",
-          description: "Documentation.",
+          title: "Overview",
+          description: `${site.description} This overview lists every page in its documentation.`,
         },
       },
     ],
-    "Schema Definition": [
+    Reference: [
       {
-        "/docs/schema-definition/agent": {
+        "/docs/reference/agent": {
           title: "Agent",
-          description: "An agent in the factory.",
+          description:
+            "Reference for the Agent schema: the fields that identify an agent and tell other agents when to delegate to it.",
         },
       },
     ],

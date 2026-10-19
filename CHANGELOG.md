@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.0.2
+
+[compare changes](https://github.com/nrjdalal/zerosdk/compare/v0.0.1...v0.0.2)
+
+### 🩹 Fixes
+
+- **docs:** Build twoslash hovers under bun from a committed cache ([#4](https://github.com/nrjdalal/zerosdk/pull/4))
+
+### ❤️ Contributors
+
+- Neeraj Dalal @nrjdalal
+
 ## v0.0.1
 
 ### 🚀 Enhancements

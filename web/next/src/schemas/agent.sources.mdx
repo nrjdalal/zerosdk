@@ -2,29 +2,32 @@
 
 ### Anomaly OpenCode
 
-[https://opencode.ai/docs/agents/#options](https://opencode.ai/docs/agents/#options)
+[https://opencode.ai/v2/docs/agents/#options](https://opencode.ai/v2/docs/agents/#options)
 
-```ts twoslash title="@opencode-ai/sdk@1.19.3"
+```ts twoslash title="@opencode/schema@2.0.32"
 // @noErrors
-interface PermissionConfig {}
+interface Json {}
 // ---cut---
-type AgentConfig = {
-  /** Hex color code (e.g., #FF5733) or theme color (e.g., primary) */
+type ConfigAgent = {
   color?: string
   description?: string
-  disable?: boolean
+  disabled?: boolean
   hidden?: boolean
-  maxSteps?: number
   mode?: "all" | "primary" | "subagent"
-  model?: string
-  options?: { [key: string]: unknown }
-  permission?: PermissionConfig
-  prompt?: string
+  model?:
+    | string
+    | { readonly providerID: string; readonly model: string; readonly variant?: string | undefined }
+  permissions?: readonly {
+    readonly action: string
+    readonly resource: string
+    readonly effect: "allow" | "ask" | "deny"
+  }[]
+  request?: {
+    readonly headers?: { readonly [x: string]: string } | undefined
+    readonly body?: { readonly [x: string]: Json } | undefined
+  }
   steps?: number
-  temperature?: number
-  tools?: { [key: string]: boolean }
-  top_p?: number
-  variant?: string
+  system?: string
 }
 ```
 
@@ -81,7 +84,7 @@ type AgentDefinition = {
 
 [https://code.claude.com/docs/en/sub-agents#supported-frontmatter-fields](https://code.claude.com/docs/en/sub-agents#supported-frontmatter-fields)
 
-```ts twoslash title="@anthropic-ai/claude-code@2.1.303 · docs"
+```ts twoslash title="@anthropic-ai/claude-code@2.1.304 · docs"
 // @noErrors
 /** A subagent file in .claude/agents/, configured by its YAML frontmatter. */
 type subagent = {
@@ -128,7 +131,7 @@ type subagent = {
 
 ### Cloudflare Agents
 
-[https://developers.cloudflare.com/agents/api-reference/agents-api/#agent-class](https://developers.cloudflare.com/agents/api-reference/agents-api/#agent-class)
+[https://developers.cloudflare.com/agents/runtime/agents-api/#agent-class](https://developers.cloudflare.com/agents/runtime/agents-api/#agent-class)
 
 ````ts twoslash title="agents@0.28.1"
 // @noErrors

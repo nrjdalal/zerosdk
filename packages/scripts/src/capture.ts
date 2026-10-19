@@ -2,6 +2,8 @@
 export const capture = async (cmd: string[], cwd: string, stdin?: string): Promise<string> => {
   const proc = Bun.spawn(cmd, {
     cwd,
+    // The environment as it is now; Bun.spawn otherwise passes the one the process started with.
+    env: process.env,
     stderr: "pipe",
     stdin: stdin === undefined ? "ignore" : new Blob([stdin]),
     stdout: "pipe",

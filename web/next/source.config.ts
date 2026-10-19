@@ -35,12 +35,13 @@ const blogSchema = pageSchema.extend({
   tags: z.array(z.string()).optional(),
 })
 
+// A page's markdown copy renders its components, so one with a markdown form (asMarkdown) shows that instead of its JSX: https://fumadocs.dev/docs/headless/mdx/remark-llms#output
 export const docs = defineDocs({
   dir: "content/docs",
   docs: {
     schema: docsSchema,
     postprocess: {
-      includeProcessedMarkdown: true,
+      includeProcessedMarkdown: { output: "function" },
     },
   },
 })
@@ -50,7 +51,7 @@ export const blog = defineDocs({
   docs: {
     schema: blogSchema,
     postprocess: {
-      includeProcessedMarkdown: true,
+      includeProcessedMarkdown: { output: "function" },
     },
   },
 })
@@ -61,7 +62,7 @@ export const consoleDocs = defineDocs({
   docs: {
     schema: docsSchema,
     postprocess: {
-      includeProcessedMarkdown: true,
+      includeProcessedMarkdown: { output: "function" },
     },
   },
 })
@@ -74,16 +75,18 @@ type HastNode = {
   value?: string
 }
 
-// A twoslash block shows its doc comments on hover, so they are cut from the code with Twoslash's notation (https://twoslash.netlify.app/refs/notations#cutting-code), before rehypeCode where fumadocs-twoslash reads it and after the page's markdown copy is taken, which keeps them.
-function rehypeCutDocComments() {
+// A twoslash block shows its doc comments on hover and needs its leading imports only to type-check, so both are cut from the code with Twoslash's notation (https://twoslash.netlify.app/refs/notations#cutting-code), before rehypeCode where fumadocs-twoslash reads it and after the page's markdown copy is taken, which keeps them.
+function rehypeTwoslashCuts() {
   const visit = (node: HastNode) => {
     if (node.tagName === "code" && node.data?.meta?.includes("twoslash"))
       for (const child of node.children ?? [])
         if (child.type === "text" && child.value)
-          child.value = child.value.replace(
-            /^([ \t]*)(\/\*\*[\s\S]*?\*\/)[ \t]*\n/gm,
-            "$1// ---cut-start---\n$1$2\n$1// ---cut-end---\n",
-          )
+          child.value = child.value
+            .replace(/^(?:import\b[^"']*["'][^"'\n]*["'][^\n]*\n)+\n*/, "$&// ---cut---\n")
+            .replace(
+              /^([ \t]*)(\/\*\*[\s\S]*?\*\/)[ \t]*\n/gm,
+              "$1// ---cut-start---\n$1$2\n$1// ---cut-end---\n",
+            )
     node.children?.forEach(visit)
   }
   return visit
@@ -105,6 +108,6 @@ export default defineConfig({
         transformerTwoslash({ typesCache: createFileSystemTypesCache({ dir: "twoslash-cache" }) }),
       ],
     },
-    rehypePlugins: (plugins) => [rehypeCutDocComments, ...plugins],
+    rehypePlugins: (plugins) => [rehypeTwoslashCuts, ...plugins],
   },
 })
