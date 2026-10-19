@@ -10,6 +10,14 @@ const docsConfig = {
         },
       },
     ],
+    "Schema Definition": [
+      {
+        "/docs/schema-definition/agent": {
+          title: "Agent",
+          description: "An agent in the factory.",
+        },
+      },
+    ],
   },
   console: {
     "Getting Started": [

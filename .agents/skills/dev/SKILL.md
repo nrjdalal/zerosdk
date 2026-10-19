@@ -63,6 +63,10 @@ Restart the same way after changing `@packages/*` exports the API consumes: they
 
 `/api/health` can report a build SHA one commit behind `HEAD` after a restart. The SHA is baked into `@packages/env` at build time (`packages/env/tsdown.config.ts` reads `git rev-parse --short HEAD`), and turbo replays a cached build when only the commit changed, since that task's inputs are its own files plus the root `package.json`, none of which a plain commit elsewhere touches. Force it with `bunx turbo run build --filter=@packages/env --force`; the number itself is right either way.
 
+## Large-page hot reload trap
+
+After `bun run agent:schemas` regenerates `web/next/src/schemas/agent.sources.mdx`, or after any edit to the Agent schema page while the stack runs, restart the stack with the recipe above before loading the page. On the first render after a hot reload, Next 16 dev re-parses the page module's whole inline source map once per JSX element, so a page this size (one Twoslash block per source, plus the schema) stalls for tens of seconds and can exhaust the heap (`FATAL ERROR: ... JavaScript heap out of memory`, then a 502). Plain reloads and production builds are unaffected; a fresh start reads source maps from files and renders the page in seconds.
+
 ## Agent login
 
 Sign in as `LocalAgent` (local only, trusted Origin required). The route is gated on `AGENT_SIGNIN_ENABLED`: set it to `true` in `.env` first, or the route 404s. It is off by default, so a fresh clone and any deploy expose no session-minting route.
