@@ -1,3 +1,5 @@
+import { site } from "@packages/config/site"
+
 import type { DocsConfig } from "./src/lib/docs"
 
 const docsConfig = {
@@ -5,8 +7,8 @@ const docsConfig = {
     "Getting Started": [
       {
         "/docs": {
-          title: "Introduction",
-          description: "Documentation.",
+          title: "Overview",
+          description: `${site.description} This overview lists every page in its documentation.`,
         },
       },
     ],

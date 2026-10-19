@@ -1,12 +1,15 @@
 import { decodeHTML } from "entities"
+import type { DocMethods } from "fumadocs-mdx/runtime/types"
 
 import { config } from "@/lib/config"
+import { getMDXComponents } from "@/mdx-components"
 
 type LLMPage = {
   url: string
   data: {
+    description?: string
+    getText: DocMethods["getText"]
     title?: string
-    getText: (type: "processed" | "raw") => Promise<string>
   }
 }
 
@@ -18,7 +21,7 @@ export async function getLLMText(page: LLMPage) {
   let body: string
 
   try {
-    body = (await page.data.getText("processed")).trim()
+    body = (await page.data.getText("processed", { components: getMDXComponents() })).trim()
   } catch {
     body = (await page.data.getText("raw")).trim()
   }
@@ -28,9 +31,11 @@ export async function getLLMText(page: LLMPage) {
 
   const pageTitle = page.data.title ?? page.url
 
+  const description = page.data.description ? `${page.data.description}\n\n` : ""
+
   return `# [${pageTitle}](${config.app.url}${page.url})
 
-${body}`
+${description}${body}`
 }
 
 // Orders pages by an explicit slug list (from docs.config), slug derived by stripping baseUrl; pages not in the list fall to the end. Used by the llms.txt routes to match sidebar order.
