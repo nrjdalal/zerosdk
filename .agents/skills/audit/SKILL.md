@@ -55,7 +55,7 @@ Run `bun run shadcn:update` (the `shadcn-sync` skill). The registry moves with t
 
 A refresh touches every surface, so verify every surface:
 
-1. **Gates:** the audit command `lefthook.yml` runs, then `bun run format:check`, `bun run lint`, `bun run check-types`, `bun run test`, and `bun run build`, with `TURBO_FORCE=true` set so every turbo task executes, since a cache hit replays an old green.
+1. **Gates:** the audit command `lefthook.yml` runs, then `bun run format:check`, `bun run lint`, `bun run check-types`, `bun run test`, and `bun run build`, with `TURBO_FORCE=true` set so every turbo task executes, since a cache hit replays an old green. Then run `bun run twoslash:cache` and commit what it rewrites in `web/next/twoslash-cache`: the docs hovers come from the packages that moved, and CI fails while they are stale.
 2. **End to end (canonical starter only):** the golden suite against a local stack, twice (the `docker-test` skill).
 3. **Docker:** when Bun or anything in the image moved, build both images with `--no-cache` and run the single-libc and offline checks (the `docker-test` skill).
 4. **Browser:** drive the pages built on the packages that moved (the `ui-verify` skill), for example the docs search after Fumadocs moves, or the console tables and their menus after Base UI moves.

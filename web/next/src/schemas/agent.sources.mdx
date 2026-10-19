@@ -87,7 +87,7 @@ type AgentDefinition = {
 type subagent = {
   /** Lower the [auto-compact window](https://code.claude.com/docs/en/sub-agents#subagent-auto-compact-window) for this subagent to a token count from `100000` to `1000000`. Requires Claude Code v2.1.296 or later */
   autoCompactWindow?
-  /** Set to `true` to keep this subagent in the background even when Claude asks to run it in the foreground. Where [fork mode](https://code.claude.com/docs/en/sub-agents#turn-fork-mode-on-or-off) is on, Claude Code already runs the subagents Claude spawns [in the background](https://code.claude.com/docs/en/sub-agents#run-subagents-in-foreground-or-background) */
+  /** Set to `true` to keep this subagent in the background even when Claude asks to wait for it. By default, subagents Claude spawns from the main conversation already [start in the background](https://code.claude.com/docs/en/sub-agents#run-subagents-in-foreground-or-background) */
   background?
   /** Display color for the subagent in the task list and transcript. Accepts `red`, `blue`, `green`, `yellow`, `purple`, `orange`, `pink`, or `cyan` */
   color?
