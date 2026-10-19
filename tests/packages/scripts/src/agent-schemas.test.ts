@@ -47,7 +47,7 @@ const CODEX_MD = `## Custom agents
 
 const CLAUDE_URL = "https://code.claude.com/docs/en/sub-agents#supported-frontmatter-fields"
 
-// Two packages the emulated registry serves: a config type that references a type the block will not declare, and a class with a definition surface to pick out of its API.
+// Three packages the emulated registry serves: a config type that references a type the block will not declare, a class with a definition surface to pick out of its API, and a schema class whose encoded side, what a config file holds, is read through a target.
 const PACKAGES = {
   "zerosdk-fixture-class": {
     "index.d.ts": `/** A Durable Object agent. */
@@ -86,6 +86,23 @@ export interface AgentConfig {
 }
 `,
     version: "1.2.3",
+  },
+  "zerosdk-fixture-schema": {
+    "index.d.ts": `/** A schema class, as Effect declares one. */
+export declare class Info {
+  /** The schema's id. */
+  static schemaId: string
+  /** What a config file holds. */
+  static readonly Encoded: {
+    /** What the agent does. */
+    readonly description?: string
+    readonly steps?: number
+  }
+  /** The decoded steps. */
+  readonly steps?: number
+}
+`,
+    version: "2.0.0",
   },
 }
 
@@ -335,6 +352,14 @@ describe("generate", () => {
               type: "Agent",
               url: `${origin}/class#agent-class`,
             } satisfies NpmSource,
+            {
+              module: "zerosdk-fixture-schema",
+              pkg: "zerosdk-fixture-schema",
+              product: "Fixture Schema",
+              target: '(typeof Info)["Encoded"]',
+              type: "Info",
+              url: `${origin}/config#options`,
+            } satisfies NpmSource,
           ],
           out,
           registry: origin,
@@ -349,6 +374,7 @@ describe("generate", () => {
         "### Fixture Class",
         "### Fixture Config",
         "### Fixture Docs",
+        "### Fixture Schema",
       ])
       expect(mdx).toContain('title="zerosdk-fixture-config@1.2.3"')
       expect(mdx).toContain('title="zerosdk-fixture-docs@9.9.9 · docs"')
@@ -358,7 +384,11 @@ describe("generate", () => {
       expect(mdx).toContain(
         "/** A Durable Object agent. */\ndeclare class Agent {\n  /** The state a new instance starts with. */\n  initialState: unknown\n  /** Where telemetry goes. */\n  observability?: { emit(event: string): void }\n  /** Called when the agent starts. */\n  onStart: () => void | Promise<void>\n  /** Options shared by every instance. */\n  static options: { hibernate: boolean }\n}",
       )
-      for (const left of ["scheduler", "secret", "_internal", "send"])
+      // A target reads as a type: the encoded fields, none of the class's statics.
+      expect(mdx).toContain(
+        "/** A schema class, as Effect declares one. */\ntype Info = {\n  /** What the agent does. */\n  description?: string\n  steps?: number\n}",
+      )
+      for (const left of ["scheduler", "secret", "_internal", "send", "schemaId", "Encoded"])
         expect(mdx).not.toContain(` ${left}`)
       // Already formatted, so the repo's formatter has nothing left to change.
       const check = Bun.spawnSync(["bunx", "oxfmt", "--check", out], {

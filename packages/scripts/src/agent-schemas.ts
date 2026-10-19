@@ -43,6 +43,8 @@ export type Source = {
 export type NpmSource = Pick<Source, "product" | "url"> & {
   module: string
   pkg: string
+  // The shape to read when it is not the exported type itself, such as the encoded side of an Effect schema class; it reads as a type, never a class.
+  target?: string
   type: string
 }
 export type DocsSource = Pick<Source, "description" | "name" | "product" | "url"> & {
@@ -56,11 +58,12 @@ type Session = { api: API; cache: string }
 // npm sources: the type each package exports for what an agent is defined with.
 const NPM: NpmSource[] = [
   {
-    module: "@opencode-ai/sdk/v2",
-    pkg: "@opencode-ai/sdk",
+    module: "@opencode/schema/config/agent",
+    pkg: "@opencode/schema",
     product: "Anomaly OpenCode",
-    type: "AgentConfig",
-    url: "https://opencode.ai/docs/agents/#options",
+    target: '(typeof Info)["Encoded"]',
+    type: "Info",
+    url: "https://opencode.ai/v2/docs/agents/#options",
   },
   {
     module: "@anthropic-ai/claude-agent-sdk",
@@ -74,7 +77,7 @@ const NPM: NpmSource[] = [
     pkg: "agents",
     product: "Cloudflare Agents",
     type: "Agent",
-    url: "https://developers.cloudflare.com/agents/api-reference/agents-api/#agent-class",
+    url: "https://developers.cloudflare.com/agents/runtime/agents-api/#agent-class",
   },
   {
     module: "@mastra/core/agent",
@@ -292,7 +295,7 @@ async function fromNpm(session: Session, npm: NpmSource[]): Promise<Source[]> {
     "target",
     npm.map(
       (s) =>
-        `import type { ${s.type} } from "${s.module}"\nexport type Target = ${s.type}\nexport type { ${s.type} }\n`,
+        `import type { ${s.type} } from "${s.module}"\nexport type Target = ${s.target ?? s.type}\nexport type { ${s.type} }\n`,
     ),
   )
   const checker: Checker = project.checker
@@ -336,7 +339,7 @@ async function fromNpm(session: Session, npm: NpmSource[]): Promise<Source[]> {
       const type = (await checker.getNonNullableType(
         await checker.getDeclaredTypeOfSymbol(target),
       ))!
-      const isClass = has(declared, SymbolFlags.Class)
+      const isClass = !s.target && has(declared, SymbolFlags.Class)
       const instance = await checker.getPropertiesOfType(type)
       // A class is defined by what a subclass provides: the properties it may set (writable, or optional), the on* hooks it overrides, and its static options; the readonly handles the framework provides and the rest of its API are left out.
       const fields = isClass
