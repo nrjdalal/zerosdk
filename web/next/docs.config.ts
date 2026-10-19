@@ -5,8 +5,9 @@ const docsConfig = {
     "Getting Started": [
       {
         "/docs": {
-          title: "Introduction",
-          description: "Documentation.",
+          title: "Overview",
+          description:
+            "ZeroSDK is an experimental multi-agent software factory, and this overview lists every page in its documentation.",
         },
       },
     ],
