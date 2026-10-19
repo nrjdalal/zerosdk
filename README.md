@@ -1,4 +1,4 @@
-# Zerosdk
+# ZeroSDK
 
 Built on top of [ZeroStarter](https://zerostarter.dev).
 

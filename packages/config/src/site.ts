@@ -1,8 +1,8 @@
 // Brand identity for this app: the single source a fork edits to rebrand. web reads it via lib/config.ts.
 export const site = {
-  name: "Zerosdk",
-  description: "Zerosdk is just getting started. Tell its story here.",
-  tagline: "Your tagline, ready when you are.",
+  name: "ZeroSDK",
+  description: "ZeroSDK is an experimental multi-agent software factory.",
+  tagline: "Where agents build software",
   social: {
     discord: "",
     github: "",
