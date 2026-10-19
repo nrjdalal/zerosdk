@@ -1,7 +1,6 @@
 "use client"
 
 import { ACCESS_ROLE, roleAtLeast, type ConsoleRole } from "@packages/auth/access"
-import { features } from "@packages/config/site"
 import {
   RiBookLine,
   RiDashboardLine,
@@ -24,6 +23,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { features } from "@/lib/config"
 import type { NavGroup } from "@/lib/docs"
 import { isActive } from "@/lib/utils"
 

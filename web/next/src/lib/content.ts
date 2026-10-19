@@ -1,4 +1,3 @@
-import { features } from "@packages/config/site"
 import type { Root } from "fumadocs-core/page-tree"
 import { createRelativeLink } from "fumadocs-ui/mdx"
 import { notFound } from "next/navigation"
@@ -9,6 +8,7 @@ import {
   getPublishedBlogPosts,
   isPublicBlogPage,
 } from "@/lib/blog"
+import { features } from "@/lib/config"
 import { blogSource, consoleSource, docsSource } from "@/lib/source"
 
 export type ContentKind = "blog" | "console" | "docs"

@@ -27,7 +27,8 @@ const TARGETS = {
 const { url, file, out } = TARGETS[process.argv[2] === "web" ? "web" : "auth"]
 
 const rawUrl = await url()
-const host = parse(rawUrl, { allowPrivateDomains: true })
+// A web build with no api url parses to an empty breakdown, so isPrivate is false.
+const host = parse(rawUrl ?? "", { allowPrivateDomains: true })
 const { domain, hostname, isIp, isPrivate, publicSuffix, subdomain } = host
 // Fail loud on tldts drift: a multi-label registrable host resolves to a full breakdown, so a null/undefined field (a renamed/moved field that would otherwise bake host-only cookies or a false isPrivate silently) is a build error. IPs, localhost, and single-label hosts legitimately carry null fields and are exempt.
 const nullish = (value: unknown) => value === null || value === undefined

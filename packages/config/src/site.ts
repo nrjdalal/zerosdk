@@ -1,8 +1,8 @@
 // Brand identity for this app: the single source a fork edits to rebrand. web reads it via lib/config.ts.
 export const site = {
-  name: "Zerosdk",
-  description: "Zerosdk is just getting started. Tell its story here.",
-  tagline: "Your tagline, ready when you are.",
+  name: "ZeroSDK",
+  description: "ZeroSDK is an experimental multi-agent software factory.",
+  tagline: "Where agents build software",
   social: {
     discord: "",
     github: "",
@@ -20,7 +20,7 @@ export const site = {
 
 export type Site = typeof site
 
-// Optional surfaces a fork enables or disables. Typed boolean (not `as const`) so a fork can flip them and the runtime gates are not dead code. Off means the routes 404 and the links, nav, sitemap, llms, and search drop the surface. waitlist off makes the home a plain landing page.
+// Optional surfaces a fork enables or disables. Typed boolean (not `as const`) so a fork can flip them and the runtime gates are not dead code. Off means the routes 404 and the links, nav, sitemap, llms, and search drop the surface. waitlist off makes the home a plain landing page. The web serves the ones that need the api only when it has one (web/next/src/lib/config.ts).
 export const features = {
   allowlist: false,
   apiDocs: true,
