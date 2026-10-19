@@ -1,12 +1,17 @@
 import { decodeHTML } from "entities"
+import type { MDXComponents } from "mdx/types"
 
 import { config } from "@/lib/config"
+import { getMDXComponents } from "@/mdx-components"
 
 type LLMPage = {
   url: string
   data: {
     title?: string
-    getText: (type: "processed" | "raw") => Promise<string>
+    getText: (
+      type: "processed" | "raw",
+      options?: { components?: MDXComponents },
+    ) => Promise<string>
   }
 }
 
@@ -18,7 +23,8 @@ export async function getLLMText(page: LLMPage) {
   let body: string
 
   try {
-    body = (await page.data.getText("processed")).trim()
+    // The components render a collection whose markdown is a function (docs); the others ignore them.
+    body = (await page.data.getText("processed", { components: getMDXComponents() })).trim()
   } catch {
     body = (await page.data.getText("raw")).trim()
   }
