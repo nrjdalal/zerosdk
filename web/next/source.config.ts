@@ -35,12 +35,13 @@ const blogSchema = pageSchema.extend({
   tags: z.array(z.string()).optional(),
 })
 
+// A page's markdown copy renders its components, so one with a markdown form (asMarkdown) shows that instead of its JSX: https://fumadocs.dev/docs/headless/mdx/remark-llms#output
 export const docs = defineDocs({
   dir: "content/docs",
   docs: {
     schema: docsSchema,
     postprocess: {
-      includeProcessedMarkdown: true,
+      includeProcessedMarkdown: { output: "function" },
     },
   },
 })
@@ -50,7 +51,7 @@ export const blog = defineDocs({
   docs: {
     schema: blogSchema,
     postprocess: {
-      includeProcessedMarkdown: true,
+      includeProcessedMarkdown: { output: "function" },
     },
   },
 })
@@ -61,7 +62,7 @@ export const consoleDocs = defineDocs({
   docs: {
     schema: docsSchema,
     postprocess: {
-      includeProcessedMarkdown: true,
+      includeProcessedMarkdown: { output: "function" },
     },
   },
 })
