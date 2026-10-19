@@ -2,13 +2,14 @@ import { getPageTreePeers } from "fumadocs-core/page-tree"
 import { asMarkdown, md } from "fumadocs-core/server"
 import { Card, Cards } from "fumadocs-ui/components/card"
 
-import { docsSource } from "@/lib/source"
+import { config } from "@/lib/config"
+import { contentSource } from "@/lib/content"
 
-// The pages beside url as cards, each with its title and description (https://fumadocs.dev/docs/markdown#further-reading-section), and as a link list in the page's markdown.
+// The documented further reading cards: https://fumadocs.dev/docs/markdown#further-reading-section
 export function DocsCategory({ url }: { url: string }) {
-  const peers = getPageTreePeers(docsSource.getPageTree(), url)
+  const peers = getPageTreePeers(contentSource("docs").tree(), url)
   if (asMarkdown())
-    return md`${peers.map((peer) => md`- [${peer.name}](${peer.url}): ${peer.description}\n`)}`
+    return md`${peers.map((peer) => md`- [${peer.name}](${config.app.url}${peer.url}.md): ${peer.description}\n`)}`
   return (
     <Cards>
       {peers.map((peer) => (
