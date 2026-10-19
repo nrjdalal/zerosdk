@@ -1,5 +1,7 @@
+import { rehypeCodeDefaultOptions } from "fumadocs-core/mdx-plugins"
 import { pageSchema } from "fumadocs-core/source/schema"
 import { defineConfig, defineDocs } from "fumadocs-mdx/config"
+import { transformerTwoslash } from "fumadocs-twoslash"
 import { z } from "zod"
 
 import { normalizeBlogTimestamp } from "@/lib/blog-policy"
@@ -63,4 +65,41 @@ export const consoleDocs = defineDocs({
   },
 })
 
-export default defineConfig()
+type HastNode = {
+  children?: HastNode[]
+  data?: { meta?: string }
+  tagName?: string
+  type: string
+  value?: string
+}
+
+// A twoslash block shows its doc comments on hover, so they are cut from the code with Twoslash's notation (https://twoslash.netlify.app/refs/notations#cutting-code), before rehypeCode where fumadocs-twoslash reads it and after the page's markdown copy is taken, which keeps them.
+function rehypeCutDocComments() {
+  const visit = (node: HastNode) => {
+    if (node.tagName === "code" && node.data?.meta?.includes("twoslash"))
+      for (const child of node.children ?? [])
+        if (child.type === "text" && child.value)
+          child.value = child.value.replace(
+            /^([ \t]*)(\/\*\*[\s\S]*?\*\/)[ \t]*\n/gm,
+            "$1// ---cut-start---\n$1$2\n$1// ---cut-end---\n",
+          )
+    node.children?.forEach(visit)
+  }
+  return visit
+}
+
+// Twoslash adds type and doc popups on hover to code blocks marked `twoslash`: https://fumadocs.dev/docs/markdown/twoslash
+export default defineConfig({
+  mdxOptions: {
+    rehypeCodeOptions: {
+      // Shiki cannot lazy-load languages inside Twoslash popups, so they are loaded up front.
+      langs: ["js", "jsx", "ts", "tsx"],
+      themes: {
+        dark: "github-dark",
+        light: "github-light",
+      },
+      transformers: [...(rehypeCodeDefaultOptions.transformers ?? []), transformerTwoslash()],
+    },
+    rehypePlugins: (plugins) => [rehypeCutDocComments, ...plugins],
+  },
+})
