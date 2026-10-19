@@ -75,6 +75,16 @@ type HastNode = {
   value?: string
 }
 
+// An included file keeps its final newline in the rendered block (fumadocs drops it only from the markdown copy), where it shows as an empty last line.
+function rehypeTrimFinalNewline() {
+  const visit = (node: HastNode) => {
+    const last = node.tagName === "code" ? node.children?.at(-1) : undefined
+    if (last?.type === "text" && last.value) last.value = last.value.replace(/\r?\n$/, "")
+    node.children?.forEach(visit)
+  }
+  return visit
+}
+
 // A twoslash block shows its doc comments on hover and needs its leading imports only to type-check, so both are cut from the code with Twoslash's notation (https://twoslash.netlify.app/refs/notations#cutting-code), before rehypeCode where fumadocs-twoslash reads it and after the page's markdown copy is taken, which keeps them.
 function rehypeTwoslashCuts() {
   const visit = (node: HastNode) => {
@@ -108,6 +118,6 @@ export default defineConfig({
         transformerTwoslash({ typesCache: createFileSystemTypesCache({ dir: "twoslash-cache" }) }),
       ],
     },
-    rehypePlugins: (plugins) => [rehypeTwoslashCuts, ...plugins],
+    rehypePlugins: (plugins) => [rehypeTrimFinalNewline, rehypeTwoslashCuts, ...plugins],
   },
 })
