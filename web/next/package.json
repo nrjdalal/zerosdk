@@ -31,6 +31,7 @@
     "entities": "catalog:",
     "fumadocs-core": "catalog:",
     "fumadocs-mdx": "catalog:",
+    "fumadocs-twoslash": "catalog:",
     "fumadocs-ui": "catalog:",
     "hono": "catalog:",
     "input-otp": "catalog:",
@@ -79,7 +80,7 @@
     "defaults"
   ],
   "portless": {
-    "name": "zerostarter",
+    "name": "zerosdk",
     "script": "dev:app"
   }
 }

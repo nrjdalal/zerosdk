@@ -1,5 +1,6 @@
 import { consoleRole } from "@packages/auth/access"
 import type { Metadata } from "next"
+import { notFound } from "next/navigation"
 
 import { ConsoleRoleProvider } from "@/components/console/role"
 import { ConsoleHeader, ConsoleNav } from "@/components/console/sidebar"
@@ -7,6 +8,7 @@ import { SidebarShell } from "@/components/shell/sidebar-shell"
 import { SidebarUserMenu } from "@/components/shell/sidebar-user-menu"
 import { SidebarMenu } from "@/components/ui/sidebar"
 import { assertConsoleAccess } from "@/lib/auth/console"
+import { config } from "@/lib/config"
 import { resolveDocsNav } from "@/lib/docs"
 
 // Force per-request rendering so the access check runs on every request and the console is never statically prerendered/cached for anonymous users.
@@ -18,6 +20,8 @@ export const metadata: Metadata = {
 }
 
 export default async function Layout({ children }: { children: React.ReactNode }) {
+  if (!config.api.enabled) notFound()
+
   // Single server-side gate for the entire /console area (every nested route).
   const session = await assertConsoleAccess()
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { features, type Feature, site } from "@packages/config/site"
+import { type Feature, site } from "@packages/config/site"
 import {
   RiArrowRightUpLine,
   RiDiscordFill,
@@ -20,6 +20,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Spinner } from "@/components/ui/spinner"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { authClient } from "@/lib/auth/client"
+import { config, features } from "@/lib/config"
 import { isActive } from "@/lib/utils"
 
 const socialLinks = [
@@ -68,16 +69,44 @@ function SocialLinks({ onClick }: { onClick?: () => void }) {
   )
 }
 
-export function Navbar() {
+function SessionButton() {
   const pathname = usePathname()
   const { data: session, isPending } = authClient.useSession()
-
   const [toDashboard, setToDashboard] = useState(false)
-  const [isOpen, setIsOpen] = useState(false)
 
   useEffect(() => {
     setToDashboard(false)
   }, [pathname])
+
+  // Shell paints immediately; only the label fades in once auth resolves, so the box never pops and a logged-in user never sees a flash of Login.
+  if (isPending) {
+    return (
+      <Button className="pointer-events-none w-24" variant="outline" aria-hidden tabIndex={-1} />
+    )
+  }
+  if (session?.user) {
+    return (
+      <Button
+        role="link"
+        className="w-24"
+        variant="outline"
+        onClick={() => setToDashboard(true)}
+        render={<Link href="/dashboard" />}
+      >
+        {toDashboard ? (
+          <Spinner />
+        ) : (
+          <span className="animate-in fade-in duration-1000">Dashboard</span>
+        )}
+      </Button>
+    )
+  }
+  return <Access labelClassName="animate-in fade-in duration-1000" />
+}
+
+export function Navbar() {
+  const pathname = usePathname()
+  const [isOpen, setIsOpen] = useState(false)
 
   if (pathname?.startsWith("/console") || pathname?.startsWith("/dashboard")) return null
 
@@ -86,7 +115,6 @@ export function Navbar() {
     { href: "/docs", label: "Documentation", feature: "docs" },
     { href: "/api/docs", label: "API Docs", external: true, feature: "apiDocs" },
     { href: "/blog", label: "Blog", feature: "blog" },
-    { href: "/hire", label: "Hire" },
   ]
   const navLinks = allNavLinks.filter((link) => !link.feature || features[link.feature])
 
@@ -135,31 +163,7 @@ export function Navbar() {
             <SocialLinks />
           </div>
 
-          {/* Shell paints immediately; only the label fades in once auth resolves, so the box never pops and a logged-in user never sees a flash of Login. */}
-          {isPending ? (
-            <Button
-              className="pointer-events-none w-24"
-              variant="outline"
-              aria-hidden
-              tabIndex={-1}
-            />
-          ) : session?.user ? (
-            <Button
-              role="link"
-              className="w-24"
-              variant="outline"
-              onClick={() => setToDashboard(true)}
-              render={<Link href="/dashboard" />}
-            >
-              {toDashboard ? (
-                <Spinner />
-              ) : (
-                <span className="animate-in fade-in duration-1000">Dashboard</span>
-              )}
-            </Button>
-          ) : (
-            <Access labelClassName="animate-in fade-in duration-1000" />
-          )}
+          {config.api.enabled && <SessionButton />}
 
           <div className="lg:-mr-2.5">
             <ModeToggle />

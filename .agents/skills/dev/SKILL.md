@@ -1,8 +1,11 @@
 ---
 name: dev
-description: Start, restart, and verify the ZeroStarter dev stack. `bun run dev` serves portless named `.localhost` URLs (branch-prefixed in a worktree); resolve them with `bunx portless get`. Use when asked to run the app, when the API returns NOT_FOUND for routes that exist in source, or before browser testing.
-source: local
+description: Start, restart, and verify the zerosdk dev stack. `bun run dev` serves portless named `.localhost` URLs (branch-prefixed in a worktree); resolve them with `bunx portless get`. Use when asked to run the app, when the API returns NOT_FOUND for routes that exist in source, or before browser testing.
+source: https://github.com/nrjdalal/zerostarter
 ---
+
+> [!CAUTION]
+> Synced from https://github.com/nrjdalal/zerostarter. Customize this skill or remove this note to stop syncing.
 
 # Dev Stack
 
@@ -13,10 +16,10 @@ source: local
 Start it from a shell that has not exported `NODE_ENV`. The worktree commit recipe exports `NODE_ENV=production`, and a stack started under it boots in the production stage: `/api/health` still answers ok, but the agent sign-in route is gone and the end-to-end suite fails wholesale. `unset NODE_ENV SKIP_ENV_VALIDATION` first; the stage then comes from `.env`, and `/api/health` names it in `environment`.
 
 ```bash
-(bun run dev --ui stream > /tmp/zerostarter-dev.log 2>&1 &)
+(bun run dev --ui stream > /tmp/zerosdk-dev.log 2>&1 &)
 # Resolve this worktree's URLs (branch-prefixed); the proxy needs a moment, so retry
-for i in $(seq 1 60); do WEB=$(bunx portless get zerostarter 2>/dev/null); [ -n "$WEB" ] && break; sleep 1; done
-API=$(bunx portless get api.zerostarter)
+for i in $(seq 1 60); do WEB=$(bunx portless get zerosdk 2>/dev/null); [ -n "$WEB" ] && break; sleep 1; done
+API=$(bunx portless get api.zerosdk)
 curl -sf --retry 60 --retry-delay 1 --retry-connrefused "$API/api/health" > /dev/null
 curl -sS "$API/api/health"                        # {"data":{"message":"ok",...}}
 curl -sS -o /dev/null -w "%{http_code}" "$WEB/"   # 200
@@ -24,9 +27,9 @@ curl -sS -o /dev/null -w "%{http_code}" "$WEB/"   # 200
 
 Ready when the health curl prints `"message":"ok"` and `/` returns `200`. `bunx portless list` shows every active route.
 
-- Web / API base URLs: `bunx portless get zerostarter` / `bunx portless get api.zerostarter`
+- Web / API base URLs: `bunx portless get zerosdk` / `bunx portless get api.zerosdk`
 - Scalar API docs: `$API/api/docs`
-- Logs: `tail -f /tmp/zerostarter-dev.log`
+- Logs: `tail -f /tmp/zerosdk-dev.log`
 
 **Fixed ports:** `PORTLESS=0 bun run dev` skips the proxy and serves web on `:3000`, api on `:4000` (the ports the curl examples in other skills assume). It runs a single stack only: two worktrees on fixed ports collide, which is why portless is the default.
 
@@ -49,8 +52,8 @@ for p in $(pgrep -f "turbo run dev|bun run dev|dev:app|next dev|next-server|src/
   esac
 done
 sleep 2
-(bun run dev --ui stream > /tmp/zerostarter-dev.log 2>&1 &)
-API=$(bunx portless get api.zerostarter)
+(bun run dev --ui stream > /tmp/zerosdk-dev.log 2>&1 &)
+API=$(bunx portless get api.zerosdk)
 curl -sf --retry 60 --retry-delay 1 --retry-connrefused "$API/api/health" > /dev/null
 ```
 
@@ -60,12 +63,16 @@ Restart the same way after changing `@packages/*` exports the API consumes: they
 
 `/api/health` can report a build SHA one commit behind `HEAD` after a restart. The SHA is baked into `@packages/env` at build time (`packages/env/tsdown.config.ts` reads `git rev-parse --short HEAD`), and turbo replays a cached build when only the commit changed, since that task's inputs are its own files plus the root `package.json`, none of which a plain commit elsewhere touches. Force it with `bunx turbo run build --filter=@packages/env --force`; the number itself is right either way.
 
+## Large-page hot reload trap
+
+After `bun run agent:schemas` regenerates `web/next/src/schemas/agent.sources.mdx`, or after any edit to the Agent schema page while the stack runs, restart the stack with the recipe above before loading the page. On the first render after a hot reload, Next 16 dev re-parses the page module's whole inline source map once per JSX element, so a page this size (one Twoslash block per source, plus the schema) stalls for tens of seconds and can exhaust the heap (`FATAL ERROR: ... JavaScript heap out of memory`, then a 502). Plain reloads and production builds are unaffected; a fresh start reads source maps from files and renders the page in seconds.
+
 ## Agent login
 
 Sign in as `LocalAgent` (local only, trusted Origin required). The route is gated on `AGENT_SIGNIN_ENABLED`: set it to `true` in `.env` first, or the route 404s. It is off by default, so a fresh clone and any deploy expose no session-minting route.
 
 ```bash
-WEB=$(bunx portless get zerostarter); API=$(bunx portless get api.zerostarter)
+WEB=$(bunx portless get zerosdk); API=$(bunx portless get api.zerosdk)
 curl -sS -c cookies.txt -X POST -H "Origin: $WEB" "$API/api/agents/sign-in-as"
 curl -sS -b cookies.txt "$API/api/v1/user"
 ```
