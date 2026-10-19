@@ -75,7 +75,7 @@ type HastNode = {
   value?: string
 }
 
-// fumadocs' include keeps a file's final newline in its block (only the markdown copy drops it) and rehypeCode strips just the one hast appends, so every block drops one more; an included block keeps its include's position, so it cannot be told from a fence here, and a fence's code never ends in a newline.
+// fumadocs' include keeps a file's final newline in its block (only the markdown copy drops it) and rehypeCode strips just the one hast appends, so every block drops one more; an included block keeps its include's position, so it cannot be told from a fence here, and a fence loses only a trailing blank line, which no doc has.
 function rehypeTrimFinalNewline() {
   const visit = (node: HastNode) => {
     const last = node.tagName === "code" ? node.children?.at(-1) : undefined
