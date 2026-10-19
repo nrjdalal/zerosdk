@@ -1,5 +1,7 @@
-import { features, site } from "@packages/config/site"
+import { site } from "@packages/config/site"
 import { redirect } from "next/navigation"
+
+import { features } from "@/lib/config"
 
 // Fresh fork: the waitlist capture when the waitlist feature is on, otherwise a plain landing page. Replace this with your real home when ready.
 export default function Home() {

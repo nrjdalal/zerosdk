@@ -1,6 +1,5 @@
 "use client"
 
-import { features } from "@packages/config/site"
 import { RiAddLine, RiBookLine, RiBuildingLine } from "@remixicon/react"
 import { useForm } from "@tanstack/react-form"
 import { type User } from "better-auth/types"
@@ -30,7 +29,7 @@ import {
 import { Spinner } from "@/components/ui/spinner"
 import { toast } from "@/components/ui/toast"
 import { authClient } from "@/lib/auth/client"
-import { config } from "@/lib/config"
+import { config, features } from "@/lib/config"
 import { slugify } from "@/lib/utils"
 
 type Organization = {
