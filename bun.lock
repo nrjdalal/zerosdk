@@ -115,6 +115,20 @@
         "typescript": "catalog:",
       },
     },
+    "packages/schema": {
+      "name": "@packages/schema",
+      "version": "0.0.0",
+      "dependencies": {
+        "zod": "catalog:",
+      },
+      "devDependencies": {
+        "@packages/config": "workspace:*",
+        "@types/bun": "catalog:",
+        "@types/node": "catalog:",
+        "tsdown": "catalog:",
+        "typescript": "catalog:",
+      },
+    },
     "packages/scripts": {
       "name": "@packages/scripts",
       "version": "0.0.0",
@@ -140,6 +154,7 @@
         "@packages/auth": "workspace:*",
         "@packages/config": "workspace:*",
         "@packages/env": "workspace:*",
+        "@packages/schema": "workspace:*",
         "@remixicon/react": "catalog:",
         "@shadcn/react": "catalog:",
         "@tanstack/react-form": "catalog:",
@@ -745,6 +760,8 @@
     "@packages/db": ["@packages/db@workspace:packages/db"],
 
     "@packages/env": ["@packages/env@workspace:packages/env"],
+
+    "@packages/schema": ["@packages/schema@workspace:packages/schema"],
 
     "@packages/scripts": ["@packages/scripts@workspace:packages/scripts"],
 
