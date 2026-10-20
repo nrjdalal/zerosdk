@@ -114,7 +114,7 @@ export default defineConfig({
         dark: "github-dark",
         light: "github-light",
       },
-      // Shiki gives up on a line after 500ms and leaves the rest as one token, which a busy build hits on the first lines it highlights, so a build sets no limit.
+      // Shiki gives up on a line after 500ms and leaves the rest as one token, and fumadocs' JavaScript regex engine takes about a second over its first TypeScript line under Bun, so a build sets no limit.
       tokenizeTimeLimit: 0,
       transformers: [
         ...(rehypeCodeDefaultOptions.transformers ?? []),
