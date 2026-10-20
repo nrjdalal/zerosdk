@@ -15,13 +15,14 @@ import { AgentsSidebarDemo } from "@/components/agents/sidebar-demo"
 
 ## Sections
 
-The orchestrators' and subagents' labels end with how many agents they hold, nested ones included.
+The orchestrators' and subagents' labels end with how many agents they hold, nested ones included. The threads' label pages through them instead.
 
-| Section       | Holds                                                                         | Nests |
-| ------------- | ----------------------------------------------------------------------------- | ----- |
-| Main agents   | The agents at the top of the team, in the header where the docs keep search   | No    |
-| Orchestrators | The persistent agents that each own one area of the work                      | No    |
-| Subagents     | The agents started for one task, each with the subagents it runs nested below | Yes   |
+| Section       | Holds                                                                                            | Nests |
+| ------------- | ------------------------------------------------------------------------------------------------ | ----- |
+| Main agents   | The agents at the top of the team, in the header where the docs keep search                      | No    |
+| Threads       | The human's [threads](#threads), five to a page, in the order given: most recently updated first | No    |
+| Orchestrators | The persistent agents that each own one area of the work                                         | No    |
+| Subagents     | The agents started for one task, each with the subagents it runs nested below                    | Yes   |
 
 ## Row
 
@@ -34,10 +35,22 @@ A row reads from left to right.
 | Provider | The [provider](/docs/ui/icons#provider) of the agent's model                                                                                                                             |
 | Effort   | The agent's [effort](/docs/ui/icons#effort) level                                                                                                                                        |
 
+## Threads
+
+A thread row shows less than an agent's: a main agent holds every thread, so its provider and effort would repeat on each one.
+
+| Part   | Shows                                                                                                   |
+| ------ | ------------------------------------------------------------------------------------------------------- |
+| Status | The thread's [state](/docs/ui/icons#state): running, waiting, stuck, idle or completed                  |
+| Title  | What the human asked, which no update changes                                                           |
+| Unread | How many of the thread's updates the human has not read, at the right, and nothing once all of them are |
+
+Past five threads, the label pages through them with an arrow on each side of the page number, such as 1/5, and each arrow stops at its end. While it pages, the list keeps five rows' height, so a short last page moves neither the arrows nor the groups below.
+
 ## Hover
 
-Each part names what it shows: the status its task or state, the provider its model, and the effort its level. A row with subagents shows its toggle in its effort's place while the mouse is on it, while it has keyboard focus or is open, and always on a phone. A subagent's title names the agent running it, such as Builder: ZS-15 Fix login, and a name alone shows only when the row cuts it short.
+Each part names what it shows: the status its task or state, the provider its model, and the effort its level. A row with subagents shows its toggle in its effort's place while the mouse is on it, while it has keyboard focus or is open, and always on a phone. A subagent's title names the agent running it, such as Builder: ZS-15 Fix login, and a name alone shows only when the row cuts it short. A thread's title names the agent holding it, such as AgentZero: Rewrite the pricing page copy, or AgentOne while it stands in.
 
 ## Selection
 
-The first main agent is selected until another row is picked. A row's toggle opens and closes its subagents without changing the selection, and a closed row shows as selected while one of its subagents is.
+The first main agent is selected until another row is picked, a thread's included, as the sidebar holds one selection. A row's toggle opens and closes its subagents without changing the selection, and a closed row shows as selected while one of its subagents is.
