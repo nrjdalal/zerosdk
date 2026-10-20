@@ -1,0 +1,96 @@
+---
+slug: /docs/ui/icons
+title: Icons
+description: Reference for the icons the UI uses.
+---
+
+import {
+  RiAlertFill,
+  RiBinocularsFill,
+  RiBookFill,
+  RiBugFill,
+  RiCalendarScheduleFill,
+  RiCloseCircleFill,
+  RiDatabase2Fill,
+  RiEyeFill,
+  RiFlag2Fill,
+  RiForbidFill,
+  RiGlobalFill,
+  RiHammerFill,
+  RiLoader4Fill,
+  RiMagicFill,
+  RiPauseCircleFill,
+  RiPresentationFill,
+  RiRoadMapFill,
+  RiRocketFill,
+  RiShieldFill,
+  RiSignalCellular1Fill,
+  RiSignalCellular2Fill,
+  RiSignalCellular3Fill,
+  RiSkull2Fill,
+  RiSkullFill,
+  RiTestTubeFill,
+  RiTimeFill,
+  RiZzzFill,
+} from "@remixicon/react"
+
+import { Anthropic, Zai } from "@/components/common/provider-logos"
+
+The icons come from [Remix Icon](https://remixicon.com), through `@remixicon/react`, always in their Fill variant, and the provider logos from [models.dev](https://models.dev).
+
+## Effort
+
+An agent's [effort](/docs/reference/agent) level: low, medium and high fill one, two and three bars of a cellular signal, and xhigh and max are two skulls, max the one with an open jaw.
+
+| Level  | Icon                      | Component               |
+| ------ | ------------------------- | ----------------------- |
+| low    | <RiSignalCellular1Fill /> | `RiSignalCellular1Fill` |
+| medium | <RiSignalCellular2Fill /> | `RiSignalCellular2Fill` |
+| high   | <RiSignalCellular3Fill /> | `RiSignalCellular3Fill` |
+| xhigh  | <RiSkullFill />           | `RiSkullFill`           |
+| max    | <RiSkull2Fill />          | `RiSkull2Fill`          |
+
+## Provider
+
+The provider of an agent's [model](/docs/reference/agent), the part before the slash, drawn with its logo from models.dev in the text color. `bun run provider:logos` copies each logo into a component named after its provider, typed and sized like a Remix icon.
+
+| Provider  | Icon          | Component   |
+| --------- | ------------- | ----------- |
+| anthropic | <Anthropic /> | `Anthropic` |
+| zai       | <Zai />       | `Zai`       |
+
+## State
+
+The state an agent, a run or a task is in. The running icon spins, and stops for a reader who asks for reduced motion.
+
+| State     | Icon                                                   | Component                |
+| --------- | ------------------------------------------------------ | ------------------------ |
+| cancelled | <RiForbidFill />                                       | `RiForbidFill`           |
+| completed | <RiFlag2Fill />                                        | `RiFlag2Fill`            |
+| failed    | <RiCloseCircleFill />                                  | `RiCloseCircleFill`      |
+| idle      | <RiZzzFill />                                          | `RiZzzFill`              |
+| paused    | <RiPauseCircleFill />                                  | `RiPauseCircleFill`      |
+| pending   | <RiCalendarScheduleFill />                             | `RiCalendarScheduleFill` |
+| running   | <RiLoader4Fill className="motion-safe:animate-spin" /> | `RiLoader4Fill`          |
+| stuck     | <RiAlertFill />                                        | `RiAlertFill`            |
+| waiting   | <RiTimeFill />                                         | `RiTimeFill`             |
+
+## Task
+
+The kind of task an agent does.
+
+| Task     | Icon                   | Component            |
+| -------- | ---------------------- | -------------------- |
+| build    | <RiHammerFill />       | `RiHammerFill`       |
+| data     | <RiDatabase2Fill />    | `RiDatabase2Fill`    |
+| debug    | <RiBugFill />          | `RiBugFill`          |
+| deploy   | <RiRocketFill />       | `RiRocketFill`       |
+| docs     | <RiBookFill />         | `RiBookFill`         |
+| explain  | <RiPresentationFill /> | `RiPresentationFill` |
+| explore  | <RiBinocularsFill />   | `RiBinocularsFill`   |
+| plan     | <RiRoadMapFill />      | `RiRoadMapFill`      |
+| refactor | <RiMagicFill />        | `RiMagicFill`        |
+| research | <RiGlobalFill />       | `RiGlobalFill`       |
+| review   | <RiEyeFill />          | `RiEyeFill`          |
+| security | <RiShieldFill />       | `RiShieldFill`       |
+| test     | <RiTestTubeFill />     | `RiTestTubeFill`     |
