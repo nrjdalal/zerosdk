@@ -2,13 +2,14 @@
 
 import type { Agent } from "@packages/schema/agent"
 import { RiArrowRightSLine } from "@remixicon/react"
+import { cn } from "cn"
 import { atom, useAtom } from "jotai"
 
 import {
   type AgentState,
   type AgentTask,
   effortIcons,
-  providerIcons,
+  providerIcon,
   stateIcons,
   taskIcons,
 } from "@/components/agents/icons"
@@ -26,46 +27,75 @@ import {
 } from "@/components/ui/sidebar"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
-export type AgentRun = {
-  agent: Agent
-  runs?: AgentRun[]
-  state: AgentState
-  task?: AgentTask
-  title?: string
-}
+// A main agent or an orchestrator: a fixed name, nothing nested
+export type AgentRow = { agent: Agent; state: AgentState }
 
-// A running run shows its task, any other its state.
-function StatusIcon({ className, run }: { className?: string; run: AgentRun }) {
-  const label = run.state === "running" && run.task ? run.task : run.state
-  const Icon = run.state === "running" && run.task ? taskIcons[run.task] : stateIcons[run.state]
+// A subagent: a title of its own, its task, and the subagents it runs
+export type SubagentRow = AgentRow & { subagents?: SubagentRow[]; task?: AgentTask; title?: string }
+
+// The toggle shows on hover, on keyboard focus, while open, and always on a phone, and the effort icon gives it its place
+const toggleShown =
+  "peer-data-active/menu-button:text-sidebar-accent-foreground group-data-[open]:opacity-100 md:opacity-0 md:group-hover/menu-item:opacity-100 md:group-has-[:focus-visible]/menu-item:opacity-100"
+const effortHidden =
+  "group-data-[open]:invisible max-md:invisible md:group-hover/menu-item:invisible md:group-has-[:focus-visible]/menu-item:invisible"
+
+function StatusIcon({ className, row }: { className?: string; row: SubagentRow }) {
+  const task = row.state === "running" ? row.task : undefined
+  const Icon = task ? taskIcons[task] : stateIcons[row.state]
   return (
     <Tooltip>
-      <TooltipTrigger render={<span className={className} />}>
-        <Icon className={label === "running" ? "size-4 motion-safe:animate-spin" : "size-4"} />
+      <TooltipTrigger render={<span className={cn("shrink-0", className)} />}>
+        <Icon
+          className={task || row.state !== "running" ? "size-4" : "size-4 motion-safe:animate-spin"}
+        />
       </TooltipTrigger>
-      <TooltipContent>{label}</TooltipContent>
+      <TooltipContent>{task ?? row.state}</TooltipContent>
     </Tooltip>
   )
 }
 
-// A collapsed run shows the first of its runs that is running, and its own status once open.
-function Status({ run }: { run: AgentRun }) {
-  const worker = run.runs?.find((child) => child.state === "running")
-  if (!worker) return <StatusIcon run={run} />
+// A collapsed row shows the first of its subagents that is running, and its own status once open.
+function Status({ row }: { row: SubagentRow }) {
+  const running = row.subagents?.find((subagent) => subagent.state === "running")
+  if (!running) return <StatusIcon row={row} />
   return (
     <>
-      <StatusIcon run={worker} className="group-data-[open]:hidden" />
-      <StatusIcon run={run} className="hidden group-data-[open]:inline" />
+      <StatusIcon row={running} className="group-data-[open]:hidden" />
+      <StatusIcon row={row} className="hidden group-data-[open]:inline" />
     </>
   )
 }
 
-function Provider({ agent }: { agent: Agent }) {
-  const Logo = agent.model && providerIcons[agent.model.split("/")[0]]
+// On hover, a title follows the agent's name, and a bare name shows only when the row cuts it short.
+function Title({ row }: { row: SubagentRow }) {
+  return (
+    <Tooltip
+      onOpenChange={(open, details) => {
+        const trigger = details.trigger
+        if (open && !row.title && trigger && trigger.scrollWidth <= trigger.clientWidth)
+          details.cancel()
+      }}
+    >
+      <TooltipTrigger render={<span className="truncate" />}>
+        {row.title ?? row.agent.name}
+      </TooltipTrigger>
+      <TooltipContent>
+        {/* One span, as the tooltip spaces its children apart */}
+        <span>
+          {row.agent.name}
+          {row.title && `: ${row.title}`}
+        </span>
+      </TooltipContent>
+    </Tooltip>
+  )
+}
+
+function ProviderIcon({ agent }: { agent: Agent }) {
+  const Logo = agent.model && providerIcon(agent.model)
   if (!Logo) return <span className="ml-auto" />
   return (
     <Tooltip>
-      <TooltipTrigger render={<span className="ml-auto" />}>
+      <TooltipTrigger render={<span className="ml-auto shrink-0" />}>
         <Logo className="size-4" />
       </TooltipTrigger>
       <TooltipContent>{agent.model}</TooltipContent>
@@ -78,7 +108,7 @@ function EffortIcon({ agent, className }: { agent: Agent; className?: string }) 
   const Effort = effortIcons[agent.effort]
   return (
     <Tooltip>
-      <TooltipTrigger render={<span className={className} />}>
+      <TooltipTrigger render={<span className={cn("shrink-0", className)} />}>
         <Effort className="size-4" />
       </TooltipTrigger>
       <TooltipContent>{agent.effort}</TooltipContent>
@@ -86,42 +116,13 @@ function EffortIcon({ agent, className }: { agent: Agent; className?: string }) 
   )
 }
 
-// On hover, a run's title follows the name of the agent running it; a bare name shows only when the row cuts it short.
-function Title({ run }: { run: AgentRun }) {
-  return (
-    <Tooltip
-      onOpenChange={(open, details) => {
-        const title = details.trigger
-        if (open && !run.title && title && title.scrollWidth <= title.clientWidth) details.cancel()
-      }}
-    >
-      <TooltipTrigger render={<span className="truncate" />}>
-        {run.title ?? run.agent.name}
-      </TooltipTrigger>
-      <TooltipContent>
-        <span>
-          {run.agent.name}
-          {run.title && `: ${run.title}`}
-        </span>
-      </TooltipContent>
-    </Tooltip>
-  )
-}
-
-function Row({ run }: { run: AgentRun }) {
+function Row({ row }: { row: SubagentRow }) {
   return (
     <>
-      <Status run={run} />
-      <Title run={run} />
-      <Provider agent={run.agent} />
-      {/* A row with runs gives its effort's place to the toggle whenever the toggle shows */}
-      <EffortIcon
-        agent={run.agent}
-        className={
-          run.runs &&
-          "group-data-[open]:invisible max-md:invisible md:group-focus-within/menu-item:invisible md:group-hover/menu-item:invisible"
-        }
-      />
+      <Status row={row} />
+      <Title row={row} />
+      <ProviderIcon agent={row.agent} />
+      <EffortIcon agent={row.agent} className={row.subagents && effortHidden} />
     </>
   )
 }
@@ -129,36 +130,43 @@ function Row({ run }: { run: AgentRun }) {
 // The selected agent's id, null until one is picked, which leaves the first main agent selected.
 const selectedAgentAtom = atom<string | null>(null)
 
-function AgentsMenu({ fallback, runs }: { fallback?: string; runs: AgentRun[] }) {
+function AgentsMenu({ fallback, rows }: { fallback?: string; rows: SubagentRow[] }) {
   const [agent, setAgent] = useAtom(selectedAgentAtom)
   const selected = agent ?? fallback
 
   return (
     <SidebarMenu className="space-y-0.5">
-      {runs.map((run) =>
-        run.runs ? (
-          <Collapsible key={run.agent.id} className="group" render={<SidebarMenuItem />}>
+      {rows.map((row) =>
+        row.subagents ? (
+          <Collapsible key={row.agent.id} className="group" render={<SidebarMenuItem />}>
+            {/* A closed row stands in for its selected subagent, as the arrow never changes the selection */}
             <SidebarMenuButton
-              isActive={selected === run.agent.id}
-              onClick={() => setAgent(run.agent.id)}
-              className="group-has-data-[sidebar=menu-action]/menu-item:pr-2 data-active:font-normal"
+              isActive={selected === row.agent.id}
+              onClick={() => setAgent(row.agent.id)}
+              className={cn(
+                "group-has-data-[sidebar=menu-action]/menu-item:pr-2 data-active:font-normal",
+                row.subagents.some((subagent) => subagent.agent.id === selected) &&
+                  "group-data-[closed]:bg-sidebar-accent group-data-[closed]:text-sidebar-accent-foreground",
+              )}
             >
-              <Row run={run} />
+              <Row row={row} />
             </SidebarMenuButton>
-            <CollapsibleTrigger render={<SidebarMenuAction showOnHover className="right-1.5" />}>
+            <CollapsibleTrigger
+              render={<SidebarMenuAction className={cn("right-1.5", toggleShown)} />}
+            >
               <RiArrowRightSLine className="transition-transform duration-200 group-data-[open]:rotate-90" />
               <span className="sr-only">Toggle</span>
             </CollapsibleTrigger>
             <CollapsibleContent>
               <SidebarMenuSub className="mr-0 gap-y-0.5 pr-0 pb-0 pl-2">
-                {run.runs.map((child) => (
-                  <SidebarMenuSubItem key={child.agent.id}>
+                {row.subagents.map((subagent) => (
+                  <SidebarMenuSubItem key={subagent.agent.id}>
                     <SidebarMenuSubButton
                       render={<button type="button" className="w-full" />}
-                      isActive={selected === child.agent.id}
-                      onClick={() => setAgent(child.agent.id)}
+                      isActive={selected === subagent.agent.id}
+                      onClick={() => setAgent(subagent.agent.id)}
                     >
-                      <Row run={child} />
+                      <Row row={subagent} />
                     </SidebarMenuSubButton>
                   </SidebarMenuSubItem>
                 ))}
@@ -166,13 +174,13 @@ function AgentsMenu({ fallback, runs }: { fallback?: string; runs: AgentRun[] })
             </CollapsibleContent>
           </Collapsible>
         ) : (
-          <SidebarMenuItem key={run.agent.id}>
+          <SidebarMenuItem key={row.agent.id}>
             <SidebarMenuButton
-              isActive={selected === run.agent.id}
-              onClick={() => setAgent(run.agent.id)}
+              isActive={selected === row.agent.id}
+              onClick={() => setAgent(row.agent.id)}
               className="data-active:font-normal"
             >
-              <Row run={run} />
+              <Row row={row} />
             </SidebarMenuButton>
           </SidebarMenuItem>
         ),
@@ -181,21 +189,20 @@ function AgentsMenu({ fallback, runs }: { fallback?: string; runs: AgentRun[] })
   )
 }
 
-// Every agent in the runs, nested ones included.
-function count(runs: AgentRun[]): number {
-  return runs.reduce((total, run) => total + 1 + count(run.runs ?? []), 0)
+function count(rows: SubagentRow[]): number {
+  return rows.reduce((total, row) => total + 1 + count(row.subagents ?? []), 0)
 }
 
-export function AgentsHeader({ mains }: { mains: AgentRun[] }) {
-  return <AgentsMenu fallback={mains[0]?.agent.id} runs={mains} />
+export function AgentsHeader({ mains }: { mains: AgentRow[] }) {
+  return <AgentsMenu fallback={mains[0]?.agent.id} rows={mains} />
 }
 
 export function AgentsNav({
   orchestrators,
   subagents,
 }: {
-  orchestrators: AgentRun[]
-  subagents: AgentRun[]
+  orchestrators: AgentRow[]
+  subagents: SubagentRow[]
 }) {
   return (
     <>
@@ -204,14 +211,14 @@ export function AgentsNav({
           Orchestrators
           <span className="ml-auto">{count(orchestrators)}</span>
         </SidebarGroupLabel>
-        <AgentsMenu runs={orchestrators} />
+        <AgentsMenu rows={orchestrators} />
       </SidebarGroup>
       <SidebarGroup>
         <SidebarGroupLabel className="pl-2.5">
           Subagents
           <span className="ml-auto">{count(subagents)}</span>
         </SidebarGroupLabel>
-        <AgentsMenu runs={subagents} />
+        <AgentsMenu rows={subagents} />
       </SidebarGroup>
     </>
   )
