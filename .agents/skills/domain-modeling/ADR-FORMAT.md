@@ -24,7 +24,7 @@ Only include these when they add genuine value. Most ADRs won't need them.
 
 ## Numbering
 
-Scan `.github/docs/adr/` for the highest existing number and increment by one.
+Scan `.github/docs/adr/` for the highest existing number and increment by one, then list the ADR in `adr/README.md`.
 
 ## When to offer an ADR
 

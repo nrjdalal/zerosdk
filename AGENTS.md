@@ -9,7 +9,8 @@ Guidance for AI coding agents working in this repository, a Bun monorepo: the `w
 - ALWAYS: Point local database work at a disposable container (`bunx pglaunch -k`) set in the worktree's own `.env`, never the `POSTGRES_URL` that ships in the root `.env`. That one is the shared Neon database read by both `canary` and production, so a migration or a rename applied there reaches production immediately and under running code. Seed fake rows; real rows must never reach a screenshot or a PR. See the `db-migration` skill.
 - ALWAYS: Keep documentation in sync with every change. Whenever code, structure, conventions, or tooling change, update the matching docs in the same change (e.g. `web/next/content/docs/`, `README.md`, the `llms.txt`/`llms-full.txt` context routes, skill docs under `.agents/skills/` and `.claude/skills/`, and these agent guides `AGENTS.md`/`CLAUDE.md`). Docs must never drift. See the `doc-sync` skill.
 - ALWAYS: When code, a convention, a command, a path, or tooling changes, review the skills in `.agents/skills/` that touch it and update them in the same change, so every skill stays accurate and relevant. A skill that describes old behavior misleads every agent that loads it, which is worse than no skill. If a change makes a skill obsolete, remove it; if it reveals a gap, consider adding one.
-- ALWAYS: Name concepts, fields and docs with the terms in `.github/docs/GLOSSARY.md`, record a hard-to-reverse decision in `.github/docs/adr/`, and keep the research behind both in `.github/docs/research/` as dated notes (`<topic>-YYMMDD.md`, a new file each time the research is redone). A new term follows the `domain-modeling` skill, which picks it by the nine sources' consensus.
+- ALWAYS: Name concepts, fields and docs with the terms in `.github/docs/GLOSSARY.md`, record a hard-to-reverse decision in `.github/docs/adr/`, and keep the research behind both in `.github/docs/research/`, a new note each time the research is redone. A new term follows the `domain-modeling` skill, which picks it by the nine sources' consensus.
+- ALWAYS: Number every file in `.github/docs/` and `.github/notes/` within its folder, `NNNN-<name>.md` (ADRs, research notes, audits and plans alike), by taking the folder's highest number and adding one; a number another branch merged first is taken, so renumber before merging. The glossary keeps its name, and each folder's `README.md` indexes its files: add, rename or remove a file and its index line in the same change.
 
 ## Code
 
@@ -36,8 +37,8 @@ Guidance for AI coding agents working in this repository, a Bun monorepo: the `w
 
 ## Working notes
 
-- Write audit reports (any kind) to `.github/notes/audits/` as dated files (`YYYY-MM-DD-<topic>.md`). Audits are transient working docs: delete one once its findings are fully addressed (shipped or consciously won't-fixed) so the directory does not accumulate stale records.
-- Track planned, in-progress, and parked work in `.github/notes/plans/` (an index plus one file per item), not in dated audit files or scattered across issues; issues are the inbox, folded in and closed once captured.
+- Write audit reports (any kind) to `.github/notes/audits/` as numbered files (`NNNN-<topic>.md`, dated inside). Audits are transient working docs: delete one once its findings are fully addressed (shipped or consciously won't-fixed) so the directory does not accumulate stale records.
+- Track planned, in-progress, and parked work in `.github/notes/plans/` (the `README.md` index plus one `NNNN-<slug>.md` file per item), not in dated audit files or scattered across issues; issues are the inbox, folded in and closed once captured.
 - A fork starts both directories itself: `.github/notes/` is the starter's own working record and does not ship.
 
 ## Logging in (agents)
