@@ -1,6 +1,6 @@
 # Where ZeroSDK's local, dynamic data can live: stores, sync and throwaway databases (2026)
 
-Research date: 2026-10-20. Gathered by three research subagents from each project's docs, source code at a named commit, license files and npm metadata. Nothing was run, so speed figures are the projects' own claims. It serves ZeroSDK's data layer: a factory that runs on the user's machine, where agents write constantly (sessions, statuses, settings, memory, dynamic skills, permission decisions) and the UI reads fast and live. The user set two constraints: **free** (open source, self-hostable, no paid cloud needed) and **local first** (works fully offline on one machine), with a sync layer to Postgres and throwaway databases on demand.
+Research date: 2026-10-20. Gathered by three research subagents from each project's docs, source code at a named commit, license files and npm metadata. Nothing was run, so speed figures are the projects' own claims. It serves ZeroSDK's data layer: a factory that runs on the user's machine, where agents write constantly (dynamic skills, memory, permission decisions, sessions, settings, statuses) and the UI reads fast and live. The user set two constraints: **free** (open source, self-hostable, no paid cloud needed) and **local first** (works fully offline on one machine), with a sync layer to Postgres and throwaway databases on demand.
 
 Labels: [Docs] official documentation · [Source] source code or license file at the commit named · [npm] package metadata on 2026-10-20 · [Unconfirmed] not settled by a primary source · [Example] built from documented fields, not a captured output.
 
@@ -96,15 +96,15 @@ There is no official collection for InstantDB, Jazz, LiveStore, Replicache, Tiny
 
 ## 5. How the nine sources store dynamic data
 
-| Data                     | SQLite                                | Postgres                 | Files                                         | In memory                     | Other                                 |
-| ------------------------ | ------------------------------------- | ------------------------ | --------------------------------------------- | ----------------------------- | ------------------------------------- |
-| Sessions                 | 3 (OpenCode, Cloudflare, Codex index) | 0 by default; 4 offer it | 4 (Claude Agent SDK, Claude Code, Codex, eve) | 2 (Mastra, OpenAI Agents SDK) | AI SDK keeps none                     |
-| Memory                   | 2                                     | 0 by default; 2 offer it | 5                                             | 1                             | 2 app-defined                         |
-| Skills                   | 1                                     | 0                        | 8 read `SKILL.md` folders                     | 1 registry                    | Cloudflare and Mastra also in a store |
-| Settings                 | 1                                     | 0                        | 4 layered (user, project, managed)            | 0                             | 5 in code                             |
-| Saved permission choices | 1 (OpenCode)                          | 0                        | 3 (Claude Agent SDK, Claude Code, Codex)      | 3 session-only                | 2                                     |
+| Data                     | SQLite                                | Postgres                 | Files                                                            | In memory                     | Other                                 |
+| ------------------------ | ------------------------------------- | ------------------------ | ---------------------------------------------------------------- | ----------------------------- | ------------------------------------- |
+| Sessions                 | 3 (OpenCode, Cloudflare, Codex index) | 0 by default; 4 offer it | 4 (Claude Agent SDK, Claude Code, Codex, eve)                    | 2 (Mastra, OpenAI Agents SDK) | AI SDK keeps none                     |
+| Memory                   | 2                                     | 0 by default; 2 offer it | 5 (Claude Agent SDK, Claude Code, OpenAI Agents SDK, Codex, eve) | 1                             | 2 app-defined                         |
+| Skills                   | 1                                     | 0                        | 8 read `SKILL.md` folders                                        | 1 registry                    | Cloudflare and Mastra also in a store |
+| Settings                 | 1                                     | 0                        | 4 layered (user, project, managed)                               | 0                             | 5 in code                             |
+| Saved permission choices | 1 (OpenCode)                          | 0                        | 3 (Claude Agent SDK, Claude Code, Codex)                         | 3 session-only                | 2                                     |
 
-- **Structured state goes in SQLite, human-editable artifacts stay files.** OpenCode keeps sessions and saved approvals in `opencode.db` (SQLite, through a Drizzle fork); Codex indexes its JSONL in SQLite; Cloudflare gives each agent a SQLite database. Postgres appears only as an opt-in adapter (a Claude Agent SDK example, Cloudflare, Mastra and eve) [Docs, Source].
+- **Structured state goes in SQLite, human-editable artifacts stay files.** OpenCode keeps sessions and saved approvals in `opencode.db` (SQLite, through a Drizzle fork); Cloudflare gives each agent a SQLite database; Codex indexes its JSONL in SQLite. Postgres appears only as an opt-in adapter (a Claude Agent SDK example, Cloudflare, Mastra and eve) [Docs, Source].
 - **Claude Code has no database.** Transcripts, memory and skills are all files under `~/.claude` [Docs].
 - **Change while running is normal.** Agents write memory while they run in 8 of 9; skills change fully while running in 7 of 9, and OpenCode, Claude Code and Codex reload them from a file watcher [Docs, Source].
 - **Sync is rare.** 2 of 9 sync a local store with a remote database, both one way or libSQL-only; none syncs SQLite with Postgres both ways [Docs].

@@ -39,15 +39,15 @@ zerosdk/
 │   │   ├── herdr.ts                now
 │   │   └── index.ts                Bridge contract: open, sendText, sendKeys, prompt, read,
 │   │                                 status, watch, snapshot, interrupt, close, check
-│   ├── cli/                        the `zerosdk` command agents run through Bash: sessions,
-│   │   │                             memory, skills
+│   ├── cli/                        the `zerosdk` command agents run through Bash: memory,
+│   │   │                             sessions, skills
 │   │   ├── skill/SKILL.md          the one skill that teaches its commands
 │   │   └── src/index.ts            each command is one HTTP call to the local server
 │   ├── harness/src/
 │   │   ├── claude-code/
 │   │   │   ├── cli.ts              now: drives the `claude` CLI through a Bridge
-│   │   │   ├── hooks.ts            builds --settings (hooks, statusLine, autoMemoryEnabled:
-│   │   │   │                         false), reads hook events
+│   │   │   ├── hooks.ts            builds --settings (autoMemoryEnabled: false, hooks,
+│   │   │   │                         statusLine), reads hook events
 │   │   │   ├── screen.ts           the screen strings, the fallback signal
 │   │   │   ├── sdk.ts              later: drives the Claude Agent SDK
 │   │   │   └── skills.ts           writes the agent's own skills into a folder passed with

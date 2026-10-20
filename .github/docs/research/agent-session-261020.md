@@ -2,7 +2,7 @@
 
 Research date: 2026-10-20. Gathered by three research subagents from each source's published TypeScript types (the npm `latest` release that day, read as text and never run) and its docs (cached that day), plus the Codex app-server schema at git tag `rust-v0.163.0`. It feeds the Session schema behind ZeroSDK's agents sidebar, where each row is one agent's run.
 
-Labels: [Types] a published `.d.ts` · [Schema] a generated protocol schema · [Docs] official documentation · [Undocumented] in the types, absent from the docs · [Example] built from documented fields, not a captured output.
+Labels: [Docs] official documentation · [Types] a published `.d.ts` · [Schema] a generated protocol schema · [Undocumented] in the types, absent from the docs · [Example] built from documented fields, not a captured output.
 
 | Source            | Read from                                                                                                 |
 | ----------------- | --------------------------------------------------------------------------------------------------------- |
@@ -46,7 +46,7 @@ ZeroSDK's glossary terms, used throughout: a **Session** is one agent's working 
 | Vercel AI SDK     | None: one `generate()` or `stream()` call, identified by `callId` [Types]                                         | A client `Chat` with an `id` [Types]                                       | A user message and the assistant message that answers it                                                            |
 | Vercel eve        | A session; each subagent call opens a child session [Docs]                                                        | The root session, or the platform conversation a channel maps to it [Docs] | "One user message and all the work it triggers" [Docs]                                                              |
 
-"Session" names one agent's run in OpenCode, Claude Code and eve, and the conversation in Cloudflare and the OpenAI Agents SDK. Codex reuses "thread" for both, and Claude Code's Projects call each worker session a thread [Docs], the opposite of ZeroSDK's use.
+"Session" names one agent's run in OpenCode, Claude Code and eve, and the conversation in Cloudflare and the OpenAI Agents SDK. Codex reuses "thread" for both, and Claude Code's Projects call each session they start a thread [Docs], the opposite of ZeroSDK's use.
 
 ## 2. The fields of one run
 
@@ -76,11 +76,11 @@ Six sources point a subagent's run at the run that started it: OpenCode `parentI
 
 ### Status field
 
-Seven sources call the field `status`: OpenCode, Claude Agent SDK, Claude Code's subagent rows, Cloudflare, Mastra, Codex and eve. `state` appears in Claude Agent SDK's session state event, in Claude Code's `claude agents --json` and in Cloudflare's task runs. OpenCode and eve keep it only in lifecycle events, and the OpenAI Agents SDK and AI SDK have none on a run.
+Seven sources call the field `status`: OpenCode, Claude Agent SDK, Claude Code's subagent rows, Cloudflare, Mastra, Codex and eve. `state` appears in Claude Agent SDK's `session_state_changed` event, in Claude Code's `claude agents --json` and in Cloudflare's task runs. OpenCode and eve keep it only in lifecycle events, and the OpenAI Agents SDK and AI SDK have none on a run.
 
 ### Task kind
 
-None of the nine has a field for the kind of work a run does. Each keeps the task as free text: `description` and `prompt` (OpenCode, Claude Agent SDK), `description` (Claude Code), `input` (Cloudflare), `task` (Mastra), `prompt` (Codex), `message` (eve). Their `type` and `kind` fields name the mechanism instead: shell, subagent, monitor, workflow. The nearest classifier is the agent itself, as in OpenCode's agents `build`, `plan`, `general` and `explore`, Mastra's example subagent ids "explore", "plan" and "execute", and Codex's built-in roles `default`, `worker` and `explorer`.
+None of the nine has a field for the kind of work a run does. Each keeps the task as free text: `description` and `prompt` (OpenCode, Claude Agent SDK), `description` (Claude Code), `input` (Cloudflare), `task` (Mastra), `prompt` (Codex), `message` (eve). Their `type` and `kind` fields name the mechanism instead: monitor, shell, subagent, workflow. The nearest classifier is the agent itself, as in OpenCode's agents `build`, `plan`, `general` and `explore`, Mastra's example subagent ids "explore", "plan" and "execute", and Codex's built-in roles `default`, `worker` and `explorer`.
 
 ### Title
 
@@ -109,9 +109,9 @@ Each cell is the source's own value for that meaning; a dash means none was foun
 ### Values ZeroSDK lacks
 
 - `interrupted` ends a run that no person stopped: a restart, a deploy or a newer run superseding it (OpenCode, Cloudflare, Codex).
+- `notLoaded` marks a thread that exists but is not in memory (Codex).
 - `retry` marks a model call being retried while the run goes on (OpenCode's status event).
 - `timed_out` (Mastra background tasks) and `tripwire`, a guardrail stop (Mastra workflows).
-- `notLoaded` marks a thread that exists but is not in memory (Codex).
 
 ### Labels in product UIs
 

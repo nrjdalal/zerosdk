@@ -22,4 +22,4 @@ The agents sidebar keeps each row's `state`, task kind, title and nesting in the
 2. Key `stateIcons` and `taskIcons` by the schema's values, the way `effortIcons` is keyed by `Agent["effort"]`, and rename the icons page's State section to Status.
 3. Make each sidebar row an `Agent` and its `Session`, build the nesting from the parent field, and fold `AgentRow`, `SubagentRow` and `NestedSubagentRow` into one row type.
 4. Settle the [icebox: the sign-in session table](auth-session-name.md) when the sessions table is designed, since agent sessions then get a table beside the sign-in `session` table.
-5. Update the tests under `tests/web/next/src/components/agents/`, the `/docs/ui/sidebar` page and the `design` and `codebase-map` skills, and check the sidebar in a real browser.
+5. Update the tests under `tests/web/next/src/components/agents/`, the `/docs/ui/sidebar` page and the `codebase-map` and `design` skills, and check the sidebar in a real browser.

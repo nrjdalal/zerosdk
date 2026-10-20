@@ -4,12 +4,12 @@ Research date: 2026-10-20. Gathered by four research subagents from published Ty
 
 Labels: [Docs] official documentation · [Types] a published `.d.ts` · [Schema] a generated protocol schema · [Source] source code at the pinned commit · [Inferred] follows from two documented facts, stated nowhere · [Example] built from documented fields, not a captured output.
 
-| Kind              | Sources and versions                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Harness libraries | Agent Client Protocol v1 and v2 · AI SDK `@ai-sdk/harness` 1.0.157 and `@ai-sdk/harness-claude-code` 1.0.161 · Claude Agent SDK `@anthropic-ai/claude-agent-sdk` 0.3.304 · Cloudflare `agents` 0.28.1 · Codex app-server schema at `rust-v0.163.0` and `@openai/codex-sdk` 0.163.0 · Mastra `@mastra/acp` 0.4.2, `@mastra/claude` 0.3.2, `@mastra/core` 1.78.0 · OpenCode V2 `@opencode/client` and `@opencode/sdk` 2.0.32            |
-| Bridges           | cmux 0.65.2 (github.com/manaflow-ai/cmux at `a5911a1`) · herdr 0.9.5 (github.com/herdrdev/herdr at `143bf5f`, API protocol 22) · tmux 3.8 · zellij 0.45.1                                                                                                                                                                                                                                                                             |
-| Claude Code       | https://code.claude.com/docs/en/ (cli-reference, interactive-mode, permissions, hooks, sessions, agent-view, cross-session-messaging, errors, statusline, env-vars) and the Agent SDK pages, Claude Code 2.1.304                                                                                                                                                                                                                      |
-| Multi-agent apps  | ccmanager (kbwo, `c6c6a41`) · Claude Squad (smtg-ai, `ce1ffb4`) · Crystal (stravu, `1e18e0b`) · Emdash (generalaction, `ce0e562`) · Happy (slopus, `b99e7f8`) · Nimbalyst (Nimbalyst, `79b8c56`) · Omnara (omnara-ai, Claude wrapper at `245f4eb76c`) · Sculptor (imbue-ai, `7411f65`) · Superset (superset-sh, `20c265f7`) · T3 Code (pingdotgg/t3code, `67c0fc0c`) · uzi (devflowinc, `421685f`) · vibe-kanban (BloopAI, `d5cbb53`) |
+| Kind              | Sources and versions                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Harness libraries | Agent Client Protocol v1 and v2 · Anomaly OpenCode V2 `@opencode/client` and `@opencode/sdk` 2.0.32 · Claude Agent SDK `@anthropic-ai/claude-agent-sdk` 0.3.304 · Cloudflare Agents `agents` 0.28.1 · Mastra `@mastra/acp` 0.4.2, `@mastra/claude` 0.3.2, `@mastra/core` 1.78.0 · OpenAI Codex app-server schema at `rust-v0.163.0` and `@openai/codex-sdk` 0.163.0 · Vercel AI SDK `@ai-sdk/harness` 1.0.157 and `@ai-sdk/harness-claude-code` 1.0.161 |
+| Bridges           | cmux 0.65.2 (github.com/manaflow-ai/cmux at `a5911a1`) · herdr 0.9.5 (github.com/herdrdev/herdr at `143bf5f`, API protocol 22) · tmux 3.8 · zellij 0.45.1                                                                                                                                                                                                                                                                                               |
+| Claude Code       | https://code.claude.com/docs/en/ (agent-view, cli-reference, cross-session-messaging, env-vars, errors, hooks, interactive-mode, permissions, sessions, statusline) and the Agent SDK pages, Claude Code 2.1.304                                                                                                                                                                                                                                        |
+| Multi-agent apps  | ccmanager (kbwo, `c6c6a41`) · Claude Squad (smtg-ai, `ce1ffb4`) · Emdash (generalaction, `ce0e562`) · Happy (slopus, `b99e7f8`) · Nimbalyst (Nimbalyst, `79b8c56`) · Omnara (omnara-ai, Claude wrapper at `245f4eb76c`) · Sculptor (imbue-ai, `7411f65`) · Superset (superset-sh, `20c265f7`) · T3 Code (pingdotgg, `67c0fc0c`) · uzi (devflowinc, `421685f`) · vibe-kanban (BloopAI, `d5cbb53`)                                                        |
 
 ## Contents
 
@@ -44,27 +44,27 @@ The server calls one **harness** contract for every agent session, whatever runs
 
 ### What every source has
 
-Seven sources define "drive one coding-agent session": the AI SDK harness, ACP, the Claude Agent SDK, OpenCode V2, the Codex app-server, Cloudflare Agents and Mastra.
+Seven harness libraries define "drive one coding-agent session": ACP, OpenCode V2, the Claude Agent SDK, Cloudflare Agents, Mastra, the Codex app-server and the AI SDK harness, here in that order.
 
 | Operation                                | Sources                                                   | Count |
 | ---------------------------------------- | --------------------------------------------------------- | ----- |
 | send a prompt (a new turn)               | all                                                       | 7     |
-| interrupt the running turn               | all (AI SDK and Mastra through an `AbortSignal`)          | 7     |
+| interrupt the running turn               | all (Mastra and AI SDK through an `AbortSignal`)          | 7     |
 | an event stream                          | all                                                       | 7     |
 | answer a permission                      | all (Cloudflare's container harness bypasses permissions) | 7     |
 | create or start                          | all but Mastra, which starts on the first call            | 6     |
-| resume                                   | AI SDK, ACP, Claude, Codex, Cloudflare                    | 5     |
-| answer a question                        | AI SDK, ACP, Claude, OpenCode, Codex                      | 5     |
-| end the session                          | AI SDK, ACP, Claude, OpenCode, Codex                      | 5     |
-| fork, read history, list sessions        | ACP, Claude, OpenCode, Codex, Cloudflare (each)           | 5     |
-| status pushed as events                  | ACP v2, Claude, OpenCode, Codex, Cloudflare               | 5     |
-| steer a running turn                     | AI SDK, OpenCode, Codex, Cloudflare                       | 4     |
-| set model or mode mid-session            | ACP, Claude, OpenCode, Cloudflare                         | 4     |
+| resume                                   | ACP, Claude, Cloudflare, Codex, AI SDK                    | 5     |
+| answer a question                        | ACP, OpenCode, Claude, Codex, AI SDK                      | 5     |
+| end the session                          | ACP, OpenCode, Claude, Codex, AI SDK                      | 5     |
+| fork, read history, list sessions        | ACP, OpenCode, Claude, Cloudflare, Codex (each)           | 5     |
+| status pushed as events                  | ACP v2, OpenCode, Claude, Cloudflare, Codex               | 5     |
+| steer a running turn                     | OpenCode, Cloudflare, Codex, AI SDK                       | 4     |
+| set model or mode mid-session            | ACP, OpenCode, Claude, Cloudflare                         | 4     |
 | status pulled by a call, compact, detach | 3 each                                                    | 3     |
 
-Every source keeps **interrupting a turn** (7 of 7) apart from **ending the session** (5 of 7), and three also keep **detaching** apart (AI SDK `detach`, Codex `thread/unsubscribe`, Cloudflare `dispose`). Steering is a delivery choice on the send call in two of the four that have it: OpenCode `session.prompt({ delivery: 'steer' | 'queue' })` and Cloudflare `submit({ whenBusy: 'steer' | 'followUp' })`, where a harness that cannot steer queues instead. Every answer is keyed by an id the harness issued, and all but Cloudflare can decline (ACP `cancelled`, AI SDK `approved: false`, Claude `deny`, Codex `decline`, OpenCode `reject`). Claude and Cloudflare answer permissions and questions through one call; ACP, OpenCode and Codex keep two.
+Every source keeps **interrupting a turn** (7 of 7) apart from **ending the session** (5 of 7), and three also keep **detaching** apart (Cloudflare `dispose`, Codex `thread/unsubscribe`, AI SDK `detach`). Steering is a delivery choice on the send call in two of the four that have it: OpenCode `session.prompt({ delivery: 'steer' | 'queue' })` and Cloudflare `submit({ whenBusy: 'steer' | 'followUp' })`, where a harness that cannot steer queues instead. Every answer is keyed by an id the harness issued, and all but Cloudflare can decline (ACP `cancelled`, OpenCode `reject`, Claude `deny`, Codex `decline`, AI SDK `approved: false`). Claude and Cloudflare answer permissions and questions through one call; ACP, OpenCode and Codex keep two.
 
-Status is reported, not stored, in most of them. `idle` is a native value in 5 of 7 and `running` in 6; a distinct "blocked on the user" value exists in 5 (AI SDK `awaiting-approval`, ACP v2 and Claude `requires_action`, Codex `waitingOnApproval` and `waitingOnUserInput`, Mastra `suspended`); `pending` is native in 3 and `paused` in 4 with four different meanings; `stuck` in none. Turn outcome (`completed`, `cancelled`, `failed`) and session status (`running`, `idle`) are separate axes in every source that has both.
+Status is reported, not stored, in most of them. `idle` is a native value in 5 of 7 and `running` in 6; a distinct value for waiting on the user exists in 5 (ACP v2 and Claude `requires_action`, Mastra `suspended`, Codex `waitingOnApproval` and `waitingOnUserInput`, AI SDK `awaiting-approval`); `pending` is native in 3 and `paused` in 4 with four different meanings; `stuck` in none. Turn outcome (`completed`, `failed`, `cancelled`) and session status (`running`, `idle`) are separate axes in every source that has both.
 
 The AI SDK expresses optional operations as optional methods that throw `HarnessCapabilityUnsupportedError` when absent; ACP and Codex negotiate capabilities at `initialize` [Types, Schema].
 
@@ -80,11 +80,11 @@ The AI SDK expresses optional operations as optional methods that throw `Harness
 | interrupt  | `interrupt` 3, `abort` 3, `cancel` 1                                                                 |
 | end        | `delete` or `remove` 4, `close` 2, `stop` 2, `destroy` 1, `archive` 1                                |
 | status     | `status` 3, `state` 2, `busy` 1                                                                      |
-| list, fork | `list` 5, `fork` 6                                                                                   |
+| list, fork | `list` 5, `fork` 6 (Mastra's only as a `forkSession` it passes to Claude)                            |
 
 ### Identity
 
-The harness assigns the session id in all 7; the caller may choose it in 3 (AI SDK `createSession({ sessionId })`, Claude `sessionId`, OpenCode `session.create({ id })`). Wherever a wrapper sits over a harness (AI SDK over Claude or Codex, Cloudflare over a CLI, Mastra over ACP), two ids coexist: the wrapper's own, and the harness's, kept as an opaque resume payload. Claude's id must be a UUID on both routes ("must be a valid UUID", `--session-id` and `sessionId` [Docs, Types]); OpenCode's is server-assigned (`ses_` plus a descending id); Codex's is a UUIDv7.
+The harness assigns the session id in all 7; the caller may choose it in 3 (OpenCode `session.create({ id })`, Claude `sessionId`, AI SDK `createSession({ sessionId })`). Wherever a wrapper sits over a harness (Cloudflare over a CLI, Mastra over ACP, AI SDK over Claude or Codex), two ids coexist: the wrapper's own, and the harness's, kept as an opaque resume payload. OpenCode's id is server-assigned (`ses_` plus a descending id); Claude's must be a UUID on both routes ("must be a valid UUID", `--session-id` and `sessionId` [Docs, Types]); Codex's is a UUIDv7.
 
 ## 3. The bridge contract
 
@@ -168,7 +168,7 @@ The TUI waits and continues by itself; the SDK never waits. On the SDK route a `
 | failed    | `StopFailure` with another error; `API Error:` text; the process ends unexpectedly                        | `result.is_error: true` with a `terminal_reason`   |
 | cancelled | ZeroSDK interrupted or closed it                                                                          | `interrupt()`, `close()`                           |
 
-`completed`, `cancelled` and `stuck` are ZeroSDK's own verdicts on both routes: no bridge reports them, and nobody has a general stuck detector. The nearest are 30 s with no transcript (Happy), a 600 s watchdog (Nimbalyst), 60 s of silence after an interrupt (Sculptor) and 10 s with no hook after a send (Superset) [Source]. herdr's `unknown` should stay a value of its own, not fold into `idle`.
+`stuck`, `completed` and `cancelled` are ZeroSDK's own verdicts on both routes: no bridge reports them, and nobody has a general stuck detector. The nearest are 30 s with no transcript (Happy), a 600 s watchdog (Nimbalyst), 60 s of silence after an interrupt (Sculptor) and 10 s with no hook after a send (Superset) [Source]. herdr's `unknown` should stay a value of its own, not fold into `idle`.
 
 ## 6. Peers across routes
 
@@ -208,7 +208,7 @@ Sending text into a TUI:
 4. Clean the text: `\n`, `\r`, `\t` and escape characters act as keys, a tab autocompletes, a leading `/` runs a command and `!` a shell command (Nimbalyst, Superset) [Source].
 5. A message typed while a dialog is open answers the dialog; herdr's `agent.prompt` refuses with `agent_blocked`, and cmux's raw send does not check [Docs, Source].
 6. Keep a typed launch command under macOS's 1,024-byte line limit, or the shell waits at `quote>` (Superset) [Source].
-7. Strip inherited `TMUX`, `CI` and `CLAUDECODE` from a pane's environment (ccmanager, Nimbalyst, Sculptor) [Source].
+7. Strip inherited `CI`, `CLAUDECODE` and `TMUX` from a pane's environment (ccmanager, Nimbalyst, Sculptor) [Source].
 
 Status:
 
