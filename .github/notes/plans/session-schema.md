@@ -1,7 +1,7 @@
 # A Session schema for the agents sidebar
 
 - Status: planned
-- Links: research note `agent-session-261020.md` in the private nrjdalal/research repo · PR #18 (the agents sidebar) · PR #20 (Session in the glossary) · icebox #22 (the sign-in `session` table)
+- Links: [research](../../docs/research/agent-session-261020.md) · PR #18 (the agents sidebar) · PR #20 (Session in the glossary) · icebox #22 (the sign-in `session` table)
 
 The agents sidebar keeps each row's state, task kind, title and nesting in the web app alone. `AgentState` and `AgentTask` are the keys of `stateIcons` and `taskIcons` in `web/next/src/components/agents/icons.ts`, and `title` and `subagents` sit on the row types in `agents/sidebar.tsx`. All four describe one run of an agent, which the glossary calls a Session, so they move into a `Session` schema in `packages/schema`, beside `Agent`. A subagent's run becomes a child session that points at the session that started it, as OpenCode, Codex and eve model it.
 
@@ -15,12 +15,17 @@ The agents sidebar keeps each row's state, task kind, title and nesting in the w
 6. Revisit icebox #22, since agent sessions then have a type of their own beside the sign-in `session` table.
 7. Update the tests under `tests/web/next/src/components/agents/`, the `/docs/ui/sidebar` page and the `design` and `codebase-map` skills, and check the sidebar in a real browser.
 
+## Decided
+
+1. **The field's name is `status`** (2026-10-20), the name seven of the nine sources use, so the icons page's State section becomes Status.
+2. **All nine values stay** (2026-10-20): cancelled, completed, failed, idle, paused, pending, running, stuck and waiting. Sessions run as CLIs in herdr panes, where a rate limit pauses a session and an unrecognized screen can leave it stuck, so each value has a way to be detected: herdr's own status (`working`, `blocked`, `idle`), the harness's wording on screen (a usage limit and its reset time), or the server (a session that stopped making progress).
+
 ## Open questions
 
-Section 5 of the research note gives the evidence for each. To ask one at a time, each with a recommendation:
+Section 5 of [the research](../../docs/research/agent-session-261020.md#5-what-it-means-for-zerosdks-session) gives the evidence for each. To ask one at a time, each with a recommendation:
 
-1. **The field's name.** Recommended: `status`, the name seven of the nine sources use, over the UI's `state`.
-2. **The values.** Recommended: cancelled, completed, failed, idle, running and waiting, the six that eight or nine sources have. `pending` and `paused` wait until a runtime needs them, and `stuck` stays out of the schema, as a condition the UI could later find from a run that stopped making progress.
+1. **What stuck covers.** Recommended: a session that is not moving and asked nothing, such as an unrecognized prompt or an unchanged screen, kept apart from waiting, where the agent asked the human something on purpose.
+2. **A reason beside the status.** Recommended: a short reason, such as "rate limited until 2:05pm", as Claude Code's `waitingFor`, Cloudflare's interrupted reason and OpenCode's retry message do.
 3. **The task kind.** Recommended: not on the Session, since no source has one. Whether the Agent should carry the kind of work it does is a separate question.
 4. **The agent reference.** Recommended: by `Id`, as `fallbacks` already references agents, over by name.
 5. **The lineage.** Recommended: the parent alone. A depth can be counted along the chain, and a root can follow if a list ever needs one.

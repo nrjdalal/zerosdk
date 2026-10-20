@@ -10,7 +10,7 @@ Distinct from the dated audit reports, which `AGENTS.md` puts in `../audits/` an
 
 ## Planned
 
-- [A Session schema for the agents sidebar](session-schema.md) - the sidebar's state, task kind, title and nesting move from the web app into a `Session` schema beside `Agent`, researched across the nine sources; six open questions to settle first.
+- [A Session schema for the agents sidebar](session-schema.md) - the sidebar's state, task kind, title and nesting move from the web app into a `Session` schema beside `Agent`, researched across the nine sources; two decisions made and six open questions left.
 
 ## Backlog / ideas
 
