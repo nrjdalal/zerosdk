@@ -13,6 +13,7 @@ One Bun + Turborepo monorepo: two deployable apps over shared packages. Imports 
 
 ```
 .generated/       # repo-root home for build-time generated assets (gitignored), the sources' docs cache among them
+.github/docs/     # GLOSSARY.md and adr/: the factory's language and its decisions (domain-modeling skill)
 api/hono/         # backend (Hono): routers, middlewares, the AppType export
 web/next/         # frontend (Next.js App Router): app/, components/, lib/, content/
 packages/auth/    # Better Auth instance
@@ -43,6 +44,7 @@ Read `AGENTS.md` first for the rules; `curl "$(bunx portless get zerosdk)/llms-f
 | Add a data table | colocate `data-columns.tsx` + `data-table.tsx` in the page's `components/` folder, composing `web/next/src/components/data-table.tsx` (reference: `(console)/console/(access)/users/`) | `design` skill |
 | Add a test | `tests/<path of the file under test>.test.ts`; run the suite with `bun run test`. An end-to-end test is `tests/<path of the router or page it drives>.e2e.test.ts` on the `tests/stack.ts` helper, run against a stack with `bun run test:e2e` | `docker-test` skill |
 | Add a build or tooling script | `packages/scripts/src/<name>.ts`, with its deps on that package | - |
+| Name a concept, a field or a docs page | `.github/docs/GLOSSARY.md`; a new term is picked by the nine sources' consensus | `domain-modeling` skill |
 | Refresh the Agent schema sources (`/docs/reference/agent`) | `packages/scripts/src/agent-schemas.ts` lists the sources → `bun run agent:schemas` rewrites `web/next/src/schemas/agent.sources.mdx` and refreshes its Twoslash hovers (`twoslash:cache`); commit both | `dev` skill (restart after) |
 | Add or change a `twoslash` code block in the docs, a file one includes (`packages/schema/src/agent.ts`), a rehype step in `web/next/source.config.ts` that rewrites a block's code, or a package its hovers come from (`zod`, `typescript`, `fumadocs-twoslash`) | then refresh the hovers with `bun run twoslash:cache` and commit `web/next/twoslash-cache`; a build under Bun (Vercel, Docker) reads hovers only from it and fails on a block it lacks, and CI rebuilds it and fails when it differs | - |
 | Gate by role | the ladder and every access decision live in `packages/auth/src/access.ts` (pure, unit-tested, imported as `@packages/auth/access`); `web/next/src/lib/auth/console.ts` gates the pages at member, `api/hono/src/middlewares/console.ts` requires admin for the whole console router via `requireConsoleRole` | - |
