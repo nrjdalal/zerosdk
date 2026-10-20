@@ -6,11 +6,11 @@ Distinct from the dated audit reports, which `AGENTS.md` puts in `../audits/` an
 
 ## In progress
 
-Nothing yet.
+- [Threads in the agents sidebar](threads-agents-sidebar.md) - the mockup lists the human's threads above the orchestrators, five to a page with unread counts; real data and the thread view are next (PR #25).
 
 ## Planned
 
-- [Threads in the agents sidebar](threads-agents-sidebar.md) - the agents sidebar lists the human's threads, each with its state and whether it has news; seven open questions to settle first (PR #20).
+Nothing yet.
 
 ## Backlog / ideas
 

@@ -1,60 +1,49 @@
 # Threads in the agents sidebar
 
-- Status: planned
-- Links: PR #20 (Thread, Turn and Session in the glossary, [ADR 0004](../../docs/adr/0004-threads-not-sessions.md)) · PR #18 (the agents sidebar)
+- Status: in progress (the mockup is built; real data is next)
+- Links: PR #20 (Thread, Turn and Session in the glossary, [ADR 0004](../../docs/adr/0004-threads-not-sessions.md)) · PR #18 (the agents sidebar) · PR #25 (the mockup)
 
-The agents sidebar on `/docs/ui/sidebar` lists the human's [threads](../../docs/GLOSSARY.md#threads), so the human can pick a thread up again and see which ones have news. "News" is a working name until open question 3 settles it.
+The agents sidebar on `/docs/ui/sidebar` lists the human's [threads](../../docs/GLOSSARY.md#threads), so the human can pick a thread up again and see which ones have unread updates. The human only talks to AgentZero, the work behind a thread spreads across orchestrators and subagents, and what the human asked is what gets buried when they come back later; the sidebar and the thread view below keep it in sight.
 
-## What exists
+## Decided
 
-- `web/next/src/components/agents/sidebar.tsx`: `AgentsHeader` lists the main agents where the docs sidebar keeps search, and `AgentsNav` lists the Orchestrators and Subagents groups, each label ending with a count. One row is selected at a time: `AgentsMenu` keeps the picked id in `pickedAgentIdAtom` (jotai) through its local `selectable` function, and the first main agent is selected until another row is picked.
-- `web/next/src/components/agents/icons.ts`: `stateIcons`, the State section of `/docs/ui/icons` (cancelled, completed, failed, idle, paused, pending, running, stuck, waiting).
-- `web/next/content/docs/ui/sidebar.mdx`: the live demo in `DocsPreview`, fed by the fake rows in `agents/sidebar-demo.tsx`, then the Sections and Row tables and the Hover and Selection sections.
+1. **Where the group sits:** above Orchestrators.
+2. **Which states a thread shows:** running, waiting, stuck, idle and completed, from `stateIcons`, with no new icon.
+3. **Unread:** a count in the shadcn `SidebarMenuBadge`, nothing once all are read. Named `unread` after the sources: Codex shows "an unread indicator" and offers "Mark all as read", and Claude Code's sessions list marks a session unread; a general UI word, so no glossary entry.
+4. **The title's tooltip:** the agent holding the thread, such as AgentOne: Rename the CLI flags while it stands in. The title is what the human asked and no update changes it.
+5. **Order and paging:** most recently updated first, five to a page, with an arrow on each side of the page number in the group label and no pager at five or fewer. The list keeps five rows' height while it pages.
+6. **Selection:** one across the sidebar, threads included; AgentZero first until a pane exists to show a thread.
+7. **No `Thread` schema** in the mockup: `ThreadRow` is a UI type, as the agent rows' `state` is.
 
-## Shape
+## Built (the mockup)
 
-A Threads group joins the nav. Its rows reuse the agent row's parts where they fit: the state icon on the left, the title, and the news at the right, where an agent row shows its provider and effort.
+- `web/next/src/components/agents/sidebar.tsx`: `ThreadRow` and `ThreadState`, the Threads group in `AgentsNav`, and `useSelection` over `pickedRowIdAtom` (renamed from `pickedAgentIdAtom`), shared by agents and threads.
+- `web/next/src/components/agents/sidebar-demo.tsx`: 22 fake threads, five pages, one held by AgentOne.
+- `/docs/ui/sidebar`: the Threads row in Sections, a Threads section, and the thread rules in Hover and Selection.
+- `tests/web/next/src/components/agents/sidebar.test.ts`: the group's place, its paging, its unread badges, and its absence with no threads.
+
+## Left for real data
+
+- **Order while paging:** threads update live, so a thread on page 2 can jump to page 1 under the human. Keep the order of the moment the human leaves the first page until they return to it, and bring the page back within range when the list shrinks below it; the mockup's data is static, so it pages the order it is given.
+- **Unread** is per human and per thread: it needs a read marker stored with the human, cleared on opening the thread, and live updates to raise the count.
+- **A `Thread` schema** in `packages/schema`, chosen by the nine sources' consensus with the runtime work that gives threads real data; `ThreadRow` then maps from it.
+- **The thread view**, which opens on what the human asked, then what they have not read, then a reply to AgentZero, with the full history collapsed:
 
 ```
-+----------------------------------+
-| (o) AgentZero          [A]  |||  |  header: main agents
-|  z  AgentOne           [Z]  ||   |
-+----------------------------------+
-| Threads                       3  |
-|  T  Pricing page copy         2  |  waiting on the human, 2 new
-| (o) Add tools                    |  a turn is running
-|  F  Fix login                    |  completed
-| Orchestrators                 2  |
-| Subagents                     5  |
-+----------------------------------+
-| LocalAgent                       |  footer: user menu
-+----------------------------------+
-(o) running   T waiting   F completed   z idle
+┌ Pricing page copy ──────────────────────────────── ◷ waiting on you ┐
+│ YOU ASKED · 2h ago                                                   │
+│ "Rewrite the pricing page copy for the three tiers, keep it short"  │
+├──────────────────────────────────────────────────────────────────────┤
+│ UNREAD  (2)                                                          │
+│ ⚑ Research: competitor scan done, 5 pages compared        40m ago   │
+│ ◷ AgentZero: tone A (playful) or B (plain)?               10m ago   │
+├──────────────────────────────────────────────────────────────────────┤
+│ ▸ Full history · 6 turns                                             │
+├──────────────────────────────────────────────────────────────────────┤
+│ Reply to AgentZero in this thread…                              ⏎   │
+└──────────────────────────────────────────────────────────────────────┘
 ```
-
-## Steps
-
-1. Add a thread row type to `agents/sidebar.tsx`, beside `AgentRow` and `SubagentRow`: an id, a title, a state, and the news under the name question 3 gives it. It stays a UI type, the way the agent rows' `state` does, and holds no turns.
-2. Render the Threads group in `AgentsNav`, its label ending with its count like the other groups, with the same `SidebarMenu` composition and 2px row gap (the `design` skill's sidebar rules).
-3. Wire selection as question 6 decides. If threads share the agents' selection, render thread rows through `AgentsMenu` or lift `selectable` out of it, and rename `pickedAgentIdAtom`, whose name and comment then no longer fit.
-4. Add fake threads to `agents/sidebar-demo.tsx`, one per state the group shows.
-5. Update `/docs/ui/sidebar`: a Threads row in Sections, the thread row's parts in Row, its tooltips in Hover, and its place in Selection. A new icon for news, if one is needed, goes on `/docs/ui/icons` first, as a Remix Fill icon.
-6. Extend `tests/web/next/src/components/agents/sidebar.test.ts` for the group, its count and its selection.
-7. Review the `design` skill's Sidebars bullet and the `codebase-map` row for the agents sidebar, and update them for any convention, file or export the change adds.
-8. Verify `/docs/ui/sidebar` in a real browser, in light and dark and at phone width, with before and after screenshots.
-
-## Open questions
-
-To ask the user one at a time before the build starts. Each has a recommendation.
-
-1. **Where the group sits.** Above Orchestrators, below Subagents, or in place of both while AgentZero is picked. Recommended: above Orchestrators, as threads are what the human comes back for.
-2. **Which states a thread shows.** A subset of `stateIcons`, such as running while a turn is worked on, waiting while AgentZero needs the human, stuck, idle and completed. Recommended: reuse the existing icons and add none.
-3. **What news is, how it shows, and when it clears.** A count at the right in the shadcn `SidebarMenuBadge`, a dot, or a bold title, cleared when the human opens the thread. Recommended: the badge, as the documented shadcn part and the same place the group counts sit, cleared on open and held in a jotai atom in the demo. Its name goes through the `domain-modeling` skill first, since the glossary has no term for it yet.
-4. **What the title's tooltip says.** Recommended: the agent holding the thread, as a subagent row names the agent running it, such as AgentOne: Fix login while a fallback agent stands in.
-5. **The order of the rows.** Recommended: most recently updated first. Pinning, which Codex offers, waits for a later change.
-6. **What picking a thread selects, and which row is selected first.** One selection across the whole sidebar, or a thread picked beside the agent that holds it; and AgentZero first, as now, or the latest thread. Recommended: one selection across the sidebar, with AgentZero first until a pane exists to show a thread.
-7. **A `Thread` schema.** Recommended: none in this change. A schema in `packages/schema` is costly to reverse and needs the nine sources' consensus, so it belongs with the runtime work that gives threads real data.
 
 ## Out of scope
 
-The pane that opens a thread, real data, a `Thread` schema, and archiving, forking or pinning threads.
+Archiving, forking or pinning threads, which Codex offers.
