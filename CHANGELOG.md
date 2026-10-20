@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.0.5
+
+[compare changes](https://github.com/nrjdalal/zerosdk/compare/v0.0.4...v0.0.5)
+
+### 🚀 Enhancements
+
+- **schema:** Add the tools an agent can use, and keep code colors in production builds ([#13](https://github.com/nrjdalal/zerosdk/pull/13))
+
+### ❤️ Contributors
+
+- Neeraj Dalal @nrjdalal
+
 ## v0.0.4
 
 [compare changes](https://github.com/nrjdalal/zerosdk/compare/v0.0.3...v0.0.4)
