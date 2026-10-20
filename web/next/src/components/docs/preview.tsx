@@ -10,6 +10,7 @@ export function DocsPreview({ children }: { children: React.ReactNode }) {
   )
   if (asMarkdown()) return code
   return (
+    // The tabs are as tall as a sidebar row (h-8), with the panel 16px below
     <Tabs defaultValue="preview" className="gap-4">
       <TabsList className="group-data-horizontal/tabs:h-auto">
         <TabsTrigger value="preview" className="h-8">
@@ -19,7 +20,7 @@ export function DocsPreview({ children }: { children: React.ReactNode }) {
           Code
         </TabsTrigger>
       </TabsList>
-      {/* h-160 is a fumadocs code block at its tallest, a 600px scroll area under a 40px title, so the tabs keep one height */}
+      {/* h-160 is a fumadocs code block at its tallest, a 600px scroll area under a 40px title, so a long demo's two tabs match */}
       <TabsContent
         value="preview"
         className="not-prose flex h-160 flex-none items-center justify-center rounded-xl border p-10"
