@@ -1,7 +1,21 @@
 "use client"
 
 import type { Agent } from "@packages/schema/agent"
-import { RiArrowRightSLine, type RemixiconComponentType } from "@remixicon/react"
+import {
+  RiArchiveFill,
+  RiArrowLeftSFill,
+  RiArrowRightSFill,
+  RiCheckDoubleFill,
+  RiDeleteBinFill,
+  RiDownload2Fill,
+  RiGitBranchFill,
+  RiLinksFill,
+  RiMailUnreadFill,
+  RiMoreFill,
+  RiPencilFill,
+  RiPushpinFill,
+  type RemixiconComponentType,
+} from "@remixicon/react"
 import { cn } from "cn"
 import { atom, useAtom } from "jotai"
 
@@ -13,17 +27,27 @@ import {
   stateIcons,
   taskIcons,
 } from "@/components/agents/icons"
+import { Button } from "@/components/ui/button"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuAction,
+  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
+  useSidebar,
 } from "@/components/ui/sidebar"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
@@ -42,11 +66,36 @@ export type SubagentRow = RowBase & {
   title?: string
 }
 
-// The toggle shows on hover, on keyboard focus, while open, and always on a phone, and the effort icon gives it its place
-const toggleShown =
-  "peer-data-active/menu-button:text-sidebar-accent-foreground group-data-[open]:opacity-100 md:opacity-0 md:group-hover/menu-item:opacity-100 md:group-has-[:focus-visible]/menu-item:opacity-100"
-const effortHidden =
-  "group-data-[open]:invisible max-md:invisible md:group-hover/menu-item:invisible md:group-has-[:focus-visible]/menu-item:invisible"
+export type ThreadState = Extract<
+  AgentState,
+  "completed" | "idle" | "running" | "stuck" | "waiting"
+>
+
+// A thread: what the human asked as its title, the agent holding it, and how many of its updates the human has not read
+export type ThreadRow = {
+  agent: Agent
+  id: string
+  state: ThreadState
+  title: string
+  unread?: number
+}
+
+const THREADS_PER_PAGE = 5
+
+// A row's control shows on hover, on keyboard focus, and always on a phone, and the effort icon or unread count it covers hides by the same rules
+const controlShown =
+  "peer-data-active/menu-button:text-sidebar-accent-foreground md:opacity-0 md:group-hover/menu-item:opacity-100 md:group-has-[:focus-visible]/menu-item:opacity-100"
+const coveredHidden =
+  "max-md:invisible md:group-hover/menu-item:invisible md:group-has-[:focus-visible]/menu-item:invisible"
+
+// The toggle also shows while its row is open, and a thread's menu while it is open
+const toggleShown = cn(controlShown, "group-data-[open]:opacity-100")
+const effortHidden = cn(coveredHidden, "group-data-[open]:invisible")
+const menuShown = cn(controlShown, "aria-expanded:opacity-100")
+const unreadHidden = cn(coveredHidden, "group-has-aria-expanded/menu-item:invisible")
+
+// A group's count is as wide as the effort icons below and centered on them
+const countCell = "ml-auto flex w-4 justify-center"
 
 function IconWithTooltip({
   className,
@@ -100,7 +149,7 @@ function Status({ row }: { row: SubagentRow }) {
 }
 
 // On hover, a title follows its agent's name, and a bare name shows only when the row cuts it short.
-function Title({ row }: { row: SubagentRow }) {
+function Title({ row }: { row: Pick<SubagentRow, "agent" | "title"> }) {
   return (
     <Tooltip
       onOpenChange={(open, details) => {
@@ -145,13 +194,22 @@ function Row({ row }: { row: SubagentRow }) {
   )
 }
 
-// The id of the agent picked last, null until a row is picked
-const pickedAgentIdAtom = atom<string | null>(null)
+// The id of the row picked last, an agent's or a thread's, null until a row is picked
+const pickedRowIdAtom = atom<string | null>(null)
 
-function AgentsMenu({ defaultSelected, rows }: { defaultSelected?: string; rows: SubagentRow[] }) {
-  const [picked, setPicked] = useAtom(pickedAgentIdAtom)
+// The Threads group's page, counted from 0
+const threadsPageAtom = atom(0)
+
+// One selection across the sidebar: the row picked last, or the default until one is
+function useSelection(defaultSelected?: string) {
+  const [picked, setPicked] = useAtom(pickedRowIdAtom)
   const selected = picked ?? defaultSelected
   const selectable = (id: string) => ({ isActive: selected === id, onClick: () => setPicked(id) })
+  return { selectable, selected }
+}
+
+function AgentsMenu({ defaultSelected, rows }: { defaultSelected?: string; rows: SubagentRow[] }) {
+  const { selectable, selected } = useSelection(defaultSelected)
 
   return (
     <SidebarMenu className="space-y-0.5">
@@ -172,7 +230,7 @@ function AgentsMenu({ defaultSelected, rows }: { defaultSelected?: string; rows:
             <CollapsibleTrigger
               render={<SidebarMenuAction className={cn("right-1.5", toggleShown)} />}
             >
-              <RiArrowRightSLine className="transition-transform duration-200 group-data-[open]:rotate-90" />
+              <RiArrowRightSFill className="transition-transform duration-200 group-data-[open]:rotate-90" />
               <span className="sr-only">Toggle</span>
             </CollapsibleTrigger>
             <CollapsibleContent>
@@ -206,6 +264,123 @@ function count(rows: SubagentRow[]): number {
   return rows.reduce((total, row) => total + 1 + (row.subagents?.length ?? 0), 0)
 }
 
+// The actions on one thread, in its unread count's place, composed as shadcn's sidebar-07 nav-projects
+function ThreadMenu({ row }: { row: ThreadRow }) {
+  const { isMobile } = useSidebar()
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        render={<SidebarMenuAction className={cn("right-1.5 aria-expanded:bg-muted", menuShown)} />}
+      >
+        <RiMoreFill />
+        <span className="sr-only">More</span>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        className="w-fit"
+        side={isMobile ? "bottom" : "right"}
+        align={isMobile ? "end" : "start"}
+      >
+        {row.unread ? (
+          <DropdownMenuItem>
+            <RiCheckDoubleFill />
+            <span>Mark as read</span>
+          </DropdownMenuItem>
+        ) : (
+          <DropdownMenuItem>
+            <RiMailUnreadFill />
+            <span>Mark as unread</span>
+          </DropdownMenuItem>
+        )}
+        <DropdownMenuItem>
+          <RiPencilFill />
+          <span>Rename</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem>
+          <RiPushpinFill />
+          <span>Pin</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem>
+          <RiGitBranchFill />
+          <span>Fork</span>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem>
+          <RiDownload2Fill />
+          <span>Export transcript</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem>
+          <RiLinksFill />
+          <span>Share link</span>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem>
+          <RiArchiveFill />
+          <span>Archive</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem variant="destructive">
+          <RiDeleteBinFill />
+          <span>Delete</span>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
+
+function Threads({ rows }: { rows: ThreadRow[] }) {
+  const [page, setPage] = useAtom(threadsPageAtom)
+  const { selectable } = useSelection()
+  const pages = Math.ceil(rows.length / THREADS_PER_PAGE)
+
+  return (
+    <SidebarGroup>
+      <SidebarGroupLabel className="pl-2.5">
+        Threads
+        {pages > 1 && (
+          // Pulled right so the next arrow centers on the effort icons' center, as the counts below do
+          <span className="-mr-1 ml-auto flex items-center gap-1 tabular-nums">
+            <Button
+              aria-label="Previous threads"
+              disabled={page === 0}
+              onClick={() => setPage(page - 1)}
+              size="icon-xs"
+              variant="ghost"
+            >
+              <RiArrowLeftSFill />
+            </Button>
+            {page + 1}/{pages}
+            <Button
+              aria-label="Next threads"
+              disabled={page === pages - 1}
+              onClick={() => setPage(page + 1)}
+              size="icon-xs"
+              variant="ghost"
+            >
+              <RiArrowRightSFill />
+            </Button>
+          </span>
+        )}
+      </SidebarGroupLabel>
+      {/* Five rows tall while it pages, so a short last page moves neither the pager nor the groups below */}
+      <SidebarMenu className={cn("space-y-0.5", pages > 1 && "min-h-42")}>
+        {rows.slice(page * THREADS_PER_PAGE, (page + 1) * THREADS_PER_PAGE).map((row) => (
+          <SidebarMenuItem key={row.id}>
+            <SidebarMenuButton {...selectable(row.id)} className="data-active:font-normal">
+              <StatusIcon row={row} />
+              <Title row={row} />
+            </SidebarMenuButton>
+            {row.unread ? (
+              <SidebarMenuBadge className={cn("right-1.5", unreadHidden)}>
+                {row.unread}
+              </SidebarMenuBadge>
+            ) : null}
+            <ThreadMenu row={row} />
+          </SidebarMenuItem>
+        ))}
+      </SidebarMenu>
+    </SidebarGroup>
+  )
+}
+
 export function AgentsHeader({ mainAgents }: { mainAgents: AgentRow[] }) {
   return <AgentsMenu defaultSelected={mainAgents[0]?.agent.id} rows={mainAgents} />
 }
@@ -213,23 +388,26 @@ export function AgentsHeader({ mainAgents }: { mainAgents: AgentRow[] }) {
 export function AgentsNav({
   orchestrators,
   subagents,
+  threads,
 }: {
   orchestrators: AgentRow[]
   subagents: SubagentRow[]
+  threads: ThreadRow[]
 }) {
   return (
     <>
+      {threads.length > 0 && <Threads rows={threads} />}
       <SidebarGroup>
         <SidebarGroupLabel className="pl-2.5">
           Orchestrators
-          <span className="ml-auto">{count(orchestrators)}</span>
+          <span className={countCell}>{count(orchestrators)}</span>
         </SidebarGroupLabel>
         <AgentsMenu rows={orchestrators} />
       </SidebarGroup>
       <SidebarGroup>
         <SidebarGroupLabel className="pl-2.5">
           Subagents
-          <span className="ml-auto">{count(subagents)}</span>
+          <span className={countCell}>{count(subagents)}</span>
         </SidebarGroupLabel>
         <AgentsMenu rows={subagents} />
       </SidebarGroup>

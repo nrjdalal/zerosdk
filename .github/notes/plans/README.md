@@ -6,11 +6,13 @@ Distinct from the dated audit reports, which `AGENTS.md` puts in `../audits/` an
 
 ## In progress
 
-Nothing yet.
+- [Threads in the agents sidebar](threads-agents-sidebar.md) - the mockup lists the human's threads above the orchestrators, five to a page with unread counts and a menu on each row; real data and the thread view are next (PR #25).
 
 ## Planned
 
-- [Threads in the agents sidebar](threads-agents-sidebar.md) - the agents sidebar lists the human's threads, each with its state and whether it has news; seven open questions to settle first (PR #20).
+- [A Session schema for the agents sidebar](session-schema.md) - the sidebar's `state`, task kind, title and nesting move from the web app into a `Session` schema beside `Agent`, researched across the nine sources; eight decisions made, none left open.
+- [Keep the factory's dynamic data local](local-data.md) - one local Postgres with TanStack DB in the UI and server push, no sync engine yet; four decisions made, none left open.
+- [Run agents through a harness and a bridge](harness-bridge.md) - the server drives each agent as a Claude Code CLI in a herdr pane behind two contracts, with the SDK as a later route; nine decisions made, none left open.
 
 ## Backlog / ideas
 

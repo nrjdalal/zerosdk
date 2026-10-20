@@ -13,7 +13,7 @@ One Bun + Turborepo monorepo: two deployable apps over shared packages. Imports 
 
 ```
 .generated/       # repo-root home for build-time generated assets (gitignored), the sources' docs cache among them
-.github/docs/     # GLOSSARY.md and adr/: the factory's language and its decisions (domain-modeling skill)
+.github/docs/     # GLOSSARY.md, adr/ and research/: the factory's language, its decisions and the evidence (domain-modeling skill)
 api/hono/         # backend (Hono): routers, middlewares, the AppType export
 web/next/         # frontend (Next.js App Router): app/, components/, lib/, content/
 packages/auth/    # Better Auth instance
@@ -36,7 +36,7 @@ Read `AGENTS.md` first for the rules; `curl "$(bunx portless get zerosdk)/llms-f
 | Change the database schema | `packages/db/src/schema/<name>.ts` → export from `schema/index.ts`; `auth.ts` is generated, see the row below | `db-migration` skill |
 | Add/change a page | `web/next/src/app/`, route groups: `(marketing)` public, `(protected)` dashboard, `(console)` member and above, `(content)` docs+blog, `(llms.txt)` the plain-text mirrors | - |
 | Add/customize a UI component | `web/next/src/components/`: `ui/` is generated shadcn, don't hand-edit | `design`, `shadcn-sync` skills |
-| Add or change the agents sidebar | `web/next/src/components/agents/sidebar.tsx` (`AgentsHeader`, `AgentsNav`), each value's icon in `agents/icons.ts`, and the demo `agents/sidebar-demo.tsx` that `/docs/ui/sidebar` shows | `design` skill |
+| Add or change the agents sidebar | `web/next/src/components/agents/sidebar.tsx` (`AgentsHeader`, and `AgentsNav` with the Threads group above the agents), each value's icon in `agents/icons.ts`, and the demo `agents/sidebar-demo.tsx` that `/docs/ui/sidebar` shows | `design` skill |
 | Document a UI component | `web/next/content/docs/ui/<name>.mdx`, the live demo and its `<include>`d source inside `DocsPreview`, registered in `web/next/docs.config.ts` | `design`, `doc-sync` skills |
 | Call the API from the web app | `web/next/src/lib/api/client.ts` (`apiClient`, `unwrap`) | - |
 | Rebrand (name, description, socials) | `packages/config/src/site.ts`, one file | - |

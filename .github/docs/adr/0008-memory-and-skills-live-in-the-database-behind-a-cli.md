@@ -1,0 +1,10 @@
+# Memory and skills live in the database, behind a CLI
+
+Agents read and write memory and skills through a `zerosdk` CLI that calls the local server, so the database is the one copy and the UI can show every memory and skill. Claude Code's own memory is off (`autoMemoryEnabled: false` in the launch settings: "When `false`, Claude doesn't read from or write to the auto memory directory", [Claude Code](https://code.claude.com/docs/en/settings-reference#automemoryenabled)). Claude Code loads native skills from skill folders on disk, not from a server, so the server writes each agent's own skills into a folder of the session's own, outside the project, and passes it with `--add-dir`, whose `.claude/skills/` Claude Code loads and watches ([Claude Code](https://code.claude.com/docs/en/skills#skills-from-additional-directories)); the writes go one way, and a permission rule blocks direct writes to that folder, keeping the files from drifting.
+
+This departs from the sources: eight of the nine keep skills as `SKILL.md` folders (all but Cloudflare Agents, which keeps a registry), and five keep memory as files, Claude Agent SDK, Claude Code, OpenAI Agents SDK, OpenAI Codex and Vercel eve ([research](../research/local-data-261020.md)). A CLI rather than an MCP server because the factory must spend few tokens: CLIs "are still more context-efficient than MCP servers because they don't add any per-tool listing" ([Claude Code](https://code.claude.com/docs/en/costs)), and the one skill that teaches the commands keeps only its description in context until used.
+
+## Considered Options
+
+- **Files as the source of truth, indexed by the server:** Claude would keep writing memory and skills behind the server's back, and the UI would show a copy.
+- **An MCP server:** every tool's schema in context on every turn.
