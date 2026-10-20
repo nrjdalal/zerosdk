@@ -1,0 +1,11 @@
+# Agents run as CLI harnesses through a bridge
+
+Each agent is its own Claude Code CLI session in a herdr pane on the user's machine. The server calls one **harness** contract (start, send, answer, interrupt, stop, watch), and the Claude Code CLI implementation drives its pane through a **bridge** contract (open, send text and keys, read, status, watch, close), so cmux can take herdr's place and the Claude Agent SDK can take the CLI's without the server changing. Claude Code's hooks, passed at launch through `--settings`, post to the local server and are the main status signal; herdr's status and the screen are the backup, since an Escape fires no hook. Agents message each other as Claude Code peers through its cross-session messaging, which an SDK session on the same machine can join later ([research](../research/harness-bridge-261020.md)).
+
+The words follow the sources where they speak. Five of the nine define a harness as this layer ("A harness is a complete agent runtime, such as Claude Code, Codex, or Pi", [AI SDK](https://ai-sdk.dev/docs/ai-sdk-harnesses/overview); "Claude Code is the harness; Claude is the model inside it", [Claude Code](https://code.claude.com/docs/en/glossary)); `runtimes?` appears in all nine too, and more often, but names different layers in different places: Cloudflare uses it for the durable layer underneath the harness, and the orchestrators that drive CLIs use it for all three layers. Bridge is the user's word for the herdr layer, which no source names: Claude Code's Remote Control and the Agent SDK's `bridge` export use it for connecting a running session to a UI elsewhere, while `hosts?`, `terminals?` and `workspaces?` (9/9 each) already carry other meanings, and `multiplexers?` appears in one source.
+
+## Considered Options
+
+- **The Claude Agent SDK first**, as the AI SDK's `@ai-sdk/harness-claude-code` does: typed events and answers, but no terminal for a human to watch, and the user starts from the CLIs.
+- **The Agent Client Protocol**: structured events from the same CLIs, but its Claude Code and Codex adapters are third-party and there is no terminal to watch either.
+- **The screen alone**: no orchestrator that drives a Claude Code TUI detects a usage limit from the screen, while hooks miss only an Escape.
