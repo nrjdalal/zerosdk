@@ -1,7 +1,7 @@
 "use client"
 
 import type { Agent } from "@packages/schema/agent"
-import { RiArrowLeftSLine, RiArrowRightSLine, type RemixiconComponentType } from "@remixicon/react"
+import { RiArrowLeftSFill, RiArrowRightSFill, type RemixiconComponentType } from "@remixicon/react"
 import { cn } from "cn"
 import { atom, useAtom } from "jotai"
 
@@ -202,7 +202,7 @@ function AgentsMenu({ defaultSelected, rows }: { defaultSelected?: string; rows:
             <CollapsibleTrigger
               render={<SidebarMenuAction className={cn("right-1.5", toggleShown)} />}
             >
-              <RiArrowRightSLine className="transition-transform duration-200 group-data-[open]:rotate-90" />
+              <RiArrowRightSFill className="transition-transform duration-200 group-data-[open]:rotate-90" />
               <span className="sr-only">Toggle</span>
             </CollapsibleTrigger>
             <CollapsibleContent>
@@ -255,7 +255,7 @@ function Threads({ rows }: { rows: ThreadRow[] }) {
               size="icon-xs"
               variant="ghost"
             >
-              <RiArrowLeftSLine />
+              <RiArrowLeftSFill />
             </Button>
             {page + 1}/{pages}
             <Button
@@ -265,7 +265,7 @@ function Threads({ rows }: { rows: ThreadRow[] }) {
               size="icon-xs"
               variant="ghost"
             >
-              <RiArrowRightSLine />
+              <RiArrowRightSFill />
             </Button>
           </span>
         )}

@@ -123,4 +123,9 @@ describe("agents sidebar", () => {
   test("drops the group when there are no threads", () => {
     expect(render({ threads: [] })).not.toContain(">Threads<")
   })
+
+  test("draws every icon in its Fill variant", async () => {
+    const source = await Bun.file(join(web, "src/components/agents/sidebar.tsx")).text()
+    expect(source.match(/\bRi\w+Line\b/g) ?? []).toEqual([])
+  })
 })
