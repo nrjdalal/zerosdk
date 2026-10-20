@@ -33,6 +33,12 @@ const docsConfig = {
           description: "Reference for the icons the UI uses.",
         },
       },
+      {
+        "/docs/ui/sidebar": {
+          title: "Sidebar",
+          description: "Reference for the agents sidebar.",
+        },
+      },
     ],
   },
   console: {
