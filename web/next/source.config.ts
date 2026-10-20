@@ -87,7 +87,7 @@ function rehypeTrimFinalNewline() {
   return visit
 }
 
-// A twoslash block shows its doc comments on hover and needs its leading imports only to type-check, so both are cut from the code with Twoslash's notation (https://twoslash.netlify.app/refs/notations#cutting-code), before rehypeCode where fumadocs-twoslash reads it and after the page's markdown copy is taken, which keeps them.
+// A twoslash block shows its doc comments on hover, needs its leading imports only to type-check, and an oxfmt-ignore only keeps a long line whole in the source, so all three are cut from the code with Twoslash's notation (https://twoslash.netlify.app/refs/notations#cutting-code), before rehypeCode where fumadocs-twoslash reads it and after the page's markdown copy is taken, which keeps them.
 function rehypeTwoslashCuts() {
   const visit = (node: HastNode) => {
     if (node.tagName === "code" && node.data?.meta?.includes("twoslash"))
@@ -96,7 +96,7 @@ function rehypeTwoslashCuts() {
           child.value = child.value
             .replace(/^(?:import\b[^"']*["'][^"'\n]*["'][^\n]*\n+)+/, "$&// ---cut---\n")
             .replace(
-              /^([ \t]*)(\/\*\*[\s\S]*?\*\/)[ \t]*\n/gm,
+              /^([ \t]*)(\/\*\*[\s\S]*?\*\/|\/\/ oxfmt-ignore)[ \t]*\n/gm,
               "$1// ---cut-start---\n$1$2\n$1// ---cut-end---\n",
             )
     node.children?.forEach(visit)
