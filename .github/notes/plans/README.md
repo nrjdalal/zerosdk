@@ -12,7 +12,7 @@ Distinct from the dated audit reports, which `AGENTS.md` puts in `../audits/` an
 
 - [Keep the factory's dynamic data local](local-data.md) - one local Postgres with TanStack DB in the UI and server push, no sync engine yet; four decisions made, none left open.
 - [Run agents through a harness and a bridge](harness-bridge.md) - the server drives each agent as a Claude Code CLI in a herdr pane behind two contracts, with the SDK as a later route; nine decisions made, none left open.
-- [A Session schema for the agents sidebar](session-schema.md) - the sidebar's state, task kind, title and nesting move from the web app into a `Session` schema beside `Agent`, researched across the nine sources; three decisions made and five open questions left.
+- [A Session schema for the agents sidebar](session-schema.md) - the sidebar's state, task kind, title and nesting move from the web app into a `Session` schema beside `Agent`, researched across the nine sources; four decisions made and four open questions left.
 
 ## Backlog / ideas
 
