@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.0.4
+
+[compare changes](https://github.com/nrjdalal/zerosdk/compare/v0.0.3...v0.0.4)
+
+### 🚀 Enhancements
+
+- **scripts:** Cache the sources' docs, count terms, and keep a glossary with ADRs ([#11](https://github.com/nrjdalal/zerosdk/pull/11))
+- **schema:** Give the agent its model, instructions, role and settings ([#12](https://github.com/nrjdalal/zerosdk/pull/12))
+
+### 🩹 Fixes
+
+- **docs:** Drop an included file's final newline from its code block ([#9](https://github.com/nrjdalal/zerosdk/pull/9))
+
+### ❤️ Contributors
+
+- Neeraj Dalal @nrjdalal
+
 ## v0.0.3
 
 [compare changes](https://github.com/nrjdalal/zerosdk/compare/v0.0.2...v0.0.3)
