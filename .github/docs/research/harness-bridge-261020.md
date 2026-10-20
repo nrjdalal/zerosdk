@@ -9,7 +9,7 @@ Labels: [Docs] official documentation · [Types] a published `.d.ts` · [Schema]
 | Harness libraries | AI SDK `@ai-sdk/harness` 1.0.157 and `@ai-sdk/harness-claude-code` 1.0.161 · Agent Client Protocol v1 and v2 · `@anthropic-ai/claude-agent-sdk` 0.3.304 · OpenCode V2 `@opencode/sdk` and `@opencode/client` 2.0.32 · Codex app-server schema at `rust-v0.163.0` and `@openai/codex-sdk` 0.163.0 · Cloudflare `agents` 0.28.1 · Mastra `@mastra/core` 1.78.0, `@mastra/claude` 0.3.2, `@mastra/acp` 0.4.2                  |
 | Bridges           | cmux 0.65.2 (github.com/manaflow-ai/cmux at `a5911a1`) · herdr 0.9.5 (github.com/herdrdev/herdr at `143bf5f`, API protocol 22) · tmux 3.8 · zellij 0.45.1                                                                                                                                                                                                                                                                  |
 | Claude Code       | https://code.claude.com/docs/en/ (cli-reference, interactive-mode, permissions, hooks, sessions, agent-view, cross-session-messaging, errors, statusline, env-vars) and the Agent SDK pages, Claude Code 2.1.304                                                                                                                                                                                                           |
-| Orchestrators     | ccmanager (kbwo, `c6c6a41`) · Claude Squad (smtg-ai, `ce1ffb4`) · Crystal (stravu, `1e18e0b`) · Emdash (generalaction, `ce0e562`) · Happy (slopus, `b99e7f8`) · Nimbalyst (`79b8c56`) · Omnara (omnara-ai, Claude wrapper at `245f4eb76c`) · Sculptor (imbue-ai, `7411f65`) · Superset (superset-sh, `20c265f7`) · T3 Code (pingdotgg/t3code, `67c0fc0c`) · uzi (devflowinc, `421685f`) · vibe-kanban (BloopAI, `d5cbb53`) |
+| Multi-agent apps  | ccmanager (kbwo, `c6c6a41`) · Claude Squad (smtg-ai, `ce1ffb4`) · Crystal (stravu, `1e18e0b`) · Emdash (generalaction, `ce0e562`) · Happy (slopus, `b99e7f8`) · Nimbalyst (`79b8c56`) · Omnara (omnara-ai, Claude wrapper at `245f4eb76c`) · Sculptor (imbue-ai, `7411f65`) · Superset (superset-sh, `20c265f7`) · T3 Code (pingdotgg/t3code, `67c0fc0c`) · uzi (devflowinc, `421685f`) · vibe-kanban (BloopAI, `d5cbb53`) |
 
 ## Contents
 
@@ -22,7 +22,7 @@ Labels: [Docs] official documentation · [Types] a published `.d.ts` · [Schema]
    - [Start and resume](#start-and-resume) · [Send](#send) · [Answer](#answer) · [Interrupt and stop](#interrupt-and-stop) · [Usage limits](#usage-limits)
 5. [Where each status comes from](#5-where-each-status-comes-from)
 6. [Peers across routes](#6-peers-across-routes)
-7. [How orchestrators drive CLIs today](#7-how-orchestrators-drive-clis-today)
+7. [How multi-agent apps drive CLIs today](#7-how-multi-agent-apps-drive-clis-today)
 8. [Pitfalls](#8-pitfalls)
 9. [Demos](#9-demos)
    - [Every kind Claude Code shows](#every-kind-claude-code-shows): [A permission prompt](#a-permission-prompt-claude-code) · [A usage limit](#a-usage-limit-claude-code) · [Hooks to a local server](#hooks-to-a-local-server-claude-code)
@@ -62,7 +62,7 @@ Seven sources define "drive one coding-agent session": the AI SDK harness, ACP, 
 | set model or mode mid-session            | ACP, Claude, OpenCode, Cloudflare                         | 4     |
 | status pulled by a call, compact, detach | 3 each                                                    | 3     |
 
-Every source keeps **interrupting a turn** (7 of 7) apart from **ending the session** (5 of 7), and three also keep **detaching** apart (AI SDK `detach`, Codex `thread/unsubscribe`, Cloudflare `dispose`). Steering is a delivery choice on the send call in two of the four that have it: OpenCode `session.prompt({ delivery: 'steer' | 'queue' })` and Cloudflare `submit({ whenBusy: 'steer' | 'followUp' })`, where a runtime that cannot steer queues instead. Every answer is keyed by an id the runtime issued, and all but Cloudflare can decline (ACP `cancelled`, Codex `decline`, OpenCode `reject`, AI SDK `approved: false`, Claude `deny`). Claude and Cloudflare answer permissions and questions through one call; ACP, OpenCode and Codex keep two.
+Every source keeps **interrupting a turn** (7 of 7) apart from **ending the session** (5 of 7), and three also keep **detaching** apart (AI SDK `detach`, Codex `thread/unsubscribe`, Cloudflare `dispose`). Steering is a delivery choice on the send call in two of the four that have it: OpenCode `session.prompt({ delivery: 'steer' | 'queue' })` and Cloudflare `submit({ whenBusy: 'steer' | 'followUp' })`, where a harness that cannot steer queues instead. Every answer is keyed by an id the harness issued, and all but Cloudflare can decline (ACP `cancelled`, AI SDK `approved: false`, Claude `deny`, Codex `decline`, OpenCode `reject`). Claude and Cloudflare answer permissions and questions through one call; ACP, OpenCode and Codex keep two.
 
 Status is reported, not stored, in most of them. `idle` is a native value in 5 of 7 and `running` in 6; a distinct "blocked on the user" value exists in 5 (AI SDK `awaiting-approval`, ACP v2 and Claude `requires_action`, Codex `waitingOnApproval` and `waitingOnUserInput`, Mastra `suspended`); `pending` is native in 3 and `paused` in 4 with four different meanings; `stuck` in none. Turn outcome (`completed`, `cancelled`, `failed`) and session state (`running`, `idle`) are separate axes in every source that has both.
 
@@ -84,7 +84,7 @@ The AI SDK expresses optional operations as optional methods that throw `Harness
 
 ### Identity
 
-The runtime assigns the session id in all 7; the caller may choose it in 3 (AI SDK `createSession({ sessionId })`, Claude `sessionId`, OpenCode `session.create({ id })`). Wherever a wrapper sits over a runtime (AI SDK over Claude or Codex, Cloudflare over a CLI, Mastra over ACP), two ids coexist: the wrapper's own, and the runtime's, kept as an opaque resume payload. Claude's id must be a UUID on both routes ("must be a valid UUID", `--session-id` and `sessionId` [Docs, Types]); OpenCode's is server-assigned (`ses_` plus a descending id); Codex's is a UUIDv7.
+The harness assigns the session id in all 7; the caller may choose it in 3 (AI SDK `createSession({ sessionId })`, Claude `sessionId`, OpenCode `session.create({ id })`). Wherever a wrapper sits over a harness (AI SDK over Claude or Codex, Cloudflare over a CLI, Mastra over ACP), two ids coexist: the wrapper's own, and the harness's, kept as an opaque resume payload. Claude's id must be a UUID on both routes ("must be a valid UUID", `--session-id` and `sessionId` [Docs, Types]); OpenCode's is server-assigned (`ses_` plus a descending id); Codex's is a UUIDv7.
 
 ## 3. The bridge contract
 
@@ -152,7 +152,7 @@ The permission prompt asks "Do you want to proceed?" with numbered choices and t
 
 ### Usage limits
 
-The TUI waits and continues by itself; the SDK never waits. On the SDK route a `rate_limit_event` with `status: "rejected"` carries an epoch `resetsAt`, and the caller schedules the resume [Types]. On the CLI route the epoch reaches only the status-line command (`rate_limits.*.resets_at`, one per window: five-hour, seven-day and spend limit, each with its `used_percentage`), and only "for claude.ai Pro and Max subscribers, or behind a Claude apps gateway that sets a spend limit for you, and only after the first API response in the session" [Docs], a `StopFailure` hook fires with `error: "rate_limit"`, and `Notification` hooks fire as `quota_auto_resume_*` [Docs]. The on-screen reset time is a local clock time such as `3:45pm`, or a weekday and time such as `Mon 12:00am`, with no date [Docs], and Nimbalyst notes the wording varies ("resets 11:40am (TZ)", `usageLimit.ts` [Source]), so it is a signal to match, not a time to parse. No orchestrator on the TUI route detects a usage limit from the screen: Nimbalyst catches HTTP 429 through a proxy, and T3 Code, Sculptor, Nimbalyst and Happy classify it on headless streams [Source].
+The TUI waits and continues by itself; the SDK never waits. On the SDK route a `rate_limit_event` with `status: "rejected"` carries an epoch `resetsAt`, and the caller schedules the resume [Types]. On the CLI route the epoch reaches only the status-line command (`rate_limits.*.resets_at`, one per window: five-hour, seven-day and spend limit, each with its `used_percentage`), and only "for claude.ai Pro and Max subscribers, or behind a Claude apps gateway that sets a spend limit for you, and only after the first API response in the session" [Docs], a `StopFailure` hook fires with `error: "rate_limit"`, and `Notification` hooks fire as `quota_auto_resume_*` [Docs]. The on-screen reset time is a local clock time such as `3:45pm`, or a weekday and time such as `Mon 12:00am`, with no date [Docs], and Nimbalyst notes the wording varies ("resets 11:40am (TZ)", `usageLimit.ts` [Source]), so it is a signal to match, not a time to parse. No multi-agent app on the TUI route detects a usage limit from the screen: Nimbalyst catches HTTP 429 through a proxy, and Happy, Nimbalyst, Sculptor and T3 Code classify it on headless streams [Source].
 
 ## 5. Where each status comes from
 
@@ -181,7 +181,7 @@ Claude Code's cross-session messaging lets sessions on one machine message each 
 
 Messages are plain text, about one million characters at most, and cannot approve prompts or run commands [Docs]. Only the auth line of the inbox socket is documented, so a server writing to it directly would rely on an undocumented format [Docs].
 
-## 7. How orchestrators drive CLIs today
+## 7. How multi-agent apps drive CLIs today
 
 | Tool, route               | Start                                    | Send into a running session                              | Answer a permission                      | Detect waiting                               | Detect idle                             | Detect a usage limit                 | Stop                               |
 | ------------------------- | ---------------------------------------- | -------------------------------------------------------- | ---------------------------------------- | -------------------------------------------- | --------------------------------------- | ------------------------------------ | ---------------------------------- |
@@ -205,10 +205,10 @@ Sending text into a TUI:
 1. Send the Enter in its own write, after the text: in one burst Claude Code treats the text as a paste and the `\r` becomes a newline in the draft (Sculptor, Superset). Gaps in use run from 100 ms to 0.75 s; Sculptor notes about 0.2 s suffices [Source].
 2. Wrap the text in bracketed paste, and scale the gap by bytes: the OS splits a large write and Claude Code counts each part as a paste (Nimbalyst) [Source].
 3. Serialize sends to one session; a second send can land between the first one's text and its Enter (Superset) [Source].
-4. Clean the text: `\n`, `\r`, `\t` and escape characters act as keys, a tab autocompletes, a leading `/` runs a command and `!` a shell command (Superset, Nimbalyst) [Source].
+4. Clean the text: `\n`, `\r`, `\t` and escape characters act as keys, a tab autocompletes, a leading `/` runs a command and `!` a shell command (Nimbalyst, Superset) [Source].
 5. A message typed while a dialog is open answers the dialog; herdr's `agent.prompt` refuses with `agent_blocked`, and cmux's raw send does not check [Docs, Source].
 6. Keep a typed launch command under macOS's 1,024-byte line limit, or the shell waits at `quote>` (Superset) [Source].
-7. Strip inherited `TMUX`, `CI` and `CLAUDECODE` from a pane's environment (Sculptor, ccmanager, Nimbalyst) [Source].
+7. Strip inherited `TMUX`, `CI` and `CLAUDECODE` from a pane's environment (ccmanager, Nimbalyst, Sculptor) [Source].
 
 Status:
 
@@ -221,10 +221,10 @@ Status:
 
 Session ids and stopping:
 
-1. No transcript exists until the first message, so resuming an id earlier fails (Sculptor, T3 Code, Superset) [Source].
+1. No transcript exists until the first message, so resuming an id earlier fails (Sculptor, Superset, T3 Code) [Source].
 2. `--session-id` fails with "Session ID <uuid> is already in use." once the id is on disk; use `--resume` from then on (Nimbalyst, T3 Code) [Source].
 3. The id changes on an in-TUI `/resume`, and `/clear` starts a new transcript; take the id from every hook payload (Emdash, Omnara) [Source].
-4. Ctrl+C at an idle prompt arms "press again to exit" (Nimbalyst) [Source], and SIGTERM to a wrapper orphans the real binary, so signal the process group (Happy, Sculptor, vibe-kanban, Emdash) [Source].
+4. Ctrl+C at an idle prompt arms "press again to exit" (Nimbalyst) [Source], and SIGTERM to a wrapper orphans the real binary, so signal the process group (Emdash, Happy, Sculptor, vibe-kanban) [Source].
 
 ## 9. Demos
 
@@ -384,7 +384,7 @@ type Bridge = {
 
 Questions this leaves for the user:
 
-1. **Screen only, or screen plus hooks.** The CLI route can read status from the screen and herdr alone, or also take Claude Code's hooks and `claude agents --json`, which every hook-based orchestrator uses and which can answer prompts without keys.
+1. **Screen only, or screen plus hooks.** The CLI route can read status from the screen and herdr alone, or also take Claude Code's hooks and `claude agents --json`, which every hook-based multi-agent app uses and which can answer prompts without keys.
 2. **How prompts get answered.** Keys typed through the bridge, or a `PermissionRequest` and `PreToolUse` hook.
 3. **The permission mode agents run in.** It decides which prompts appear and how peers' messages are held.
 4. **First launch per worktree.** Pre-seed the trust dialog, or let the session start as `pending` until someone accepts it.

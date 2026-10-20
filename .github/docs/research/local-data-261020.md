@@ -96,17 +96,17 @@ There is no official collection for InstantDB, Jazz, LiveStore, Replicache, Tiny
 
 ## 5. How the nine sources store dynamic data
 
-| Data                     | SQLite                                | Postgres                 | Files                                  | In memory          | Other                                 |
-| ------------------------ | ------------------------------------- | ------------------------ | -------------------------------------- | ------------------ | ------------------------------------- |
-| Sessions                 | 3 (OpenCode, Cloudflare, Codex index) | 0 by default; 4 offer it | 4 (Claude Code, Agent SDK, Codex, eve) | 2 (Mastra, OpenAI) | AI SDK keeps none                     |
-| Memory                   | 2                                     | 0 by default; 2 offer it | 5                                      | 1                  | 2 app-defined                         |
-| Skills                   | 1                                     | 0                        | 8 read `SKILL.md` folders              | 1 registry         | Mastra and Cloudflare also in a store |
-| Settings                 | 1                                     | 0                        | 4 layered (user, project, managed)     | 0                  | 5 in code                             |
-| Saved permission choices | 1 (OpenCode)                          | 0                        | 3 (Claude Code, Agent SDK, Codex)      | 3 session-only     | 2                                     |
+| Data                     | SQLite                                | Postgres                 | Files                                         | In memory                     | Other                                 |
+| ------------------------ | ------------------------------------- | ------------------------ | --------------------------------------------- | ----------------------------- | ------------------------------------- |
+| Sessions                 | 3 (OpenCode, Cloudflare, Codex index) | 0 by default; 4 offer it | 4 (Claude Agent SDK, Claude Code, Codex, eve) | 2 (Mastra, OpenAI Agents SDK) | AI SDK keeps none                     |
+| Memory                   | 2                                     | 0 by default; 2 offer it | 5                                             | 1                             | 2 app-defined                         |
+| Skills                   | 1                                     | 0                        | 8 read `SKILL.md` folders                     | 1 registry                    | Mastra and Cloudflare also in a store |
+| Settings                 | 1                                     | 0                        | 4 layered (user, project, managed)            | 0                             | 5 in code                             |
+| Saved permission choices | 1 (OpenCode)                          | 0                        | 3 (Claude Agent SDK, Claude Code, Codex)      | 3 session-only                | 2                                     |
 
-- **Structured state goes in SQLite, human-editable artifacts stay files.** OpenCode keeps sessions and saved approvals in `opencode.db` (SQLite, through a Drizzle fork); Codex indexes its JSONL in SQLite; Cloudflare gives each agent a SQLite database. Postgres appears only as an opt-in adapter (Cloudflare, Mastra, eve, and an Agent SDK example) [Docs, Source].
+- **Structured state goes in SQLite, human-editable artifacts stay files.** OpenCode keeps sessions and saved approvals in `opencode.db` (SQLite, through a Drizzle fork); Codex indexes its JSONL in SQLite; Cloudflare gives each agent a SQLite database. Postgres appears only as an opt-in adapter (a Claude Agent SDK example, Cloudflare, Mastra and eve) [Docs, Source].
 - **Claude Code has no database.** Transcripts, memory and skills are all files under `~/.claude` [Docs].
-- **Runtime change is normal.** Agents write memory at runtime in 8 of 9; skills change at runtime fully in 7 of 9, and OpenCode, Claude Code and Codex reload them from a file watcher [Docs, Source].
+- **Change while running is normal.** Agents write memory while they run in 8 of 9; skills change fully while running in 7 of 9, and OpenCode, Claude Code and Codex reload them from a file watcher [Docs, Source].
 - **Sync is rare.** 2 of 9 sync a local store with a remote database, both one way or libSQL-only; none syncs SQLite with Postgres both ways [Docs].
 
 ## 6. Throwaway databases
