@@ -176,7 +176,7 @@ Claude Code's cross-session messaging lets sessions on one machine message each 
 
 1. Every session runs Claude Code v2.1.224 or later, as the same OS user, on the same side of any container boundary ("A session inside a container and a session on the host can't reach each other") [Docs].
 2. No session runs in bare mode [Docs].
-3. A session that bypasses permission prompts sets `crossSessionInbound: "accept"` through `--settings` or the SDK's `settings`. With no value set, a session that prompts delivers every message unless the sender bypasses prompts, and a session that bypasses holds every message; "A `-p` session can't show the approval dialog", so a held message drops after five minutes [Docs].
+3. A session that bypasses permission prompts sets `crossSessionInbound: "accept"` through `--settings` or the SDK's `settings`. With no value set, a session that prompts delivers every message unless the sender bypasses prompts, and a session that bypasses holds every message unless the sender also bypasses; "A `-p` session can't show the approval dialog", so a held message drops after five minutes [Docs].
 4. Every session has a unique name (`--name` or `title`), its peer address [Docs].
 
 Messages are plain text, about one million characters at most, and cannot approve prompts or run commands [Docs]. Only the auth line of the inbox socket is documented, so a server writing to it directly would rely on an undocumented format [Docs].
@@ -312,7 +312,7 @@ Claude Code has no way to tell an outside program that a line appeared. herdr ma
 
 #### An answer as a function return (Claude Agent SDK)
 
-On the CLI route a permission is a dialog to read and keys to press. On the SDK route it is a callback whose return value is the answer. [Example] built from the types in `@anthropic-ai/claude-agent-sdk` 0.3.304:
+Claude Code answers a permission from outside its process, through a hook that a command or an HTTP endpoint replies to, or through keys. On the SDK route the answer is the return value of a callback in the same process. [Example] built from the types in `@anthropic-ai/claude-agent-sdk` 0.3.304:
 
 ```ts
 import { query } from "@anthropic-ai/claude-agent-sdk"
@@ -321,7 +321,6 @@ const session = query({
   prompt: "Fix the login bug",
   options: {
     sessionId: "6f1c2a4e-3b7d-4c8e-9a10-2b3c4d5e6f70",
-    settings: { crossSessionInbound: "accept" },
     canUseTool: async (toolName, input) =>
       toolName === "Bash"
         ? { behavior: "deny", message: "Ask the human first" }

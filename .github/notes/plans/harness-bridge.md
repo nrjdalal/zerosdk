@@ -8,12 +8,12 @@ ZeroSDK runs each agent as its own Claude Code CLI session in a herdr pane on th
 ## Decided
 
 1. **The app runs locally** (2026-10-20): a hosted server cannot reach herdr or start `claude` on the user's machine.
-2. **UI, server, bridge, CLI** (2026-10-20). Both the UI and the agents start new sessions through the server, agents through the `zerosdk` CLI, and the server records who opened each one, since herdr keeps no parent.
+2. **UI, server, bridge, CLI** (2026-10-20). Both the UI and the agents start new sessions through the server, agents through the `zerosdk` CLI, and the server records who started each one, since herdr keeps no parent.
 3. **Agents talk as Claude Code peers** (2026-10-20), through cross-session messaging; each session's unique name is its peer address.
 4. **CLIs first, the SDK later, and no ACP** (2026-10-20); the SDK comes as a second implementation of the same harness contract, with no change to the server.
 5. **herdr first, cmux later** (2026-10-20), behind one bridge contract. The bridge is chosen in a setup step, where each bridge and harness checks itself, and the choice is saved in the database, not in an env setting.
 6. **Hooks and the screen from the start** (2026-10-20), hooks as the main signal and the screen as the backup, as ADR 0005 sets out.
-7. **Prompts are answered through the hook reply**, with keys typed through the bridge as the fallback (2026-10-20), as ADR 0006 sets out.
+7. **Prompts are answered through the hook reply** (2026-10-20), with keys typed through the bridge as the fallback, as ADR 0006 sets out.
 8. **A permission flipper on each main agent** (2026-10-20): Ask me, Rules or Allow all, for that main agent and every session under it, as ADR 0006 sets out.
 9. **No session waits on the workspace trust dialog** (2026-10-20): the server marks the repository's main checkout trusted once (`projects["<root>"].hasTrustDialogAccepted` in `~/.claude.json`), which covers its worktrees, since Claude Code keys a worktree's trust on the main checkout's root.
 
@@ -63,7 +63,7 @@ zerosdk/
     └── screen.test.ts              checked against real screen captures
 ```
 
-The server calls only the Harness contract, and only the CLI implementations use a Bridge, so adding `sdk.ts` or `cmux.ts` changes nothing else. Three places still reserve `packages/cli` for zerostarter's npm CLI and get updated with it: the `runtime-apis` skill, whose rules (Node, `node:` only) apply to the `zerosdk` command, the `codebase-map` skill, and `.github/scripts/build-sizes.ts`, which leaves `packages/cli` out of the build-size graph. The name of the sessions table waits on the [icebox: the sign-in session table](auth-session-name.md), since the sign-in table is already called `session`.
+The server calls only the Harness contract, and only the CLI implementations use a Bridge, so adding `sdk.ts` or `cmux.ts` changes nothing else. `packages/cli` still means zerostarter's npm CLI in `AGENTS.md`, the `add-package`, `audit`, `codebase-map` and `runtime-apis` skills (its `index.md` too) and `.github/scripts/build-sizes.ts`, which leaves it out of the build-size graph; each gets updated when the `zerosdk` command lands there, and the `runtime-apis` rules (Node, `node:` only) apply to it. A custom status line, which `until` needs, hides Claude Code's `esc to interrupt` hint, so the screen backup and herdr fall back on the title spinner to see a session working. The name of the sessions table waits on the [icebox: the sign-in session table](auth-session-name.md), since the sign-in table is already called `session`.
 
 ## Steps
 
