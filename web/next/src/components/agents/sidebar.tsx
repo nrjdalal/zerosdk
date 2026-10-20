@@ -33,10 +33,14 @@ type RowBase = { agent: Agent; state: AgentState }
 export type AgentRow = RowBase & { subagents?: never; task?: never; title?: never }
 
 // A subagent run by another, shown by its agent's name, with nothing nested
-export type NestedSubagentRow = RowBase & { task?: AgentTask }
+export type NestedSubagentRow = RowBase & { subagents?: never; task?: AgentTask; title?: never }
 
 // A subagent: a title of its own, its task, and the subagents it runs
-export type SubagentRow = NestedSubagentRow & { subagents?: NestedSubagentRow[]; title?: string }
+export type SubagentRow = RowBase & {
+  subagents?: NestedSubagentRow[]
+  task?: AgentTask
+  title?: string
+}
 
 // The toggle shows on hover, on keyboard focus, while open, and always on a phone, and the effort icon gives it its place
 const toggleShown =
@@ -65,7 +69,13 @@ function IconWithTooltip({
   )
 }
 
-function StatusIcon({ className, row }: { className?: string; row: NestedSubagentRow }) {
+function StatusIcon({
+  className,
+  row,
+}: {
+  className?: string
+  row: Pick<SubagentRow, "state" | "task">
+}) {
   const task = row.state === "running" ? row.task : undefined
   return (
     <IconWithTooltip
