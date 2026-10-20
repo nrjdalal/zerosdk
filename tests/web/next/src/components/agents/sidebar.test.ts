@@ -7,6 +7,7 @@ import {
   AgentsHeader,
   AgentsNav,
   type SubagentRow,
+  type ThreadRow,
 } from "../../../../../../web/next/src/components/agents/sidebar"
 import { SidebarProvider } from "../../../../../../web/next/src/components/ui/sidebar"
 
@@ -39,15 +40,25 @@ const subagents: SubagentRow[] = [
   },
   { agent: agent("uV5wX6yZ", "Builder", "subagent"), state: "completed", title: "ZS-15 Fix login" },
 ]
+const threads: ThreadRow[] = Array.from({ length: 7 }, (_, i) => ({
+  agent: mainAgents[0]!.agent,
+  id: `thread-${i + 1}`,
+  state: i === 0 ? "waiting" : "completed",
+  title: `Ask ${i + 1}`,
+  unread: i === 0 ? 2 : undefined,
+}))
 
-const html: string = renderToStaticMarkup(
-  createElement(
-    SidebarProvider,
-    null,
-    createElement(AgentsHeader, { mainAgents }),
-    createElement(AgentsNav, { orchestrators, subagents }),
-  ),
-)
+const render = (nav: { threads: ThreadRow[] }) =>
+  renderToStaticMarkup(
+    createElement(
+      SidebarProvider,
+      null,
+      createElement(AgentsHeader, { mainAgents }),
+      createElement(AgentsNav, { orchestrators, subagents, ...nav }),
+    ),
+  ) as string
+
+const html = render({ threads })
 
 describe("agents sidebar", () => {
   test("selects the first main agent by default", () => {
@@ -56,8 +67,8 @@ describe("agents sidebar", () => {
   })
 
   test("counts each section's agents, nested ones included", () => {
-    expect(html).toMatch(/Orchestrators<span class="ml-auto">1<\/span>/)
-    expect(html).toMatch(/Subagents<span class="ml-auto">4<\/span>/)
+    expect(html).toMatch(/Orchestrators<span class="ml-auto flex w-4 justify-center">1<\/span>/)
+    expect(html).toMatch(/Subagents<span class="ml-auto flex w-4 justify-center">4<\/span>/)
   })
 
   test("shows a closed row's running subagent, and its own status once open", () => {
@@ -78,5 +89,38 @@ describe("agents sidebar", () => {
   test("gives a row with subagents a toggle apart from the row", () => {
     expect(html).toContain('data-sidebar="menu-action"')
     expect(html).toContain('<span class="sr-only">Toggle</span>')
+  })
+
+  test("lists the threads above the orchestrators", () => {
+    expect(html.indexOf(">Threads<")).toBeGreaterThan(-1)
+    expect(html.indexOf(">Threads<")).toBeLessThan(html.indexOf(">Orchestrators<"))
+  })
+
+  test("shows five threads to a page, starting on the first", () => {
+    expect(html).toContain("Ask 5")
+    expect(html).not.toContain("Ask 6")
+    const disabled = (label: string) =>
+      new RegExp(`<button(?=[^>]*aria-label="${label}")(?=[^>]*\\sdisabled="")`)
+    expect(html).toMatch(disabled("Previous threads"))
+    expect(html).not.toMatch(disabled("Next threads"))
+    expect(html).toMatch(/<\/button>1\/2<button/)
+    expect(html).toContain("min-h-42")
+  })
+
+  test("pages only past five threads", () => {
+    const five = render({ threads: threads.slice(0, 5) })
+    expect(five).toContain("Ask 5")
+    expect(five).not.toContain("Next threads")
+    expect(five).not.toContain("min-h-42")
+  })
+
+  test("shows a thread's unread count, and nothing for a thread with none", () => {
+    expect(html.match(/data-sidebar="menu-badge"[^>]*>(\d+)</g)).toEqual([
+      expect.stringMatching(/>2<$/),
+    ])
+  })
+
+  test("drops the group when there are no threads", () => {
+    expect(render({ threads: [] })).not.toContain(">Threads<")
   })
 })
