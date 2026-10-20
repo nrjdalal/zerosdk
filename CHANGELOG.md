@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.0.8
+
+[compare changes](https://github.com/nrjdalal/zerosdk/compare/v0.0.7...v0.0.8)
+
+### 🚀 Enhancements
+
+- **web:** Link socials from the navbar and say the site is not for public use yet ([#24](https://github.com/nrjdalal/zerosdk/pull/24))
+
+### 📖 Documentation
+
+- **glossary:** Name the human's conversations threads, made of turns ([#20](https://github.com/nrjdalal/zerosdk/pull/20))
+- **notes:** Start the plans index with the threads plan and an icebox ([#23](https://github.com/nrjdalal/zerosdk/pull/23))
+
+### ❤️ Contributors
+
+- Neeraj Dalal @nrjdalal
+
 ## v0.0.7
 
 [compare changes](https://github.com/nrjdalal/zerosdk/compare/v0.0.6...v0.0.7)
