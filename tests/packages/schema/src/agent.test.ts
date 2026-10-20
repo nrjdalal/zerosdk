@@ -31,10 +31,15 @@ describe("Agent", () => {
   })
 
   test("rejects an id that is not 6 letters or digits, in id and in fallbacks", () => {
-    for (const id of ["aB3dE", "aB3dE9x", "aB3-E9"]) {
+    for (const id of ["aB3dE", "aB3dE9x", "aB3-E9", "aB3_E9"]) {
       expect(Agent.safeParse({ ...minimal, id }).success).toBe(false)
       expect(Agent.safeParse({ ...minimal, fallbacks: [id] }).success).toBe(false)
     }
+  })
+
+  test("holds every Tailwind color, and effort as a scale from low to max", () => {
+    expect(Agent.shape.color.unwrap().options).toHaveLength(26)
+    expect(Agent.shape.effort.unwrap().options).toEqual(["low", "medium", "high", "xhigh", "max"])
   })
 
   test("rejects a model without both its provider and its model id", () => {

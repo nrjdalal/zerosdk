@@ -1,5 +1,3 @@
-import { join } from "node:path"
-
 import { rehypeCodeDefaultOptions } from "fumadocs-core/mdx-plugins"
 import { pageSchema } from "fumadocs-core/source/schema"
 import { defineConfig, defineDocs } from "fumadocs-mdx/config"
@@ -94,7 +92,7 @@ function rehypeTwoslashCuts() {
       for (const child of node.children ?? [])
         if (child.type === "text" && child.value)
           child.value = child.value
-            .replace(/^(?:import\b[^"']*["'][^"'\n]*["'][^\n]*\n+)+/, "$&// ---cut---\n")
+            .replace(/^(?:import\b[^"']*["'][^"'\n]*["'][^\n]*\n)+\n*/, "$&// ---cut---\n")
             .replace(
               /^([ \t]*)(\/\*\*[\s\S]*?\*\/|\/\/ oxfmt-ignore)[ \t]*\n/gm,
               "$1// ---cut-start---\n$1$2\n$1// ---cut-end---\n",
@@ -117,15 +115,7 @@ export default defineConfig({
       transformers: [
         ...(rehypeCodeDefaultOptions.transformers ?? []),
         // The hovers are kept in git, since a build under Bun cannot run TypeScript 7's sync API (oven-sh/bun#39747) and reads them from here instead.
-        transformerTwoslash({
-          // An included schema file imports its siblings through @/, which resolves to packages/schema/src in a block.
-          twoslashOptions: {
-            compilerOptions: {
-              paths: { "@/*": [join(process.cwd(), "../../packages/schema/src/*")] },
-            },
-          },
-          typesCache: createFileSystemTypesCache({ dir: "twoslash-cache" }),
-        }),
+        transformerTwoslash({ typesCache: createFileSystemTypesCache({ dir: "twoslash-cache" }) }),
       ],
     },
     rehypePlugins: (plugins) => [rehypeTrimFinalNewline, rehypeTwoslashCuts, ...plugins],
