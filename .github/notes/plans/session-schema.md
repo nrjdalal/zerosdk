@@ -19,14 +19,14 @@ The agents sidebar keeps each row's state, task kind, title and nesting in the w
 
 1. **The field's name is `status`** (2026-10-20), the name seven of the nine sources use, so the icons page's State section becomes Status.
 2. **All nine values stay** (2026-10-20): cancelled, completed, failed, idle, paused, pending, running, stuck and waiting. Sessions run as CLIs in herdr panes, where a rate limit pauses a session and an unrecognized screen can leave it stuck, so each value has a way to be detected: herdr's own status (`working`, `blocked`, `idle`), the harness's wording on screen (a usage limit and its reset time), or the server (a session that stopped making progress).
+3. **Stuck and waiting stay apart** (2026-10-20). Waiting: the agent asked the human something on purpose, a question or a permission, which the UI can answer. Stuck: the agent is not moving and asked nothing the server understands, such as an unrecognized screen or one that has not changed for a long time, so a person has to look at the pane.
 
 ## Open questions
 
 Section 5 of [the research](../../docs/research/agent-session-261020.md#5-what-it-means-for-zerosdks-session) gives the evidence for each. To ask one at a time, each with a recommendation:
 
-1. **What stuck covers.** Recommended: a session that is not moving and asked nothing, such as an unrecognized prompt or an unchanged screen, kept apart from waiting, where the agent asked the human something on purpose.
-2. **A reason beside the status.** Recommended: a short reason, such as "rate limited until 2:05pm", as Claude Code's `waitingFor`, Cloudflare's interrupted reason and OpenCode's retry message do.
-3. **The task kind.** Recommended: not on the Session, since no source has one. Whether the Agent should carry the kind of work it does is a separate question.
-4. **The agent reference.** Recommended: by `Id`, as `fallbacks` already references agents, over by name.
-5. **The lineage.** Recommended: the parent alone. A depth can be counted along the chain, and a root can follow if a list ever needs one.
-6. **The title, the ticket and the pull request.** Recommended: an optional title, generated and renamable, with the ticket and the pull request in fields of their own, so the row composes `ZS-12#45 Add tools` instead of storing it.
+1. **A reason beside the status.** Recommended: a short reason, such as "rate limited until 2:05pm", as Claude Code's `waitingFor`, Cloudflare's interrupted reason and OpenCode's retry message do.
+2. **The task kind.** Recommended: not on the Session, since no source has one. Whether the Agent should carry the kind of work it does is a separate question.
+3. **The agent reference.** Recommended: by `Id`, as `fallbacks` already references agents, over by name.
+4. **The lineage.** Recommended: the parent alone. A depth can be counted along the chain, and a root can follow if a list ever needs one.
+5. **The title, the ticket and the pull request.** Recommended: an optional title, generated and renamable, with the ticket and the pull request in fields of their own, so the row composes `ZS-12#45 Add tools` instead of storing it.
