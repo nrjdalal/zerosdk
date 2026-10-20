@@ -17,9 +17,13 @@ ZeroSDK has a single context, kept in `.github/docs/`:
 ```
 .github/docs/
 ├── GLOSSARY.md
-└── adr/
-    └── NNNN-slug.md
+├── adr/
+│   └── NNNN-slug.md
+└── research/
+    └── <topic>-YYMMDD.md
 ```
+
+`research/` holds the evidence behind terms and decisions, one note per study, named by topic and the date it was done. Redoing a study writes a new dated note rather than editing the old one. The repo is public, so a note keeps only what public primary sources confirm.
 
 If a `.github/docs/GLOSSARY-MAP.md` exists, the repo has multiple contexts; the map points to where each one lives, each with its own `GLOSSARY.md` and `adr/`.
 
