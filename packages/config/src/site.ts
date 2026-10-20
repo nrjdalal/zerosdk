@@ -5,8 +5,9 @@ export const site = {
   tagline: "Where agents build software",
   social: {
     discord: "",
-    github: "",
-    x: "",
+    github: "https://github.com/nrjdalal/zerosdk",
+    linkedin: "https://www.linkedin.com/in/nrjdalal",
+    x: "https://x.com/nrjdalal",
   },
   // Local-only dev agent identity (api/hono agents router).
   agent: {
