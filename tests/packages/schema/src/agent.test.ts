@@ -3,7 +3,7 @@ import { describe, expect, test } from "bun:test"
 import { Agent } from "../../../../packages/schema/src/agent"
 
 const minimal = {
-  id: "aB3dE9",
+  id: "aB3dE9fG",
   name: "builder",
 } satisfies Omit<Agent, "role">
 
@@ -18,7 +18,7 @@ describe("Agent", () => {
       color: "purple",
       description: "Builds and merges changes",
       effort: "xhigh",
-      fallbacks: ["gH7kL2"],
+      fallbacks: ["gH7kL2mN"],
       instructions: "Build the requested change, run the tests and open a pull request",
       mcpServers: ["github"],
       memory: "project",
@@ -30,8 +30,8 @@ describe("Agent", () => {
     expect(Agent.parse(full)).toEqual(full)
   })
 
-  test("rejects an id that is not 6 letters or digits, in id and in fallbacks", () => {
-    for (const id of ["aB3dE", "aB3dE9x", "aB3-E9", "aB3_E9"]) {
+  test("rejects an id that is not 8 letters or digits, in id and in fallbacks", () => {
+    for (const id of ["aB3dE9f", "aB3dE9fGh", "aB3-E9fG", "aB3_E9fG"]) {
       expect(Agent.safeParse({ ...minimal, id }).success).toBe(false)
       expect(Agent.safeParse({ ...minimal, fallbacks: [id] }).success).toBe(false)
     }

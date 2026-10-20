@@ -1,7 +1,6 @@
 import * as z from "zod"
 
-/** Unique identifier; 6 characters from a-z, A-Z and 0-9, e.g. aB3dE9 */
-const Id = z.nanoid({ length: 6 }).regex(/^[A-Za-z0-9]+$/)
+import { Id } from "@/common"
 
 /** Configuration for an agent: a model with its own instructions, skills and MCP servers; other agents delegate tasks to it by its description */
 export const Agent = z.object({
@@ -12,9 +11,9 @@ export const Agent = z.object({
   description: z.string().optional(),
   /** Reasoning effort level for the agent's model, from low to max; the levels available depend on the model, and omitting it uses the model's default, e.g. high */
   effort: z.enum(["low", "medium", "high", "xhigh", "max"]).optional(),
-  /** Agents that take over when this agent's provider is unavailable or out of quota; tried in order, by id, e.g. [gH7kL2] */
+  /** Agents that take over when this agent's provider is unavailable or out of quota; tried in order, by id, e.g. [gH7kL2mN] */
   fallbacks: z.array(Id).optional(),
-  /** Unique identifier for the agent; with name it forms the label, e.g. aB3dE9-builder */
+  /** Unique identifier for the agent; with name it forms the label, e.g. aB3dE9fG-builder */
   id: Id,
   /** System prompt that defines the agent's behavior; the model reads it on every turn, and omitting it keeps the provider's base prompt, e.g. Build the requested change, run the tests and open a pull request */
   instructions: z.string().optional(),
