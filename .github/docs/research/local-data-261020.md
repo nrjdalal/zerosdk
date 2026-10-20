@@ -100,7 +100,7 @@ There is no official collection for InstantDB, Jazz, LiveStore, Replicache, Tiny
 | ------------------------ | ------------------------------------- | ------------------------ | --------------------------------------------- | ----------------------------- | ------------------------------------- |
 | Sessions                 | 3 (OpenCode, Cloudflare, Codex index) | 0 by default; 4 offer it | 4 (Claude Agent SDK, Claude Code, Codex, eve) | 2 (Mastra, OpenAI Agents SDK) | AI SDK keeps none                     |
 | Memory                   | 2                                     | 0 by default; 2 offer it | 5                                             | 1                             | 2 app-defined                         |
-| Skills                   | 1                                     | 0                        | 8 read `SKILL.md` folders                     | 1 registry                    | Mastra and Cloudflare also in a store |
+| Skills                   | 1                                     | 0                        | 8 read `SKILL.md` folders                     | 1 registry                    | Cloudflare and Mastra also in a store |
 | Settings                 | 1                                     | 0                        | 4 layered (user, project, managed)            | 0                             | 5 in code                             |
 | Saved permission choices | 1 (OpenCode)                          | 0                        | 3 (Claude Agent SDK, Claude Code, Codex)      | 3 session-only                | 2                                     |
 

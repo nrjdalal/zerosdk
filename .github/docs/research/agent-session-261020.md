@@ -26,8 +26,8 @@ ZeroSDK's glossary terms, used throughout: a **Session** is one agent's working 
 3. [Status values](#3-status-values)
    - [Against ZeroSDK's nine statuses](#against-zerosdks-nine-statuses) · [Values ZeroSDK lacks](#values-zerosdk-lacks) · [Labels in product UIs](#labels-in-product-uis)
 4. [Demos](#4-demos)
-   - [Every kind Claude Code shows](#every-kind-claude-code-shows): [Agent view rows](#agent-view-rows-claude-code) · [Session state as JSON](#session-state-as-json-claude-code)
-   - [Kinds Claude Code lacks](#kinds-claude-code-lacks): [A new id for each run of a resumed subagent](#a-new-id-for-each-run-of-a-resumed-subagent-claude-agent-sdk) · [A subagent run that is a session of its own](#a-subagent-run-that-is-a-session-of-its-own-opencode) · [A status stored on the run's record](#a-status-stored-on-the-runs-record-codex) · [A pointer to the root as well as the parent](#a-pointer-to-the-root-as-well-as-the-parent-eve) · [Why a run stalled](#why-a-run-stalled-cloudflare)
+   - [Every kind Claude Code shows](#every-kind-claude-code-shows): [Agent view rows](#agent-view-rows-claude-code) · [Sessions as JSON](#sessions-as-json-claude-code)
+   - [Kinds Claude Code lacks](#kinds-claude-code-lacks): [A new id for each run of a resumed subagent](#a-new-id-for-each-run-of-a-resumed-subagent-claude-agent-sdk) · [A subagent run that is a session of its own](#a-subagent-run-that-is-a-session-of-its-own-opencode) · [A status stored on the run's record](#a-status-stored-on-the-runs-record-codex) · [A pointer to the root as well as the parent](#a-pointer-to-the-root-as-well-as-the-parent-eve) · [Why a run is stuck](#why-a-run-is-stuck-cloudflare)
 5. [What it means for ZeroSDK's Session](#5-what-it-means-for-zerosdks-session)
 
 ---
@@ -68,7 +68,7 @@ Where the run is a record of its own, the key is `id` (OpenCode, Codex). The oth
 
 ### Agent
 
-Seven sources name the agent by its name: Claude Agent SDK, Claude Code, Cloudflare, Mastra, the OpenAI Agents SDK, Codex and eve. OpenCode stores the agent's id, eve adds an `agentId` in its runtime identity, and the AI SDK names only the tool that runs the agent. Five spell the field as an agent type: `subagent_type`, `agent_type`, `agentType` in Cloudflare and Mastra, and Codex's `agentRole`, whose Rust source accepts `agent_type` as an alias.
+Seven sources name the agent by its name: Claude Agent SDK, Claude Code, Cloudflare, Mastra, the OpenAI Agents SDK, Codex and eve. OpenCode stores the agent's id, eve adds a `runtime.agentId`, and the AI SDK names only the tool that runs the agent. Five spell the field as an agent type: `subagent_type`, `agent_type`, `agentType` in Cloudflare and Mastra, and Codex's `agentRole`, whose Rust source accepts `agent_type` as an alias.
 
 ### Parent
 
@@ -123,7 +123,7 @@ Claude Code's agent view shows Working, Needs input, Idle, Completed, Failed and
 
 #### Agent view rows (Claude Code)
 
-[Docs] https://code.claude.com/docs/en/agent-view: each row is a state icon, the session's name, its one-line summary, an optional pull request label and its age, grouped so the rows that need the human come first.
+[Docs] https://code.claude.com/docs/en/agent-view: each row is a status icon, the session's name, its one-line summary, an optional pull request label and its age, grouped so the rows that need the human come first.
 
 ```text
 Pinned
@@ -145,7 +145,7 @@ Completed
   … 6 more
 ```
 
-#### Session state as JSON (Claude Code)
+#### Sessions as JSON (Claude Code)
 
 [Example] one entry of `claude agents --json`, built from the documented fields at https://code.claude.com/docs/en/agent-view#list-sessions-as-json, for a background session waiting on an answer:
 
@@ -200,7 +200,7 @@ Claude Code keeps a subagent inside the session that spawned it, and its agent v
 
 #### A status stored on the run's record (Codex)
 
-Claude Code reports state per listing and per event. Codex stores it on the thread, and says why an active thread waits. [Schema] `codex-rs/app-server-protocol/schema/typescript/v2/` at `rust-v0.163.0`, trimmed to the row's fields and reformatted:
+Claude Code reports status per listing and per event. Codex stores it on the thread, and says why an active thread waits. [Schema] `codex-rs/app-server-protocol/schema/typescript/v2/` at `rust-v0.163.0`, trimmed to the row's fields and reformatted:
 
 ```ts
 export type Thread = {
@@ -247,9 +247,9 @@ export interface SessionParent {
 }
 ```
 
-#### Why a run stalled (Cloudflare)
+#### Why a run is stuck (Cloudflare)
 
-Claude Code has no value for a run that stopped making progress. Cloudflare ends such a run as `interrupted` and records why. [Types] `agents/dist/agent-routing-*.d.ts`, comment trimmed to the stall case and its dash written as a colon:
+Claude Code has no value for a run that stopped making progress. Cloudflare ends such a run as `interrupted` and records why. [Types] `agents/dist/agent-routing-*.d.ts`, comment trimmed to the no-progress case and its dash written as a colon:
 
 ```ts
 type AgentToolRunStatus = "starting" | "running" | "completed" | "error" | "aborted" | "interrupted"
