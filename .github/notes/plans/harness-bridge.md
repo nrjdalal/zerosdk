@@ -22,6 +22,42 @@ later:  UI ─► server ─► Harness ─► claude-code (sdk) ─► @anthrop
 8. **A permission flipper in each main agent's pane** (2026-10-20): Ask me, Rules or Allow all, deciding how the server answers permission requests for that main agent and every agent it started, followed down the recorded parents. The flip lives in the server, not in Claude: agents run in Claude Code's ask-first mode (`default`), so every request reaches the hook, and the server records each answer and what gave it.
 9. **New worktrees are trusted in advance** (2026-10-20): the server marks each worktree it creates as trusted (`projects["<path>"].hasTrustDialogAccepted` in `~/.claude.json`, as Claude Code's permissions docs give it), so no session starts behind the workspace trust dialog.
 
+## Layout
+
+Approved 2026-10-20.
+
+```
+zerosdk/
+├── api/hono/src/
+│   ├── lib/
+│   │   └── permissions.ts          the flipper (Ask me / Rules / Allow all) and the rules
+│   └── routers/
+│       ├── hooks.ts                where Claude's hook notes arrive
+│       └── sessions.ts             for the UI: open, send, answer, interrupt, stop, list
+├── packages/
+│   ├── bridge/src/
+│   │   ├── cmux.ts                 later
+│   │   ├── herdr.ts                now
+│   │   └── index.ts                Bridge contract: open, sendText, sendKeys, prompt, read,
+│   │                                 status, watch, snapshot, interrupt, close
+│   ├── harness/src/
+│   │   ├── claude-code/
+│   │   │   ├── cli.ts              now: drives the `claude` CLI through a Bridge
+│   │   │   ├── hooks.ts            builds --settings, reads the hook notes
+│   │   │   ├── screen.ts           the screen strings, the backup signal
+│   │   │   └── sdk.ts              later: drives the Claude Agent SDK
+│   │   ├── opencode/
+│   │   │   └── cli.ts              later
+│   │   ├── index.ts                Harness contract: start, send, answer, interrupt, stop, watch
+│   │   └── status.ts               turns signals into the nine statuses
+│   └── schema/src/
+│       └── session.ts              what a session is
+└── tests/packages/harness/src/claude-code/
+    └── screen.test.ts              checked against real screen captures
+```
+
+The server calls only the Harness contract, and only the CLI implementations use a Bridge, so adding `sdk.ts` or `cmux.ts` changes nothing else. The `BRIDGE` setting goes in `packages/env`, and the sessions table needs a name other than `session`, which the sign-in table holds (icebox #22).
+
 ## Steps
 
 1. Write the harness and bridge contracts from section 10 of the research, with the bridge's herdr implementation and the harness's Claude Code CLI implementation.
