@@ -2,14 +2,14 @@ import * as z from "zod"
 
 import { Id } from "@/common"
 
-/** Configuration for an agent: a language model given its own instructions, skills and MCP servers to carry out one kind of work in the factory */
+/** Configuration for an agent: a language model given its own instructions to carry out one kind of work in the factory */
 export const Agent = z.object({
   /** Display color for the agent in lists and transcripts; a Tailwind color, drawn at shade 600 in light mode and 500 in dark mode, e.g. violet */
   // oxfmt-ignore
   color: z.enum(["amber", "blue", "cyan", "emerald", "fuchsia", "gray", "green", "indigo", "lime", "mauve", "mist", "neutral", "olive", "orange", "pink", "purple", "red", "rose", "sky", "slate", "stone", "taupe", "teal", "violet", "yellow", "zinc"]).optional(),
   /** What the agent does and when to delegate to it; other agents read it to decide, e.g. Builds and merges changes */
   description: z.string().optional(),
-  /** Reasoning effort level for the agent's model, from low to max; the levels available depend on the model, and omitting it uses the model's default, e.g. high */
+  /** Reasoning effort level for the agent's model, from low to max; the levels available depend on the model, and an agent without one inherits the effort of the agent that delegates to it, e.g. high */
   effort: z.enum(["low", "medium", "high", "xhigh", "max"]).optional(),
   /** Agents that take over when this agent's provider is unavailable or out of quota; tried in order, by id, e.g. [gH7kL2mN] */
   fallbacks: z.array(Id).optional(),
@@ -21,7 +21,7 @@ export const Agent = z.object({
   mcpServers: z.array(z.string()).optional(),
   /** Persistent memory the agent reads and updates across sessions; local is this project only and kept out of version control, project is shared through the repo, user spans every project, and omitting it means no memory, e.g. project */
   memory: z.enum(["local", "project", "user"]).optional(),
-  /** Key-value labels for classifying, filtering and tracing the agent; values are strings, e.g. { team: platform } */
+  /** Key-value pairs for classifying, filtering and tracing the agent; values are strings, e.g. { team: platform } */
   metadata: z.record(z.string(), z.string()).optional(),
   /** Language model the agent runs on; provider/model, using the provider's own model ID, and an agent without one inherits the model of the agent that delegates to it, so a main agent sets one, e.g. anthropic/claude-opus-5-5 */
   model: z.templateLiteral([z.string().min(1), "/", z.string().min(1)]).optional(),
