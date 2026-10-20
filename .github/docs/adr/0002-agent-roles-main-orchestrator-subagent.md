@@ -20,6 +20,8 @@ An agent's role is main, orchestrator or subagent: for each place in the team, t
 
 \* The pattern also matches non-agent uses, left out here: the Claude Agent SDK's container orchestrator and Codex's cloud orchestrator (8/9 in all), Codex's scan coordinator and eve's `coordinator` tool (7/9), OpenCode's and Claude Code's process supervisors (4/9), and Mastra's and Codex's human teammates (4/9).
 
+An agent with no role is a subagent: Claude Code, Codex and eve treat every agent they define as one, and a main agent is then always marked on purpose. OpenCode defaults the other way: "When omitted on a new custom agent, it defaults to primary" ([OpenCode](https://opencode.ai/v2/docs/agents/#modes)).
+
 ## Considered Options
 
 - **primary:** OpenCode's value for its `mode` field. The sources with failover pair "primary" with "fallback" ("When the primary is overloaded or unavailable, the session switches to the backup", [Claude Agent SDK](https://code.claude.com/docs/en/agent-sdk/configuration)), so a main agent that stands in for another would read as a contradiction.
