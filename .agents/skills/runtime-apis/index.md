@@ -54,7 +54,7 @@ runs under the system Node while Docker and Vercel serve it under Bun.
 | `tests/packages/scripts/src/release-version.test.ts` | Bun | `node:fs` (mkdtempSync, rmSync); `node:os` (tmpdir); `node:path` (join) |
 | `tests/packages/scripts/src/sources.test.ts` | Bun | `node:fs` (mkdtempSync, rmSync); `node:os` (tmpdir); `node:path` (join) |
 | `tests/packages/scripts/src/terms.test.ts` | Bun | `node:fs` (mkdtempSync, rmSync); `node:os` (tmpdir); `node:path` (join) |
-| `tests/web/next/content/docs/ui/icons.test.ts` | Bun | `node:path` (join) |
+| `tests/web/next/content/docs/ui/icons-page.ts` | Bun | `node:path` (join) |
 | `tests/web/next/source.config.test.ts` | Bun | `node:path` (join) |
 | `tests/web/next/src/components/agents/icons.test.ts` | Bun | `node:path` (join) |
 | `tests/web/next/src/components/agents/sidebar.test.ts` | Bun | `node:path` (join) |
