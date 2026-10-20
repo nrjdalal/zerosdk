@@ -8,7 +8,7 @@ The agents sidebar on `/docs/ui/sidebar` lists the human's [threads](../../docs/
 ## Decided
 
 1. **Where the group sits:** above Orchestrators.
-2. **Which states a thread shows:** running, waiting, stuck, idle and completed, from `stateIcons`, with no new icon.
+2. **Which statuses a thread shows:** running, waiting, stuck, idle and completed, from `stateIcons`, with no new icon.
 3. **Unread:** a count in the shadcn `SidebarMenuBadge`, nothing once all are read. Named `unread` after the sources: Codex shows "an unread indicator" and offers "Mark all as read", and Claude Code's sessions list marks a session unread; a general UI word, so no glossary entry.
 4. **The title's tooltip:** the agent holding the thread, such as AgentOne: Rename the CLI flags while it stands in. The title is what the human asked and no update changes it.
 5. **Order and paging:** most recently updated first, five to a page, with an arrow on each side of the page number in the group label and no pager at five or fewer. The list keeps five rows' height while it pages.

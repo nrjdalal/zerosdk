@@ -90,7 +90,7 @@ Two facts frame every verdict below. Writes start on the server, where the agent
 | ElectricCollection                 | `@tanstack/electric-db-collection` 0.6.2                         | ElectricSQL                            |
 | PowerSyncCollection                | `@tanstack/powersync-db-collection` 0.2.12 (alpha per PowerSync) | PowerSync                              |
 | RxDB, TrailBase                    | 0.1.110, 0.1.122                                                 | RxDB; TrailBase (a SQLite backend)     |
-| IndexedDB, LocalStorage, LocalOnly | built in                                                         | the browser                            |
+| IndexedDB, LocalOnly, LocalStorage | built in                                                         | the browser                            |
 
 There is no official collection for InstantDB, Jazz, LiveStore, Replicache, TinyBase, Triplit or Zero [npm]. Its SQLite persistence guide keeps rows and sync offsets across restarts, and its offline transactions package keeps a durable outbox of pending writes; both apply to the Query and Electric collections and are redundant for PowerSync, which persists and queues already [Docs]. The app already depends on `@tanstack/react-query` 5, which the QueryCollection builds on.
 

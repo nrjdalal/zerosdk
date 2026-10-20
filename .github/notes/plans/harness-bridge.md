@@ -39,8 +39,8 @@ zerosdk/
 │   │   ├── herdr.ts                now
 │   │   └── index.ts                Bridge contract: open, sendText, sendKeys, prompt, read,
 │   │                                 status, watch, snapshot, interrupt, close, check
-│   ├── cli/                        the `zerosdk` command agents run through Bash: memory,
-│   │   │                             sessions, skills
+│   ├── cli/                        the `zerosdk` command agents run through Bash: its
+│   │   │                             memory, session and skill commands
 │   │   ├── skill/SKILL.md          the one skill that teaches its commands
 │   │   └── src/index.ts            each command is one HTTP call to the local server
 │   ├── harness/src/

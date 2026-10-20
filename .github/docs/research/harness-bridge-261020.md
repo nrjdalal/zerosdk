@@ -1,6 +1,6 @@
 # How ZeroSDK can drive agent CLIs: a harness contract over a bridge (2026)
 
-Research date: 2026-10-20. Gathered by four research subagents from published TypeScript types (the npm `latest` release that day, read as text and never run), protocol schemas, official docs, and the source code of the tools below at the commits listed, plus strings read out of the installed Claude Code 2.1.304 binary without starting a session. It feeds the design of the flow ZeroSDK settled on: the UI calls the server, the server drives Claude Code through a bridge (herdr first, cmux later), and agents talk to each other as Claude Code peers; later the same server drives the Claude Agent SDK directly, with no bridge.
+Research date: 2026-10-20. Gathered by four research subagents from published TypeScript types (the npm `latest` release that day, read as text and never run), protocol schemas, official docs, and the source code of the tools below at the commits listed. It feeds the design of the flow ZeroSDK settled on: the UI calls the server, the server drives Claude Code through a bridge (herdr first, cmux later), and agents talk to each other as Claude Code peers; later the same server drives the Claude Agent SDK directly, with no bridge.
 
 Labels: [Docs] official documentation · [Types] a published `.d.ts` · [Schema] a generated protocol schema · [Source] source code at the pinned commit · [Inferred] follows from two documented facts, stated nowhere · [Example] built from documented fields, not a captured output.
 
@@ -64,7 +64,7 @@ Seven harness libraries define "drive one coding-agent session": ACP, OpenCode V
 
 Every source keeps **interrupting a turn** (7 of 7) apart from **ending the session** (5 of 7), and three also keep **detaching** apart (Cloudflare `dispose`, Codex `thread/unsubscribe`, AI SDK `detach`). Steering is a delivery choice on the send call in two of the four that have it: OpenCode `session.prompt({ delivery: 'steer' | 'queue' })` and Cloudflare `submit({ whenBusy: 'steer' | 'followUp' })`, where a harness that cannot steer queues instead. Every answer is keyed by an id the harness issued, and all but Cloudflare can decline (ACP `cancelled`, OpenCode `reject`, Claude `deny`, Codex `decline`, AI SDK `approved: false`). Claude and Cloudflare answer permissions and questions through one call; ACP, OpenCode and Codex keep two.
 
-Status is reported, not stored, in most of them. `idle` is a native value in 5 of 7 and `running` in 6; a distinct value for waiting on the user exists in 5 (ACP v2 and Claude `requires_action`, Mastra `suspended`, Codex `waitingOnApproval` and `waitingOnUserInput`, AI SDK `awaiting-approval`); `pending` is native in 3 and `paused` in 4 with four different meanings; `stuck` in none. Turn outcome (`completed`, `failed`, `cancelled`) and session status (`running`, `idle`) are separate axes in every source that has both.
+Status is reported, not stored, in most of them. `pending` is a native value in 3 of 7 and `running` in 6; a distinct value for waiting on the user exists in 5 (ACP v2 and Claude `requires_action`, Mastra `suspended`, Codex `waitingOnApproval` and `waitingOnUserInput`, AI SDK `awaiting-approval`); `idle` is native in 5 and `paused` in 4 with four different meanings; `stuck` in none. Turn outcome (`completed`, `failed`, `cancelled`) and session status (`running`, `idle`) are separate axes in every source that has both.
 
 The AI SDK expresses optional operations as optional methods that throw `HarnessCapabilityUnsupportedError` when absent; ACP and Codex negotiate capabilities at `initialize` [Types, Schema].
 
@@ -74,11 +74,11 @@ The AI SDK expresses optional operations as optional methods that throw `Harness
 | ---------- | ---------------------------------------------------------------------------------------------------- |
 | start      | `create` 3, `start` 2, `new` 1, `query` 1                                                            |
 | resume     | `resume` 5, `load` 1                                                                                 |
-| send       | `prompt` 4, `generate` / `stream` 2, `submit` 1, `turn/start` 1, `streamInput` 1                     |
+| send       | `prompt` 4, `generate` / `stream` 2, `streamInput` 1, `submit` 1, `turn/start` 1                     |
 | steer      | `steer` 4                                                                                            |
-| answer     | `permission` 4 and `approval` 3 for the request; `question` 3 and `elicitation` 3 for the other kind |
-| interrupt  | `interrupt` 3, `abort` 3, `cancel` 1                                                                 |
-| end        | `delete` or `remove` 4, `close` 2, `stop` 2, `destroy` 1, `archive` 1                                |
+| answer     | `permission` 4 and `approval` 3 for the request; `elicitation` 3 and `question` 3 for the other kind |
+| interrupt  | `abort` 3, `interrupt` 3, `cancel` 1                                                                 |
+| end        | `delete` or `remove` 4, `close` 2, `stop` 2, `archive` 1, `destroy` 1                                |
 | status     | `status` 3, `state` 2, `busy` 1                                                                      |
 | list, fork | `list` 5, `fork` 6 (Mastra's only as a `forkSession` it passes to Claude)                            |
 
@@ -136,7 +136,7 @@ No agent library's sandbox interface (OpenCode `WorkspaceDriver`, OpenAI `Sandbo
 | resume                       | `claude --resume <id>`                                                                    | `resume`                                             |
 | first launch in a new folder | the workspace trust dialog appears; pre-seed `hasTrustDialogAccepted` in `~/.claude.json` | "A `claude -p` run or an SDK session never shows it" |
 
-Both routes write one transcript store, `~/.claude/projects/<encoded-cwd>/<session-id>.jsonl`; the CLI can resume an SDK session by id [Docs], and the reverse follows from the same store [Inferred]. A resume does not restore `--settings`, `--mcp-config`, `--add-dir` or `--plugin-dir` ("pass them again when you resume" [Docs]), and opening one session in two processes interleaves its transcript [Docs]. `CLAUDE_CODE_CHILD_SESSION=1`, set in every Bash and hook subprocess, hides a nested TUI from `--resume` and from `claude agents` unless `CLAUDE_CODE_FORCE_SESSION_PERSISTENCE=1` [Docs].
+Both routes write one transcript store, `~/.claude/projects/<encoded-cwd>/<session-id>.jsonl`; the CLI can resume an SDK session by id [Docs], and the reverse follows from the same store [Inferred]. A resume does not restore `--add-dir`, `--mcp-config`, `--plugin-dir` or `--settings` ("pass them again when you resume" [Docs]), and opening one session in two processes interleaves its transcript [Docs]. `CLAUDE_CODE_CHILD_SESSION=1`, set in every Bash and hook subprocess, hides a nested TUI from `--resume` and from `claude agents` unless `CLAUDE_CODE_FORCE_SESSION_PERSISTENCE=1` [Docs].
 
 ### Send
 
@@ -375,7 +375,7 @@ type Bridge = {
 }
 ```
 
-- **start** folds in resume and keeps the harness's own session id as an opaque `resume` payload beside ZeroSDK's own `Id`, as the AI SDK and Cloudflare do; for Claude that payload holds its UUID and the full launch settings, since a resume does not restore them.
+- **start** folds in resume and keeps the harness's own session id as an opaque `resume` payload beside ZeroSDK's own `Id`, as Cloudflare and the AI SDK do; for Claude that payload holds its UUID and the full launch settings, since a resume does not restore them.
 - **send** takes a delivery choice: Claude queues by default, OpenCode V2 steers by default ("While OpenCode is working, Enter steers the active session" [Docs]).
 - **answer** is one call for both kinds, with a cancel.
 - **interrupt** and **stop** stay apart, as in every source.
