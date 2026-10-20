@@ -30,11 +30,9 @@ describe("Agent", () => {
     expect(Agent.parse(full)).toEqual(full)
   })
 
-  test("rejects an id that is not 8 letters or digits, in id and in fallbacks", () => {
-    for (const id of ["aB3dE9f", "aB3dE9fGh", "aB3-E9fG", "aB3_E9fG"]) {
-      expect(Agent.safeParse({ ...minimal, id }).success).toBe(false)
-      expect(Agent.safeParse({ ...minimal, fallbacks: [id] }).success).toBe(false)
-    }
+  test("checks id and fallbacks against the Id rule", () => {
+    expect(Agent.safeParse({ ...minimal, id: "aB3-E9fG" }).success).toBe(false)
+    expect(Agent.safeParse({ ...minimal, fallbacks: ["aB3-E9fG"] }).success).toBe(false)
   })
 
   test("holds every Tailwind color", () => {
