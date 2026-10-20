@@ -64,7 +64,7 @@ When a change establishes or alters a convention, update this file in the same c
 - **Forms:** native `<form>` then `<FieldGroup>` then `<form.Field>` then `<Field>` + `<FieldLabel>` + `<Input>` + conditional `<FieldError>`, with `@tanstack/react-form` + zod. Let `FieldGroup` own the vertical rhythm (no second `space-y-*`). Do not hand-roll labels or error markup.
 
 - **Dialogs:** bare `<DialogContent>` is centered at `sm:max-w-sm`. The auth dialog (`components/common/access.tsx`) uses `max-w-md`.
-- **Icons:** `@remixicon/react` only. `size-4` inside buttons by default.
+- **Icons:** `@remixicon/react` only. `size-4` inside buttons by default. An icon that stands for a value, such as an agent's effort level, is the one the Icons docs page (`web/next/content/docs/ui/icons.mdx`) gives it; change the page to change the icon.
 - **shadcn (`components/ui/*`):** customize only via `.github/scripts/shadcn-customize.ts` (the sync wipes and re-scaffolds `ui/`). Extend the primitive in place; do not fork a copy.
 
 ## Data tables
