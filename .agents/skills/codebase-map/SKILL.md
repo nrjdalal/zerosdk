@@ -13,7 +13,7 @@ One Bun + Turborepo monorepo: two deployable apps over shared packages. Imports 
 
 ```
 .generated/       # repo-root home for build-time generated assets (gitignored), the sources' docs cache among them
-.github/docs/     # GLOSSARY.md and adr/: the factory's language and its decisions (domain-modeling skill)
+.github/docs/     # GLOSSARY.md, adr/ and research/: the factory's language, its decisions and the evidence (domain-modeling skill)
 api/hono/         # backend (Hono): routers, middlewares, the AppType export
 web/next/         # frontend (Next.js App Router): app/, components/, lib/, content/
 packages/auth/    # Better Auth instance
