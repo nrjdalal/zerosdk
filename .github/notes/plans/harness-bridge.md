@@ -35,13 +35,14 @@ zerosdk/
 │       ├── hooks.ts                where Claude's hook notes arrive
 │       ├── memory.ts               what `zerosdk memory ...` calls
 │       ├── sessions.ts             for the UI: open, send, answer, interrupt, stop, list
+│       ├── setup.ts                runs each bridge's and harness's check(), saves the choices
 │       └── skills.ts               what `zerosdk skill ...` calls
 ├── packages/
 │   ├── bridge/src/
 │   │   ├── cmux.ts                 later
 │   │   ├── herdr.ts                now
 │   │   └── index.ts                Bridge contract: open, sendText, sendKeys, prompt, read,
-│   │                                 status, watch, snapshot, interrupt, close
+│   │                                 status, watch, snapshot, interrupt, close, check
 │   ├── cli/                        the `zerosdk` command agents run through Bash
 │   │   ├── skill/SKILL.md            the one skill that teaches its commands
 │   │   └── src/index.ts              each command is one HTTP call to the local server
@@ -54,7 +55,8 @@ zerosdk/
 │   │   │   └── skills.ts           writes the agent's own skills into .claude/skills/
 │   │   ├── opencode/
 │   │   │   └── cli.ts              later
-│   │   ├── index.ts                Harness contract: start, send, answer, interrupt, stop, watch
+│   │   ├── index.ts                Harness contract: start, send, answer, interrupt, stop, watch,
+│   │   │                             check
 │   │   └── status.ts               turns signals into the nine statuses
 │   └── schema/src/
 │       └── session.ts              what a session is
