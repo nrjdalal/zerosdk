@@ -15,7 +15,7 @@ export const Agent = z.object({
   fallbacks: z.array(Id).optional(),
   /** Unique identifier for the agent; with name it forms the label, as in aB3dE9fG-builder, e.g. aB3dE9fG */
   id: Id,
-  /** System prompt that defines the agent's behavior; the model reads it on every turn, and omitting it keeps the provider's base prompt, e.g. Build the requested change, run the tests and open a pull request */
+  /** System prompt that defines the agent's behavior; the model reads it on every call, and omitting it keeps the provider's base prompt, e.g. Build the requested change, run the tests and open a pull request */
   instructions: z.string().optional(),
   /** MCP servers available to the agent, by the name of a server configured elsewhere; the agent can call their tools, e.g. github */
   mcpServers: z.array(z.string()).optional(),

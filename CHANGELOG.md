@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.0.7
+
+[compare changes](https://github.com/nrjdalal/zerosdk/compare/v0.0.6...v0.0.7)
+
+### 🚀 Enhancements
+
+- **web:** Add the agents sidebar, shown on a docs page with a preview block ([#18](https://github.com/nrjdalal/zerosdk/pull/18))
+
+### ❤️ Contributors
+
+- Neeraj Dalal @nrjdalal
+
 ## v0.0.6
 
 [compare changes](https://github.com/nrjdalal/zerosdk/compare/v0.0.5...v0.0.6)

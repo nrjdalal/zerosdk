@@ -25,8 +25,8 @@ A known next action belongs in the plans backlog; a confident verdict gets shipp
 
 1. Write the concern to `.github/notes/plans/<slug>.md`, or append a section to a fitting file: state the concern, its context, and the open question, with no plan and no verdict. Done when a reader grasps what is unresolved and finds no recommendation.
 2. Link it under `## Icebox` in `.github/notes/plans/README.md`. Done when the index points at the file.
-3. Mirror the one-liner and the `plans/<slug>.md` path as an unchecked box on the standing Icebox issue (#707). Done when `gh issue view 707` shows it.
+3. Mirror the one-liner and the `plans/<slug>.md` path as an unchecked box on the standing Icebox issue (#22). Done when `gh issue view 22` shows it.
 
 ## Thaw
 
-An item leaves ice only by being decided. When that happens, check its box in #707, record the outcome (shipped, dismissed, or moved to the backlog), and graduate its write-up to the plans backlog or delete it.
+An item leaves ice only by being decided. When that happens, check its box in #22, record the outcome (shipped, dismissed, or moved to the backlog), and graduate its write-up to the plans backlog or delete it.

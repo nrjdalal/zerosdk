@@ -1,0 +1,23 @@
+# Plans
+
+The curated backlog of everything not yet done: in-progress work, planned features, ideas, and known cleanups. One file per item in this folder, each carrying a status and a link to its history (closed issue, branch, or PR). GitHub issues are the inbox for new bugs and requests; fold each in here and close it once captured, so this stays the single backlog rather than a parallel one.
+
+Distinct from the dated audit reports, which `AGENTS.md` puts in `../audits/` and which are deleted once addressed. An item gets a full spec once it moves to `planned`.
+
+## In progress
+
+Nothing yet.
+
+## Planned
+
+- [Threads in the agents sidebar](threads-agents-sidebar.md) - the agents sidebar lists the human's threads, each with its state and whether it has news; seven open questions to settle first (PR #20).
+
+## Backlog / ideas
+
+Nothing yet.
+
+## Icebox
+
+Raised but undecided: real concerns with no agreed next action and no confident verdict. They sit here rather than in the backlog (which implies a plan) or closed (which loses the context), and leave only by being decided. Mirrored as checkboxes on the standing Icebox issue (#22).
+
+- [The sign-in session table and the glossary's Session](auth-session-name.md) - the database's `session` table holds a sign-in while the glossary's Session is an agent's working context; it matters once agent sessions get a table of their own (PR #20 review).

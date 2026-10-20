@@ -5,6 +5,7 @@ import {
   RiArrowRightUpLine,
   RiDiscordFill,
   RiGithubFill,
+  RiLinkedinBoxFill,
   RiMenuLine,
   RiTwitterXFill,
 } from "@remixicon/react"
@@ -33,6 +34,11 @@ const socialLinks = [
     href: site.social.github,
     icon: RiGithubFill,
     label: "GitHub",
+  },
+  {
+    href: site.social.linkedin,
+    icon: RiLinkedinBoxFill,
+    label: "LinkedIn",
   },
   {
     href: site.social.x,

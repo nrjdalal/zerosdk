@@ -2,11 +2,12 @@
 export const site = {
   name: "ZeroSDK",
   description: "ZeroSDK is an experimental multi-agent software factory.",
-  tagline: "Where agents build software",
+  tagline: "Where agents build software (not for public use yet)",
   social: {
     discord: "",
-    github: "",
-    x: "",
+    github: "https://github.com/nrjdalal/zerosdk",
+    linkedin: "https://www.linkedin.com/in/nrjdalal",
+    x: "https://x.com/nrjdalal",
   },
   // Local-only dev agent identity (api/hono agents router).
   agent: {
