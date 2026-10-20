@@ -20,6 +20,7 @@ later:  UI ─► server ─► Harness ─► claude-code (sdk) ─► @anthrop
 6. **Hooks and the screen, both from the start** (2026-10-20). Claude Code hooks passed at launch through `--settings` post events to the local server and are the main signal; the screen read through herdr is the backup, since Escape fires no hook.
 7. **Prompts are answered through the hook reply** (2026-10-20): `PermissionRequest`, and `PreToolUse` for questions, so the answer reaches the exact question; keys typed through the bridge are only the fallback for a prompt that sends no hook.
 8. **A permission flipper in each main agent's pane** (2026-10-20): Ask me, Rules or Allow all, deciding how the server answers permission requests for that main agent and every agent it started, followed down the recorded parents. The flip lives in the server, not in Claude: agents run in Claude Code's ask-first mode (`default`), so every request reaches the hook, and the server records each answer and what gave it.
+9. **New worktrees are trusted in advance** (2026-10-20): the server marks each worktree it creates as trusted (`projects["<path>"].hasTrustDialogAccepted` in `~/.claude.json`, as Claude Code's permissions docs give it), so no session starts behind the workspace trust dialog.
 
 ## Steps
 
@@ -29,9 +30,3 @@ later:  UI ─► server ─► Harness ─► claude-code (sdk) ─► @anthrop
 4. Compute the nine statuses in the harness from hook events, herdr's status and pattern events, and a no-progress timer.
 5. Keep the screen strings Claude Code prints (prompts, usage limits) in the Claude Code harness, with real screen captures as test fixtures.
 6. Verify the whole flow on a real machine with herdr: open a session, send, answer, hit a prompt, interrupt, resume after a restart.
-
-## Open questions
-
-To ask the user one at a time, each with a recommendation:
-
-1. **First launch in a new worktree.** Recommended: pre-seed the workspace trust dialog, so a session never starts behind it.
