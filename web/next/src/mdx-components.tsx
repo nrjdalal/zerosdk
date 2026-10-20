@@ -4,6 +4,7 @@ import type { MDXComponents } from "mdx/types"
 
 import { BlogPostList } from "@/components/blog/post-list"
 import { DocsCategory } from "@/components/docs/category"
+import { DocsPreview } from "@/components/docs/preview"
 
 export function getMDXComponents(components?: MDXComponents): MDXComponents {
   return {
@@ -11,6 +12,7 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
     ...Twoslash,
     BlogPostList,
     DocsCategory,
+    DocsPreview,
     ...components,
   }
 }
