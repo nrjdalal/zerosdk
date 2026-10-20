@@ -114,6 +114,8 @@ export default defineConfig({
         dark: "github-dark",
         light: "github-light",
       },
+      // Shiki gives up on a line after 500ms and leaves the rest as one token, and fumadocs' JavaScript regex engine takes about a second over its first TypeScript line under Bun, so a build sets no limit.
+      tokenizeTimeLimit: 0,
       transformers: [
         ...(rehypeCodeDefaultOptions.transformers ?? []),
         // The hovers are kept in git, since a build under Bun cannot run TypeScript 7's sync API (oven-sh/bun#39747) and reads them from here instead.
