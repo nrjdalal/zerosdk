@@ -33,19 +33,25 @@ zerosdk/
 │   │   └── permissions.ts          the flipper (Ask me / Rules / Allow all) and the rules
 │   └── routers/
 │       ├── hooks.ts                where Claude's hook notes arrive
-│       └── sessions.ts             for the UI: open, send, answer, interrupt, stop, list
+│       ├── memory.ts               what `zerosdk memory ...` calls
+│       ├── sessions.ts             for the UI: open, send, answer, interrupt, stop, list
+│       └── skills.ts               what `zerosdk skill ...` calls
 ├── packages/
 │   ├── bridge/src/
 │   │   ├── cmux.ts                 later
 │   │   ├── herdr.ts                now
 │   │   └── index.ts                Bridge contract: open, sendText, sendKeys, prompt, read,
 │   │                                 status, watch, snapshot, interrupt, close
+│   ├── cli/                        the `zerosdk` command agents run through Bash
+│   │   ├── skill/SKILL.md            the one skill that teaches its commands
+│   │   └── src/index.ts              each command is one HTTP call to the local server
 │   ├── harness/src/
 │   │   ├── claude-code/
 │   │   │   ├── cli.ts              now: drives the `claude` CLI through a Bridge
-│   │   │   ├── hooks.ts            builds --settings, reads the hook notes
+│   │   │   ├── hooks.ts            builds --settings (hooks, autoMemoryEnabled: false), reads hook notes
 │   │   │   ├── screen.ts           the screen strings, the backup signal
-│   │   │   └── sdk.ts              later: drives the Claude Agent SDK
+│   │   │   ├── sdk.ts              later: drives the Claude Agent SDK
+│   │   │   └── skills.ts           writes the agent's own skills into .claude/skills/
 │   │   ├── opencode/
 │   │   │   └── cli.ts              later
 │   │   ├── index.ts                Harness contract: start, send, answer, interrupt, stop, watch
@@ -56,7 +62,7 @@ zerosdk/
     └── screen.test.ts              checked against real screen captures
 ```
 
-The server calls only the Harness contract, and only the CLI implementations use a Bridge, so adding `sdk.ts` or `cmux.ts` changes nothing else. The `BRIDGE` setting goes in `packages/env`, and the sessions table needs a name other than `session`, which the sign-in table holds (icebox #22).
+The server calls only the Harness contract, and only the CLI implementations use a Bridge, so adding `sdk.ts` or `cmux.ts` changes nothing else. The `runtime-apis` skill's rules for `packages/cli` (Node, `node:` only) apply to the `zerosdk` command, and its wording, which still describes zerostarter's npm CLI, gets updated with it. The bridge choice is saved in the database through a setup step, not an env setting, and the sessions table needs a name other than `session`, which the sign-in table holds (icebox #22).
 
 ## Steps
 
