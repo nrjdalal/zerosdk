@@ -2,7 +2,7 @@ import * as z from "zod"
 
 import { Id } from "@/common"
 
-/** Configuration for an agent: a model with its own instructions, skills and MCP servers; other agents delegate tasks to it by its description */
+/** Configuration for an agent: a language model given its own instructions, skills and MCP servers to carry out one kind of work in the factory */
 export const Agent = z.object({
   /** Display color for the agent in lists and transcripts; a Tailwind color, drawn at shade 600 in light mode and 500 in dark mode, e.g. violet */
   // oxfmt-ignore
@@ -13,7 +13,7 @@ export const Agent = z.object({
   effort: z.enum(["low", "medium", "high", "xhigh", "max"]).optional(),
   /** Agents that take over when this agent's provider is unavailable or out of quota; tried in order, by id, e.g. [gH7kL2mN] */
   fallbacks: z.array(Id).optional(),
-  /** Unique identifier for the agent; with name it forms the label, e.g. aB3dE9fG-builder */
+  /** Unique identifier for the agent; with name it forms the label, as in aB3dE9fG-builder, e.g. aB3dE9fG */
   id: Id,
   /** System prompt that defines the agent's behavior; the model reads it on every turn, and omitting it keeps the provider's base prompt, e.g. Build the requested change, run the tests and open a pull request */
   instructions: z.string().optional(),
