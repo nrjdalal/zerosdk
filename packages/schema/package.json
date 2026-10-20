@@ -10,6 +10,10 @@
     "./agent": {
       "types": "./dist/agent.d.mts",
       "default": "./dist/agent.mjs"
+    },
+    "./common": {
+      "types": "./dist/common.d.mts",
+      "default": "./dist/common.mjs"
     }
   },
   "scripts": {

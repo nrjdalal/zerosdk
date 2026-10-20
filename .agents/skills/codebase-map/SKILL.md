@@ -20,7 +20,7 @@ packages/auth/    # Better Auth instance
 packages/db/      # Drizzle schema + client
 packages/env/     # type-safe env, one validated entry per consumer
 packages/config/  # TS base, tsdown factory, and site.ts (brand identity)
-packages/schema/  # Zod schemas the factory shares, one file per entity (agent.ts); web/next depends on it so the docs that include it rebuild with it
+packages/schema/  # Zod schemas the factory shares, one file per entity (agent.ts) plus common.ts for the enums they share (Color, Effort, Memory, Role); web/next depends on it so the docs that include it rebuild with it
 packages/scripts/ # build-only bun tooling (agent-schemas, auth-schema, data-table-metrics, generate-env, release-version, sources, terms); every new script lands here, never bundled
 packages/cli/     # the zerostarter scaffolding CLI (canonical repo only; init strips it)
 tests/            # the whole suite, mirroring each subject's path; *.e2e.test.ts drive a running stack (init strips the canonical suite; this repo keeps its own)
