@@ -3,48 +3,35 @@ import { join } from "node:path"
 
 import * as icons from "../../../../../../web/next/src/components/agents/icons"
 import * as logos from "../../../../../../web/next/src/components/common/provider-logos"
+import { tables } from "../../../content/docs/ui/icons-page"
 
 // @remixicon/react is a dependency of web/next, not of the root, so it resolves from there
-const web = join(import.meta.dir, "../../../../../../web/next")
-const remix = await import(Bun.resolveSync("@remixicon/react", web))
-const page = await Bun.file(join(web, "content/docs/ui/icons.mdx")).text()
-
-// Each section's rows as [value, component], keyed by the section's heading.
-const tables = Object.fromEntries(
-  page
-    .split(/^## /m)
-    .slice(1)
-    .map((section) => [
-      section.slice(0, section.indexOf("\n")),
-      section
-        .split("\n")
-        .filter((line) => line.startsWith("|"))
-        .slice(2)
-        .map((line) => {
-          const cells = line.split("|").map((cell) => cell.trim())
-          return [cells[1], cells[3]?.replaceAll("`", "")]
-        }),
-    ]),
+const remix = await import(
+  Bun.resolveSync("@remixicon/react", join(import.meta.dir, "../../../../../../web/next"))
 )
 
-const maps: Record<string, Record<string, unknown>> = {
-  Effort: icons.effortIcons,
-  Provider: icons.providerIcons,
-  State: icons.stateIcons,
-  Task: icons.taskIcons,
-}
+const component = (name = "") =>
+  remix[name.replaceAll("`", "")] ?? logos[name.replaceAll("`", "") as keyof typeof logos]
 
 describe("agents icons", () => {
-  test("hold the Icons page's values, in its order", () => {
-    for (const [section, map] of Object.entries(maps))
-      expect(Object.keys(map)).toEqual(tables[section]?.map(([value]) => value) ?? [])
+  test("give each effort, state and task the icon the Icons page gives it, in its order", () => {
+    for (const [section, map] of [
+      ["Effort", icons.effortIcons],
+      ["State", icons.stateIcons],
+      ["Task", icons.taskIcons],
+    ] as const) {
+      const rows = tables[section] ?? []
+      expect(Object.keys(map)).toEqual(rows.map(([value]) => value))
+      for (const [value, , name] of rows)
+        expect(map[value as keyof typeof map]).toBe(component(name))
+    }
   })
 
-  test("draw each value with the component the Icons page names", () => {
-    for (const [section, map] of Object.entries(maps))
-      for (const [value, component] of tables[section] ?? [])
-        expect(map[value as string]).toBe(
-          remix[component as string] ?? logos[component as keyof typeof logos],
-        )
+  test("find each provider's logo from a provider/model ID", () => {
+    const rows = tables.Provider ?? []
+    expect(rows.length).toBeGreaterThan(0)
+    for (const [provider, , name] of rows)
+      expect(icons.providerIcon(`${provider}/some-model`)).toBe(component(name))
+    expect(icons.providerIcon("unknown/some-model")).toBeUndefined()
   })
 })

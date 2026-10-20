@@ -30,7 +30,7 @@ import {
   type RemixiconComponentType,
 } from "@remixicon/react"
 
-import { Anthropic, Zai } from "@/components/common/provider-logos"
+import * as logos from "@/components/common/provider-logos"
 
 // Each value's icon as the Icons docs page gives it: web/next/content/docs/ui/icons.mdx
 export const effortIcons: Record<NonNullable<Agent["effort"]>, RemixiconComponentType> = {
@@ -41,9 +41,14 @@ export const effortIcons: Record<NonNullable<Agent["effort"]>, RemixiconComponen
   max: RiSkull2Fill,
 }
 
-export const providerIcons: Record<string, RemixiconComponentType> = {
-  anthropic: Anthropic,
-  zai: Zai,
+// Each provider's logo, keyed by its name as provider-logos names the component, with dashes and dots dropped, e.g. zai
+export const providerIcons: Record<string, RemixiconComponentType> = Object.fromEntries(
+  Object.entries(logos).map(([name, logo]) => [name.toLowerCase(), logo]),
+)
+
+// The logo of the provider in a provider/model ID, if one is drawn
+export function providerIcon(model: string) {
+  return providerIcons[model.split("/")[0].replaceAll(/[-.]/g, "")]
 }
 
 export const stateIcons = {
