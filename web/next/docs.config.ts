@@ -26,6 +26,14 @@ const docsConfig = {
         },
       },
     ],
+    UI: [
+      {
+        "/docs/ui/icons": {
+          title: "Icons",
+          description: "Reference for the icons the UI uses.",
+        },
+      },
+    ],
   },
   console: {
     "Getting Started": [
