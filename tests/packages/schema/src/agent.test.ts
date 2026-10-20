@@ -37,8 +37,11 @@ describe("Agent", () => {
     }
   })
 
-  test("holds every Tailwind color, and effort as a scale from low to max", () => {
+  test("holds every Tailwind color", () => {
     expect(Agent.shape.color.unwrap().options).toHaveLength(26)
+  })
+
+  test("orders effort as a scale from low to max", () => {
     expect(Agent.shape.effort.unwrap().options).toEqual(["low", "medium", "high", "xhigh", "max"])
   })
 
