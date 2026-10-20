@@ -2,7 +2,7 @@
 
 Research date: 2026-10-20. Gathered by four research subagents from published TypeScript types (the npm `latest` release that day, read as text and never run), protocol schemas, official docs, and the source code of the tools below at the commits listed, plus strings read out of the installed Claude Code 2.1.304 binary without starting a session. It feeds the design of the flow ZeroSDK settled on: the UI calls the server, the server drives Claude Code through a bridge (herdr first, cmux later), and agents talk to each other as Claude Code peers; later the same server drives the Claude Agent SDK directly, with no bridge.
 
-Labels: [Docs] official documentation · [Types] a published `.d.ts` · [Schema] a generated protocol schema · [Source] source code at the pinned commit · [Inferred] follows from two documented facts, stated nowhere.
+Labels: [Docs] official documentation · [Types] a published `.d.ts` · [Schema] a generated protocol schema · [Source] source code at the pinned commit · [Inferred] follows from two documented facts, stated nowhere · [Example] built from documented fields, not a captured output.
 
 | Kind              | Sources and versions                                                                                                                                                                                                                                                                                                                                                                                                       |
 | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -176,7 +176,7 @@ Claude Code's cross-session messaging lets sessions on one machine message each 
 
 1. Every session runs Claude Code v2.1.224 or later, as the same OS user, on the same side of any container boundary ("A session inside a container and a session on the host can't reach each other") [Docs].
 2. No session runs in bare mode [Docs].
-3. Every session sets `crossSessionInbound: "accept"` through `--settings` or the SDK's `settings`; otherwise a session that bypasses permission prompts holds messages from one that prompts, and "A `-p` session can't show the approval dialog", so held messages drop after five minutes [Docs].
+3. A session that bypasses permission prompts sets `crossSessionInbound: "accept"` through `--settings` or the SDK's `settings`. With no value set, a session that prompts delivers every message unless the sender bypasses prompts, and a session that bypasses holds every message; "A `-p` session can't show the approval dialog", so a held message drops after five minutes [Docs].
 4. Every session has a unique name (`--name` or `title`), its peer address [Docs].
 
 Messages are plain text, about one million characters at most, and cannot approve prompts or run commands [Docs]. Only the auth line of the inbox socket is documented, so a server writing to it directly would rely on an undocumented format [Docs].
@@ -266,7 +266,6 @@ Usage limit reset · continuing automatically
 
 ```json
 {
-  "crossSessionInbound": "accept",
   "hooks": {
     "PermissionRequest": [
       { "hooks": [{ "type": "http", "url": "http://localhost:4000/hooks/permission-request" }] }

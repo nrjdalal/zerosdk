@@ -24,7 +24,7 @@ ZeroSDK's glossary terms, used throughout: a **Session** is one agent's working 
 2. [The fields of one run](#2-the-fields-of-one-run)
    - [Identifier](#identifier) · [Agent](#agent) · [Parent](#parent) · [Status field](#status-field) · [Task kind](#task-kind) · [Title](#title)
 3. [Status values](#3-status-values)
-   - [Against ZeroSDK's nine states](#against-zerosdks-nine-states) · [Values ZeroSDK lacks](#values-zerosdk-lacks) · [Labels in product UIs](#labels-in-product-uis)
+   - [Against ZeroSDK's nine statuses](#against-zerosdks-nine-statuses) · [Values ZeroSDK lacks](#values-zerosdk-lacks) · [Labels in product UIs](#labels-in-product-uis)
 4. [Demos](#4-demos)
    - [Every kind Claude Code shows](#every-kind-claude-code-shows): [Agent view rows](#agent-view-rows-claude-code) · [Session state as JSON](#session-state-as-json-claude-code)
    - [Kinds Claude Code lacks](#kinds-claude-code-lacks): [A new id for each run of a resumed subagent](#a-new-id-for-each-run-of-a-resumed-subagent-claude-agent-sdk) · [A subagent run that is a session of its own](#a-subagent-run-that-is-a-session-of-its-own-opencode) · [A status stored on the run's record](#a-status-stored-on-the-runs-record-codex) · [A pointer to the root as well as the parent](#a-pointer-to-the-root-as-well-as-the-parent-eve) · [Why a run stalled](#why-a-run-stalled-cloudflare)
@@ -88,7 +88,7 @@ Four sources generate the title: OpenCode with a hidden `title` agent, Claude Co
 
 ## 3. Status values
 
-### Against ZeroSDK's nine states
+### Against ZeroSDK's nine statuses
 
 Each cell is the source's own value for that meaning; a dash means none was found. The last column counts the sources that have the meaning, and in brackets those that use ZeroSDK's word for it.
 

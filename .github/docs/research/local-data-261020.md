@@ -2,7 +2,7 @@
 
 Research date: 2026-10-20. Gathered by three research subagents from each project's docs, source code at a named commit, license files and npm metadata. Nothing was run, so speed figures are the projects' own claims. It serves ZeroSDK's data layer: a factory that runs on the user's machine, where agents write constantly (sessions, statuses, settings, memory, dynamic skills, permission decisions) and the UI reads fast and live. The user set two constraints: **free** (open source, self-hostable, no paid cloud needed) and **local first** (works fully offline on one machine), with a sync layer to Postgres and throwaway databases on demand.
 
-Labels: [Docs] official documentation · [Source] source code or license file at the commit named · [npm] package metadata on 2026-10-20 · [Unconfirmed] not settled by a primary source.
+Labels: [Docs] official documentation · [Source] source code or license file at the commit named · [npm] package metadata on 2026-10-20 · [Unconfirmed] not settled by a primary source · [Example] built from documented fields, not a captured output.
 
 ## Contents
 
@@ -95,7 +95,7 @@ There is no official collection for Zero, LiveStore, Triplit, Replicache, Instan
 
 ## 6. Throwaway databases
 
-The nine sources test with the same engine in memory or in a temporary home folder, never a mock: in-memory SQLite (`:memory:`) in OpenCode, Mastra and OpenAI's Python SDK; in-memory store classes in five; a temporary `CLAUDE_CONFIG_DIR` or `CODEX_HOME` per test [Source]. For Postgres, a template database gives isolated copies on a running server: "CREATE DATABASE actually works by copying an existing database", with the limit that "no other sessions can be connected to the source database while it is being copied" [Docs]. Cheapest first, by documented numbers: SQLite `:memory:`, a PGlite `clone()` (anecdotal 30 ms), PGlite from a prepared folder (263 ms), PGlite from scratch (886 ms), a Postgres template copy [Unconfirmed], a new container [Unconfirmed, seconds].
+The nine sources test with the same engine in memory or in a temporary home folder, never a mock: in-memory SQLite (`:memory:`) in OpenCode, Mastra and OpenAI's Python SDK; in-memory store classes in five; a temporary `CLAUDE_CONFIG_DIR` or `CODEX_HOME` per test [Source]. For Postgres, a template database gives isolated copies on a running server: "CREATE DATABASE actually works by copying an existing database", with the limit that "no other sessions can be connected to the source database while it is being copied" [Docs]. Cheapest first: SQLite `:memory:`, a PGlite `clone()` (anecdotal 30 ms), PGlite from a prepared folder, then PGlite from scratch (both timed in section 2), a Postgres template copy [Unconfirmed], a new container [Unconfirmed, seconds].
 
 ## 7. Demos
 
@@ -161,7 +161,7 @@ C) PowerSync          server: local SQLite first, an upload queue to Postgres
 - **A fits today**: one machine, one writer, nothing to converge. TanStack DB in the UI is the fast layer, and the server pushes changes after each write or relays Postgres `LISTEN/NOTIFY`. It keeps throwaway databases free of replication slots and publications.
 - **B is the sync engine that fits this stack best** when a second database arrives: Apache-2.0, any existing table, the write path stays the server's API, and the UI code changes from a Query to an Electric collection. Its costs are an Elixir service with its own disk, logical replication, and a mandatory auth proxy, since Electric "exposes public access to the contents of your database" by default [Docs].
 - **C is for writing offline to a local store while a remote Postgres is the source of truth**, which a one-machine factory does not need yet, and its service is not OSI open source.
-- **Skills and memory.** Since Claude Code keeps them as files (section 5), a database can be their source of truth only if the server writes them out to each session's `.claude/` folder, where Claude Code's file watcher picks up changes.
+- **Skills and memory.** Since Claude Code keeps them as files (section 5), a database can be their source of truth only if the server writes them out to a folder each session loads skills from, where Claude Code's file watcher picks up changes.
 - **Throwaways**: a template database per test or experiment on the local Postgres, or PGlite in memory where a test wants no server at all.
 
 Questions this leaves for the user:
