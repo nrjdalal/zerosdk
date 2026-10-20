@@ -24,9 +24,4 @@ The agents sidebar keeps each row's state, task kind, title and nesting in the w
 5. **An optional task kind on the session** (2026-10-20), one of the thirteen on `/docs/ui/icons`, set by whoever starts the session (`zerosdk session start --agent builder --task debug`), since the glossary defines a subagent as started for one task, so the same agent can build one day and debug the next. No source has such a field; it is ZeroSDK's own, and a session started without one shows its status icon.
 6. **A session names its agent by `Id`** (2026-10-20), as `fallbacks` already references agents, so renaming an agent never breaks its sessions; the UI shows the name by looking the `Id` up, and the server does the same when it launches Claude with `--agent`. Seven of the nine sources reference by name; OpenCode references by id.
 7. **A session keeps its parent and its root** (2026-10-20). The server writes both when it opens the session: `parent`, the session that asked for it, and `root`, the top of its tree, so the permission flipper finds a session's main agent in one look on every request, as eve's `rootSessionId` does. Depth is worked out when a session starts, from the short chain, and is not stored.
-
-## Open questions
-
-Section 5 of [the research](../../docs/research/agent-session-261020.md#5-what-it-means-for-zerosdks-session) gives the evidence for each. To ask one at a time, each with a recommendation:
-
-1. **The title, the ticket and the pull request.** Recommended: an optional title, generated and renamable, with the ticket and the pull request in fields of their own, so the row composes `ZS-12#45 Add tools` instead of storing it.
+8. **Title, ticket and pull request are three fields** (2026-10-20): `ticket` (such as `ZS-12`, set at start), `pullRequest` (a number, filled in once the agent opens one) and `title` (set at start, renamable), all optional; the row composes `ZS-12#45 Add tools` and can link the ticket and the pull request, as Claude Code's agent view shows a pull request label beside a session's name.
