@@ -14,10 +14,15 @@ const docsConfig = {
     ],
     Reference: [
       {
+        "/docs/reference/common": {
+          title: "Common",
+          description: "Reference for the rules the schemas share.",
+        },
+      },
+      {
         "/docs/reference/agent": {
           title: "Agent",
-          description:
-            "Reference for the Agent schema: the configuration that defines an agent, from its model and instructions to its role in the team.",
+          description: "Reference for the Agent schema.",
         },
       },
     ],
