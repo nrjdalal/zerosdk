@@ -1,0 +1,43 @@
+---
+slug: /docs/ui/sidebar
+title: Sidebar
+description: Reference for the agents sidebar.
+---
+
+import { AgentsSidebarDemo } from "@/components/agents/sidebar-demo"
+
+<DocsPreview>
+  <AgentsSidebarDemo />
+  <include cwd lang="tsx" meta='title="web/next/src/components/agents/sidebar-demo.tsx"'>
+    src/components/agents/sidebar-demo.tsx
+  </include>
+</DocsPreview>
+
+## Sections
+
+The orchestrators' and subagents' labels end with how many agents they hold, nested ones included.
+
+| Section       | Holds                                                                         | Nests |
+| ------------- | ----------------------------------------------------------------------------- | ----- |
+| Main agents   | The agents at the top of the team, in the header where the docs keep search   | No    |
+| Orchestrators | The persistent agents that each own one area of the work                      | No    |
+| Subagents     | The agents started for one task, each with the subagents it runs nested below | Yes   |
+
+## Row
+
+A row reads from left to right.
+
+| Part     | Shows                                                                                                                                                                                    |
+| -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Status   | The agent's [task](/docs/ui/icons#task) while it runs, otherwise its [state](/docs/ui/icons#state); a closed row shows the first of its subagents that is running, and its own once open |
+| Title    | The agent's name, or for a subagent with a ticket the ticket and pull request before its title, such as ZS-12#45 Add tools                                                               |
+| Provider | The [provider](/docs/ui/icons#provider) of the agent's model                                                                                                                             |
+| Effort   | The agent's [effort](/docs/ui/icons#effort) level                                                                                                                                        |
+
+## Hover
+
+Each part names what it shows: the status its task or state, the provider its model, and the effort its level. A row with subagents shows its toggle in its effort's place while the mouse is on it, while it has keyboard focus or is open, and always on a phone. A subagent's title names the agent running it, such as Builder: ZS-15 Fix login, and a name alone shows only when the row cuts it short.
+
+## Selection
+
+The first main agent is selected until another row is picked. A row's toggle opens and closes its subagents without changing the selection, and a closed row shows as selected while one of its subagents is.

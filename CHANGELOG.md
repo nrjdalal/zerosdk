@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.0.6
+
+[compare changes](https://github.com/nrjdalal/zerosdk/compare/v0.0.5...v0.0.6)
+
+### 🚀 Enhancements
+
+- **docs:** Add a ui icons page for effort levels, states and tasks ([#15](https://github.com/nrjdalal/zerosdk/pull/15))
+- **docs:** Add claude and z.ai provider logos from models.dev to the icons page ([#17](https://github.com/nrjdalal/zerosdk/pull/17))
+
+### ❤️ Contributors
+
+- Neeraj Dalal @nrjdalal
+
 ## v0.0.5
 
 [compare changes](https://github.com/nrjdalal/zerosdk/compare/v0.0.4...v0.0.5)
