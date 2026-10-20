@@ -45,7 +45,7 @@ One message from the human and all the work it starts, delegated work included; 
 **Session**:
 One agent's working context, from its start until it stops; a thread can outlast several of AgentZero's sessions.
 
-## Running
+## Execution
 
 **Harness**:
 The program that runs one agent's loop of model calls and tools, such as Claude Code or OpenCode; the model inside it comes from a provider of its own.

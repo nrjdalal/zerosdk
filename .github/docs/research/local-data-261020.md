@@ -60,7 +60,7 @@ Two facts frame every verdict below. Writes start on the server, where the agent
 | **Postgres logical replication** | PostgreSQL License                                                                     | built in                                      | local Postgres                | normal SQL                                                                | the local side is always writable    | n/a                            | migrations run on both sides                 | `wal_level=logical`; the subscriber must reach the publisher            | core Postgres                 |
 
 - **Zero calls itself "not local-first"** and "doesn't support offline writes" [Docs]. **ElectricSQL "does not do write-path sync"**: writes go through your own API [Docs]. Only PowerSync writes to a local store first and drains a queue later.
-- **Weak fits** [Docs, Source, npm]: Triplit (AGPL, no Postgres store, dormant since mid-2025), Replicache ("now in maintenance mode"), InstantDB (stores everything as triples in its own Postgres), Jazz (2.0 alpha, no Postgres), TinyBase (persists whole stores rather than syncing a schema), RxDB (no native Postgres plugin; its production SQLite storage is paid).
+- **Weak fits** [Docs, Source, npm]: InstantDB (stores everything as triples in its own Postgres), Jazz (2.0 alpha, no Postgres), Replicache ("now in maintenance mode"), RxDB (no native Postgres plugin; its production SQLite storage is paid), TinyBase (persists whole stores rather than syncing a schema), Triplit (AGPL, no Postgres store, dormant since mid-2025).
 - **Logical replication copies no schema changes and no sequences, and stops on a constraint conflict** [Docs]. Because the subscriber connects to the publisher, pushing from a laptop to a remote server needs that server to reach the laptop.
 - **The honest baseline: no sync engine.** With one writer (the local server), a UI on localhost and no second database, a sync engine solves nothing yet. ElectricSQL's own guide: "Not every app needs local, offline writes" [Docs]. Sync becomes necessary when a second replica appears: a remote Postgres, a second device, collaborators.
 
@@ -76,7 +76,7 @@ Two facts frame every verdict below. Writes start on the server, where the agent
 | RxDB, TrailBase                    | 0.1.110, 0.1.122                                                 | RxDB; TrailBase (a SQLite backend)     |
 | IndexedDB, LocalStorage, LocalOnly | built in                                                         | the browser                            |
 
-There is no official collection for Zero, LiveStore, Triplit, Replicache, InstantDB, Jazz or TinyBase [npm]. Its SQLite persistence guide keeps rows and sync offsets across restarts, and its offline transactions package keeps a durable outbox of pending writes; both apply to the Query and Electric collections and are redundant for PowerSync, which persists and queues already [Docs]. The app already depends on `@tanstack/react-query` 5, which the QueryCollection builds on.
+There is no official collection for InstantDB, Jazz, LiveStore, Replicache, TinyBase, Triplit or Zero [npm]. Its SQLite persistence guide keeps rows and sync offsets across restarts, and its offline transactions package keeps a durable outbox of pending writes; both apply to the Query and Electric collections and are redundant for PowerSync, which persists and queues already [Docs]. The app already depends on `@tanstack/react-query` 5, which the QueryCollection builds on.
 
 ## 5. How the nine sources store dynamic data
 

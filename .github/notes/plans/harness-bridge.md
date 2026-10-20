@@ -1,9 +1,9 @@
 # Run agents through a harness and a bridge
 
 - Status: planned
-- Links: [ADR 0005](../../docs/adr/0005-agents-run-as-cli-harnesses-through-a-bridge.md) · [ADR 0006](../../docs/adr/0006-the-server-answers-permission-requests.md) · [research](../../docs/research/harness-bridge-261020.md) · [the Session schema plan](session-schema.md) · [the local data plan](local-data.md) · branch `docs/session-schema-plan`
+- Links: [ADR 0005](../../docs/adr/0005-agents-run-in-cli-harnesses-through-a-bridge.md) · [ADR 0006](../../docs/adr/0006-the-server-answers-permission-requests.md) · [research](../../docs/research/harness-bridge-261020.md) · [the Session schema plan](session-schema.md) · [the local data plan](local-data.md) · branch `docs/session-schema-plan`
 
-ZeroSDK runs each agent as its own Claude Code CLI session in a herdr pane on the user's machine, behind the harness and bridge contracts of ADR 0005, and answers permission requests as ADR 0006 sets out.
+ZeroSDK runs each session of an agent as its own Claude Code CLI in a herdr pane on the user's machine, behind the harness and bridge contracts of ADR 0005, and answers permission requests as ADR 0006 sets out.
 
 ## Decided
 
@@ -15,7 +15,7 @@ ZeroSDK runs each agent as its own Claude Code CLI session in a herdr pane on th
 6. **Hooks and the screen from the start** (2026-10-20), hooks as the main signal and the screen as the backup, as ADR 0005 sets out.
 7. **Prompts are answered through the hook reply** (2026-10-20), with keys typed through the bridge as the fallback, as ADR 0006 sets out.
 8. **A permission flipper on each main agent** (2026-10-20): Ask me, Rules or Allow all, for that main agent and every session under it, as ADR 0006 sets out.
-9. **No session waits on the workspace trust dialog** (2026-10-20): the server marks the repository's main checkout trusted once (`projects["<root>"].hasTrustDialogAccepted` in `~/.claude.json`), which covers its worktrees, since Claude Code keys a worktree's trust on the main checkout's root.
+9. **No session waits on the workspace trust dialog** (2026-10-20): the server marks the repository's main checkout trusted once (`projects["<root>"].hasTrustDialogAccepted` in `~/.claude.json`), which covers its worktrees, since Claude Code keys a worktree's trust on the main checkout's root ([Claude Code](https://code.claude.com/docs/en/permissions#project-allow-rules-and-workspace-trust)).
 
 ## Layout
 
