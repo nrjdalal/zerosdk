@@ -17,6 +17,7 @@ import {
 } from "typescript/unstable/async"
 
 import { capture } from "@/capture"
+import { fetchOk } from "@/fetch-ok"
 
 // Reads how each TypeScript source defines an agent, from its npm types or, where it exports none, its docs table, and writes the comparison into the Agent docs page; run with `bun run agent:schemas`, which installs each package at its latest into .generated/agent-schemas/.
 
@@ -56,7 +57,7 @@ type Block = { source: Source; stubs: string }
 type Session = { api: API; cache: string }
 
 // npm sources: the type each package exports for what an agent is defined with.
-const NPM: NpmSource[] = [
+export const NPM: NpmSource[] = [
   {
     module: "@opencode/schema/config/agent",
     pkg: "@opencode/schema",
@@ -110,7 +111,7 @@ const NPM: NpmSource[] = [
 ]
 
 // Docs sources: products whose agent file has no exported type, read from the table in their docs.
-const DOCS: DocsSource[] = [
+export const DOCS: DocsSource[] = [
   {
     description: "A subagent file in .claude/agents/, configured by its YAML frontmatter.",
     markdown: "https://code.claude.com/docs/en/sub-agents.md",
@@ -132,12 +133,6 @@ const DOCS: DocsSource[] = [
 
 const sortByName = <T extends { name: string }>(items: T[]) =>
   items.sort((a, b) => a.name.localeCompare(b.name))
-
-const fetchOk = async (url: string) => {
-  const response = await fetch(url)
-  if (!response.ok) throw new Error(`${response.status} ${url}`)
-  return response
-}
 
 const npmLatest = async (name: string, registry: string) =>
   ((await (await fetchOk(`${registry}/${name}/latest`)).json()) as { version: string }).version
