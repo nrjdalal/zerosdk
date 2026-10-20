@@ -31,6 +31,8 @@ export const Agent = z.object({
   role: z.enum(["main", "orchestrator", "subagent"]).default("subagent"),
   /** Names of the skills available to the agent; each is a set of reusable instructions the model loads on demand, e.g. api-conventions */
   skills: z.array(z.string()).optional(),
+  /** Names of the tools the agent can use, MCP tools included; an agent without a list inherits every tool of the agent that delegates to it, and a main agent without one can use every tool, e.g. Read */
+  tools: z.array(z.string()).optional(),
 })
 
 export type Agent = z.infer<typeof Agent>

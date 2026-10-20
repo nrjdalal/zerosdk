@@ -26,6 +26,7 @@ describe("Agent", () => {
       model: "anthropic/claude-opus-5-5",
       role: "orchestrator",
       skills: ["api-conventions"],
+      tools: ["Read"],
     } satisfies Agent
     expect(Agent.parse(full)).toEqual(full)
   })
