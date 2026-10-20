@@ -17,7 +17,7 @@ const docsConfig = {
         "/docs/reference/agent": {
           title: "Agent",
           description:
-            "Reference for the Agent schema: the fields that identify an agent and tell other agents when to delegate to it.",
+            "Reference for the Agent schema: the configuration that defines an agent, from its model and instructions to its role in the team.",
         },
       },
     ],
