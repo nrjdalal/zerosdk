@@ -34,7 +34,9 @@ import {
   RiZzzFill,
 } from "@remixicon/react"
 
-The icons come from [Remix Icon](https://remixicon.com), through `@remixicon/react`, always in their Fill variant.
+import { Anthropic, Zai } from "@/components/common/provider-logos"
+
+The icons come from [Remix Icon](https://remixicon.com), through `@remixicon/react`, always in their Fill variant, and the provider logos from [models.dev](https://models.dev).
 
 ## Effort
 
@@ -47,6 +49,15 @@ An agent's [effort](/docs/reference/agent) level: low, medium and high fill one,
 | high   | <RiSignalCellular3Fill /> | `RiSignalCellular3Fill` |
 | xhigh  | <RiSkullFill />           | `RiSkullFill`           |
 | max    | <RiSkull2Fill />          | `RiSkull2Fill`          |
+
+## Provider
+
+The provider of an agent's [model](/docs/reference/agent), the part before the slash, drawn with its logo from models.dev in the text color. `bun run provider:logos` copies each logo into a component named after its provider, typed and sized like a Remix icon.
+
+| Provider  | Icon          | Component   |
+| --------- | ------------- | ----------- |
+| anthropic | <Anthropic /> | `Anthropic` |
+| zai       | <Zai />       | `Zai`       |
 
 ## State
 
