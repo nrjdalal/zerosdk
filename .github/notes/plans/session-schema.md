@@ -1,7 +1,7 @@
 # A Session schema for the agents sidebar
 
 - Status: planned
-- Links: [research](../../docs/research/agent-session-261020.md) · PR #18 (the agents sidebar) · PR #20 (Session in the glossary) · [icebox: the sign-in session table](auth-session-name.md) · branch `docs/session-schema-plan`
+- Links: [research](../../docs/research/agent-session-261020.md) · PR #18 (the agents sidebar) · PR #20 (Session in the glossary) · [icebox: the sign-in session table](auth-session-name.md) · PR #28
 
 The agents sidebar keeps each row's `state`, task kind, title and nesting in the web app alone. `AgentState` and `AgentTask` are the keys of `stateIcons` and `taskIcons` in `web/next/src/components/agents/icons.ts`, and `title` and `subagents` sit on the row types in `agents/sidebar.tsx`. All four describe one run of an agent, which the glossary calls a Session, so they move into a `Session` schema in `packages/schema`, beside `Agent`. A subagent's run becomes a child session that points at the session that started it, as OpenCode, Codex and eve model it.
 

@@ -1,7 +1,7 @@
 # Run agents through a harness and a bridge
 
 - Status: planned
-- Links: [ADR 0005](../../docs/adr/0005-agents-run-in-cli-harnesses-through-a-bridge.md) · [ADR 0006](../../docs/adr/0006-the-server-answers-permission-requests.md) · [research](../../docs/research/harness-bridge-261020.md) · [the Session schema plan](session-schema.md) · [the local data plan](local-data.md) · branch `docs/session-schema-plan`
+- Links: [ADR 0005](../../docs/adr/0005-agents-run-in-cli-harnesses-through-a-bridge.md) · [ADR 0006](../../docs/adr/0006-the-server-answers-permission-requests.md) · [research](../../docs/research/harness-bridge-261020.md) · [the Session schema plan](session-schema.md) · [the local data plan](local-data.md) · PR #28
 
 ZeroSDK runs each session of an agent as its own Claude Code CLI in a herdr pane on the user's machine, behind the harness and bridge contracts of ADR 0005, and answers permission requests as ADR 0006 sets out.
 
