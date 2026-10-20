@@ -4,5 +4,5 @@ Agents run in Claude Code's Manual permission mode (config value `default`), whi
 
 ## Considered Options
 
-- **Flipping Claude's own mode** with Shift+Tab through the bridge: keystrokes into a live pane, one agent at a time, and nothing recorded.
+- **Flipping Claude's own mode:** Shift+Tab through the bridge means keystrokes into a live pane, one agent at a time, and nothing recorded.
 - **`bypassPermissions`:** no request ever reaches the server, so the flipper would have nothing to answer.

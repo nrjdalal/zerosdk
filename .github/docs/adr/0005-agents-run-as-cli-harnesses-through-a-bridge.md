@@ -6,6 +6,6 @@ The words follow the sources where they speak. Five of the nine define a harness
 
 ## Considered Options
 
-- **The Claude Agent SDK first**, as the AI SDK's `@ai-sdk/harness-claude-code` does: typed events and answers, but no terminal for a human to watch, and the user starts from the CLIs.
+- **The Claude Agent SDK first:** as the AI SDK's `@ai-sdk/harness-claude-code` does, typed events and answers, but no terminal for a human to watch, and the user starts from the CLIs.
 - **The Agent Client Protocol:** structured events from the same CLIs, but its Claude Code and Codex adapters are third-party and there is no terminal to watch either.
 - **The screen alone:** no orchestrator that drives a Claude Code TUI detects a usage limit from the screen, while hooks miss only an Escape.

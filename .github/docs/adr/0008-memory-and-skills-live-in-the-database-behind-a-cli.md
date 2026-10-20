@@ -6,5 +6,5 @@ This departs from the sources: eight of the nine keep skills as `SKILL.md` folde
 
 ## Considered Options
 
-- **Files as the source of truth**, indexed by the server: Claude would keep writing memory and skills behind the server's back, and the UI would show a copy.
+- **Files as the source of truth, indexed by the server:** Claude would keep writing memory and skills behind the server's back, and the UI would show a copy.
 - **An MCP server:** every tool's schema in context on every turn.

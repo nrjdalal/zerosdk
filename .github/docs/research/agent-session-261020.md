@@ -270,7 +270,7 @@ type AgentToolInterruptedReason =
 
 ## 5. What it means for ZeroSDK's Session
 
-ZeroSDK's sidebar today keeps a row's state, task kind, title and nesting in the web app only. Following the sources, they belong to a Session record beside the Agent, with a subagent's run as a child session, as in OpenCode, Codex and eve. [Example] a draft for discussion, with keys A to Z as ZeroSDK orders them:
+ZeroSDK's sidebar today keeps a row's `state`, task kind, title and nesting in the web app only. Following the sources, they belong to a Session record beside the Agent, with a subagent's run as a child session, as in OpenCode, Codex and eve. [Example] a draft for discussion, with keys A to Z as ZeroSDK orders them:
 
 ```ts
 export const Session = z.object({
