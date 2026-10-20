@@ -23,9 +23,9 @@ A known next action belongs in the plans backlog; a confident verdict gets shipp
 
 ## Park it
 
-1. Write the concern to `.github/notes/plans/<slug>.md`, or append a section to a fitting file: state the concern, its context, and the open question, with no plan and no verdict. Done when a reader grasps what is unresolved and finds no recommendation.
+1. Write the concern to `.github/notes/plans/NNNN-<name>.md` (the folder's highest number plus one), or append a section to a fitting file: state the concern, its context, and the open question, with no plan and no verdict. Done when a reader grasps what is unresolved and finds no recommendation.
 2. Link it under `## Icebox` in `.github/notes/plans/README.md`. Done when the index points at the file.
-3. Mirror the one-liner and the `plans/<slug>.md` path as an unchecked box on the standing Icebox issue (#22). Done when `gh issue view 22` shows it.
+3. Mirror the one-liner and the `plans/NNNN-<name>.md` path as an unchecked box on the standing Icebox issue (#22). Done when `gh issue view 22` shows it.
 
 ## Thaw
 
