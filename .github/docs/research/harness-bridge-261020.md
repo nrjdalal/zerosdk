@@ -2,7 +2,7 @@
 
 Research date: 2026-10-20. Gathered by four research subagents from published TypeScript types (the npm `latest` release that day, read as text and never run), protocol schemas, official docs, and the source code of the tools below at the commits listed, plus strings read out of the installed Claude Code 2.1.304 binary without starting a session. It feeds the design of the flow ZeroSDK settled on: the UI calls the server, the server drives Claude Code through a bridge (herdr first, cmux later), and agents talk to each other as Claude Code peers; later the same server drives the Claude Agent SDK directly, with no bridge.
 
-Labels: [Docs] official documentation · [Types] a published `.d.ts` · [Schema] a generated protocol schema · [Source] source code at the pinned commit · [Binary] a string read from the Claude Code binary, unconfirmed on a live screen · [Inferred] follows from two documented facts, stated nowhere.
+Labels: [Docs] official documentation · [Types] a published `.d.ts` · [Schema] a generated protocol schema · [Source] source code at the pinned commit · [Inferred] follows from two documented facts, stated nowhere.
 
 | Kind              | Sources and versions                                                                                                                                                                                                                                                                                                                                                                                                       |
 | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -152,7 +152,7 @@ The permission prompt asks "Do you want to proceed?" with numbered choices and t
 
 ### Usage limits
 
-The TUI waits and continues by itself; the SDK never waits. On the SDK route a `rate_limit_event` with `status: "rejected"` carries an epoch `resetsAt`, and the caller schedules the resume [Types]. On the CLI route the epoch reaches only the status-line command (`rate_limits.*.resets_at`), a `StopFailure` hook fires with `error: "rate_limit"`, and `Notification` hooks fire as `quota_auto_resume_*` [Docs]. The on-screen reset time is local wall-clock time with no date or timezone, and its wording is localized, so it is a signal to match, not a time to parse (Nimbalyst `usageLimit.ts` [Source]). No orchestrator on the TUI route detects a usage limit; T3 Code, Sculptor, Nimbalyst and Happy classify it only on headless streams [Source].
+The TUI waits and continues by itself; the SDK never waits. On the SDK route a `rate_limit_event` with `status: "rejected"` carries an epoch `resetsAt`, and the caller schedules the resume [Types]. On the CLI route the epoch reaches only the status-line command (`rate_limits.*.resets_at`), a `StopFailure` hook fires with `error: "rate_limit"`, and `Notification` hooks fire as `quota_auto_resume_*` [Docs]. The on-screen reset time is a local clock time such as `3:45pm`, or a weekday and time such as `Mon 12:00am`, with no date [Docs], and Nimbalyst notes the wording varies ("resets 11:40am (TZ)", `usageLimit.ts` [Source]), so it is a signal to match, not a time to parse. No orchestrator on the TUI route detects a usage limit from the screen: Nimbalyst catches HTTP 429 through a proxy, and T3 Code, Sculptor, Nimbalyst and Happy classify it on headless streams [Source].
 
 ## 5. Where each status comes from
 
@@ -388,5 +388,5 @@ Questions this leaves for the user:
 
 1. **Screen only, or screen plus hooks.** The CLI route can read status from the screen and herdr alone, or also take Claude Code's hooks and `claude agents --json`, which every hook-based orchestrator uses and which can answer prompts without keys.
 2. **How prompts get answered.** Keys typed through the bridge, or a `PermissionRequest` and `PreToolUse` hook.
-3. **The permission mode agents run in.** Cloudflare's adapters bypass permissions entirely; ZeroSDK's choice decides which prompts appear and how peers' messages are held.
+3. **The permission mode agents run in.** It decides which prompts appear and how peers' messages are held.
 4. **First launch per worktree.** Pre-seed the trust dialog, or let the session start as `pending` until someone accepts it.

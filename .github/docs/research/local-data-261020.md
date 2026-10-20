@@ -36,15 +36,15 @@ Two facts frame every verdict below. Writes start on the server, where the agent
 
 ## 2. The local store
 
-| Candidate                                        | License (OSI unless noted)                                      | Processes that can use it                                                    | Drizzle                                              | Live changes                                                              | Throwaway cost                                                                          | Maturity                                                        |
-| ------------------------------------------------ | --------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| **PGlite** (Postgres in WASM, in-process)        | Apache-2.0 or PostgreSQL License                                | one process, one connection; a second process on the same folder corrupts it | yes, `drizzle-orm/pglite`, the same `pg-core` schema | built in, in that process only                                            | 0.26 s from a prepared folder, 0.9 s from scratch, 128 MiB each (M1, project benchmark) | 0.5.10, labelled alpha                                          |
-| **SQLite** (`bun:sqlite`, WAL)                   | public domain, MIT                                              | many processes on one file, one writer at a time                             | yes, but a second, `sqlite-core` schema              | same-connection hooks; other processes need `PRAGMA data_version` polling | `:memory:`, near-instant [Unconfirmed number]                                           | decades                                                         |
-| **libSQL** (embedded replicas)                   | MIT                                                             | one writer                                                                   | yes                                                  | none built in                                                             | `file::memory:`                                                                         | client 0.18.0                                                   |
-| **Local Postgres** (Docker, `embedded-postgres`) | PostgreSQL License; Docker Desktop is paid for larger companies | many processes and connections                                               | yes, unchanged                                       | `LISTEN/NOTIFY` across processes; `Bun.SQL` has `sql.listen()`            | `CREATE DATABASE ... TEMPLATE` on a running server                                      | Postgres mature; `embedded-postgres` every release beta, 148 MB |
-| **DuckDB**                                       | MIT                                                             | one writer process                                                           | none                                                 | none                                                                      | `:memory:`                                                                              | built for analytics, not this                                   |
+| Candidate                                        | License (OSI unless noted)                                      | Processes that can use it                                                                                     | Drizzle                                              | Live changes                                                              | Throwaway cost                                                                          | Maturity                                                        |
+| ------------------------------------------------ | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| **PGlite** (Postgres in WASM, in-process)        | Apache-2.0 or PostgreSQL License                                | one process, one connection; a second process on the same folder corrupts it, with no lock to stop it (#1106) | yes, `drizzle-orm/pglite`, the same `pg-core` schema | built in, in that process only                                            | 0.26 s from a prepared folder, 0.9 s from scratch, 128 MiB each (M1, project benchmark) | 0.5.10, labelled alpha                                          |
+| **SQLite** (`bun:sqlite`, WAL)                   | public domain, MIT                                              | many processes on one file, one writer at a time                                                              | yes, but a second, `sqlite-core` schema              | same-connection hooks; other processes need `PRAGMA data_version` polling | `:memory:`, near-instant [Unconfirmed number]                                           | decades                                                         |
+| **libSQL** (embedded replicas)                   | MIT                                                             | one writer                                                                                                    | yes                                                  | none built in                                                             | `file::memory:`                                                                         | client 0.18.0                                                   |
+| **Local Postgres** (Docker, `embedded-postgres`) | PostgreSQL License; Docker Desktop is paid for larger companies | many processes and connections                                                                                | yes, unchanged                                       | `LISTEN/NOTIFY` across processes; `Bun.SQL` has `sql.listen()`            | `CREATE DATABASE ... TEMPLATE` on a running server                                      | Postgres mature; `embedded-postgres` every release beta, 148 MB |
+| **DuckDB**                                       | MIT                                                             | one writer process                                                                                            | none                                                 | none                                                                      | `:memory:`                                                                              | built for analytics, not this                                   |
 
-- **PGlite's costs** [Docs, Source]: it runs with fsync off by default, has no autovacuum or automatic checkpoints, takes no lock against a second process (issue #1106), has an open hang under heavy delete-and-upsert churn (#1068), and its `pglite-socket` server, the only way in for other processes, has an open bug that mixes queries between clients (#1046). Its strength is the dialect: production Postgres, so one schema and one set of migrations.
+- **PGlite's costs** [Docs, Source]: it runs with fsync off by default, has no autovacuum or automatic checkpoints, has an open hang under heavy delete-and-upsert churn (#1068), and its `pglite-socket` server, the only way in for other processes, has an open bug that mixes queries between clients (#1046). Its strength is the dialect: production Postgres, so one schema and one set of migrations.
 - **libSQL syncs only with libSQL** (Turso Cloud or a self-hosted `sqld`), never with Postgres, and offline writes work only against Turso Cloud [Docs].
 - **`pglaunch`**, which the repo already uses, runs `docker run postgres:alpine` [Source].
 - **One owner process.** Every embedded option is single-writer, so the cleanest shape is the Bun server owning the store and hooks, agents and the UI going through its API. That turns "can several processes reach it" from an engine property into an API one, and lets live updates fan out from one place.
@@ -99,7 +99,7 @@ The nine sources test with the same engine in memory or in a temporary home fold
 
 ## 7. Demos
 
-#### A template copy per test (Postgres)
+### A template copy per test (Postgres)
 
 [Example] built from https://www.postgresql.org/docs/current/manage-ag-templatedbs.html: migrate and seed one template once, then copy it per test or experiment.
 
@@ -110,7 +110,7 @@ CREATE DATABASE t_ab3de9fg TEMPLATE zerosdk_template;
 DROP DATABASE t_ab3de9fg;
 ```
 
-#### A collection fed by the server (TanStack DB)
+### A collection fed by the server (TanStack DB)
 
 [Example] built from the QueryCollection docs: the UI's sessions, fetched from the server and refreshed when the server pushes a change.
 
@@ -128,7 +128,7 @@ export const sessions = createCollection(
 )
 ```
 
-#### A write that waits for sync (TanStack DB with Electric)
+### A write that waits for sync (TanStack DB with Electric)
 
 [Example] built from https://tanstack.com/db/latest/docs/collections/electric-collection ("Each handler should call `await collection.utils.awaitTxId(txid)` to wait for synchronization"): the server returns the transaction id of its write, and the client holds its optimistic state until Electric delivers that transaction.
 
@@ -161,7 +161,7 @@ C) PowerSync          server: local SQLite first, an upload queue to Postgres
 - **A fits today**: one machine, one writer, nothing to converge. TanStack DB in the UI is the fast layer, and the server pushes changes after each write or relays Postgres `LISTEN/NOTIFY`. It keeps throwaway databases free of replication slots and publications.
 - **B is the sync engine that fits this stack best** when a second database arrives: Apache-2.0, any existing table, the write path stays the server's API, and the UI code changes from a Query to an Electric collection. Its costs are an Elixir service with its own disk, logical replication, and a mandatory auth proxy, since Electric "exposes public access to the contents of your database" by default [Docs].
 - **C is for writing offline to a local store while a remote Postgres is the source of truth**, which a one-machine factory does not need yet, and its service is not OSI open source.
-- **Skills and memory as files.** Claude Code reads skills and memory only from files, so a database can be their source of truth only if the server writes them out to each session's `.claude/` folder; Claude Code's file watcher then picks up changes.
+- **Skills and memory.** Since Claude Code keeps them as files (section 5), a database can be their source of truth only if the server writes them out to each session's `.claude/` folder, where Claude Code's file watcher picks up changes.
 - **Throwaways**: a template database per test or experiment on the local Postgres, or PGlite in memory where a test wants no server at all.
 
 Questions this leaves for the user:

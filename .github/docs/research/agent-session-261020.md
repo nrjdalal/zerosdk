@@ -26,8 +26,8 @@ ZeroSDK's glossary terms, used throughout: a **Session** is one agent's working 
 3. [Status values](#3-status-values)
    - [Against ZeroSDK's nine states](#against-zerosdks-nine-states) · [Values ZeroSDK lacks](#values-zerosdk-lacks) · [Labels in product UIs](#labels-in-product-uis)
 4. [Demos](#4-demos)
-   - [Every kind Claude Code shows](#every-kind-claude-code-shows): [Agent view rows](#agent-view-rows-claude-code) · [Session state as JSON](#session-state-as-json-claude-code) · [A subagent's runs as task events](#a-subagents-runs-as-task-events-claude-agent-sdk)
-   - [Kinds Claude Code lacks](#kinds-claude-code-lacks): [A subagent run that is a session of its own](#a-subagent-run-that-is-a-session-of-its-own-opencode) · [A status stored on the run's record](#a-status-stored-on-the-runs-record-codex) · [A pointer to the root as well as the parent](#a-pointer-to-the-root-as-well-as-the-parent-eve) · [Why a run stalled](#why-a-run-stalled-cloudflare)
+   - [Every kind Claude Code shows](#every-kind-claude-code-shows): [Agent view rows](#agent-view-rows-claude-code) · [Session state as JSON](#session-state-as-json-claude-code)
+   - [Kinds Claude Code lacks](#kinds-claude-code-lacks): [A new id for each run of a resumed subagent](#a-new-id-for-each-run-of-a-resumed-subagent-claude-agent-sdk) · [A subagent run that is a session of its own](#a-subagent-run-that-is-a-session-of-its-own-opencode) · [A status stored on the run's record](#a-status-stored-on-the-runs-record-codex) · [A pointer to the root as well as the parent](#a-pointer-to-the-root-as-well-as-the-parent-eve) · [Why a run stalled](#why-a-run-stalled-cloudflare)
 5. [What it means for ZeroSDK's Session](#5-what-it-means-for-zerosdks-session)
 
 ---
@@ -115,7 +115,7 @@ Each cell is the source's own value for that meaning; a dash means none was foun
 
 ### Labels in product UIs
 
-Claude Code's agent view shows Working, Needs input, Idle, Completed, Failed and Stopped, and groups rows as Ready for review, Needs input, Working and Completed. Codex's activity tray shows Running, Needs input, Ready and Blocked. Both label waiting on the human "Needs input". Claude Code's JSON keeps two fields apart: `state` for what the session is doing, and `status` (`busy`, `waiting`, `idle`) for its process right now.
+Claude Code's agent view shows Working, Needs input, Idle, Completed, Failed and Stopped, and groups rows as Ready for review, Needs input, Working and Completed. Codex's activity tray shows Running, Needs input, Ready and Blocked. Both label waiting on the human "Needs input".
 
 ## 4. Demos
 
@@ -166,17 +166,17 @@ Completed
 ]
 ```
 
-#### A subagent's runs as task events (Claude Agent SDK)
+### Kinds Claude Code lacks
 
-[Docs] https://code.claude.com/docs/en/agent-sdk/typescript#sdktaskstartedmessage: a background subagent that Claude resumed once. Both runs share the `task_id`; each has its own `run_id`.
+#### A new id for each run of a resumed subagent (Claude Agent SDK)
+
+Claude Code names a subagent by one `agent_id` across all its runs. The Agent SDK's task events also give each run its own `run_id`. [Docs] https://code.claude.com/docs/en/agent-sdk/typescript#sdktaskstartedmessage: a background subagent that Claude resumed once. Both runs share the `task_id`; each has its own `run_id`.
 
 ```json
 {"subtype": "task_started", "task_id": "a5c2e8f41b09d7a36", "run_id": "0mubbs7i8-6f0c2d41"}
 {"subtype": "task_notification", "task_id": "a5c2e8f41b09d7a36", "run_id": "0mubbs7i8-6f0c2d41", "status": "completed"}
 {"subtype": "task_started", "task_id": "a5c2e8f41b09d7a36", "run_id": "0mubc18m1-b7719e05"}
 ```
-
-### Kinds Claude Code lacks
 
 #### A subagent run that is a session of its own (OpenCode)
 

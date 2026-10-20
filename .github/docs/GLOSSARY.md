@@ -49,11 +49,15 @@ One agent's working context, from its start until it stops; a thread can outlast
 
 **Harness**:
 The program that runs one agent's loop of model calls and tools, such as Claude Code or OpenCode; the model inside it comes from a provider of its own.
-_Avoid_: runtime, runner, engine
+_Avoid_: engine, runner, runtime
 
 **Bridge**:
 The program that hosts harnesses in terminal panes the factory can open, type into and read, such as herdr or cmux.
 _Avoid_: host, multiplexer, terminal, workspace
+
+**Permission flipper**:
+A main agent's setting for how the factory answers permission requests from it and every agent under it: ask the human, follow saved rules, or allow all.
+_Avoid_: permission mode
 
 **Status**:
 Where a session is in its life: pending, running, waiting, idle, paused, stuck, completed, failed or cancelled.
@@ -69,4 +73,4 @@ _Avoid_: rate-limited, suspended
 
 **Stuck**:
 The status of a session that is not moving and asked nothing the factory understands, so a person has to look at it.
-_Avoid_: stalled, hung
+_Avoid_: hung, stalled
