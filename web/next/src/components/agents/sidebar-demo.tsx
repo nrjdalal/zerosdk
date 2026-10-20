@@ -25,7 +25,7 @@ const agent = (
   effort: Agent["effort"],
 ): Agent => ({ effort, id, model, name, role })
 
-const mains: AgentRow[] = [
+const mainAgents: AgentRow[] = [
   {
     agent: agent("aB3dE9fG", "AgentZero", "main", "anthropic/claude-opus-5-5", "high"),
     state: "running",
@@ -91,7 +91,7 @@ export function AgentsSidebarDemo() {
     <SidebarProvider className="min-h-0 w-fit overflow-hidden rounded-xl border">
       <Sidebar collapsible="none">
         <SidebarHeader>
-          <AgentsHeader mains={mains} />
+          <AgentsHeader mainAgents={mainAgents} />
         </SidebarHeader>
         <SidebarContent>
           <AgentsNav orchestrators={orchestrators} subagents={subagents} />

@@ -47,7 +47,7 @@ export const providerIcons: Record<string, RemixiconComponentType> = Object.from
 )
 
 // The logo of the provider in a provider/model ID, if one is drawn
-export function providerIcon(model: string) {
+export function providerIcon(model: string): RemixiconComponentType | undefined {
   return providerIcons[model.split("/")[0].replaceAll(/[-.]/g, "")]
 }
 

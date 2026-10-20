@@ -19,7 +19,7 @@ type Agent = AgentRow["agent"]
 
 const agent = (id: string, name: string, role: Agent["role"]): Agent => ({ id, name, role })
 
-const mains: AgentRow[] = [
+const mainAgents: AgentRow[] = [
   { agent: agent("aB3dE9fG", "AgentZero", "main"), state: "running" },
   { agent: agent("hJ2kL4mN", "AgentOne", "main"), state: "idle" },
 ]
@@ -44,7 +44,7 @@ const html: string = renderToStaticMarkup(
   createElement(
     SidebarProvider,
     null,
-    createElement(AgentsHeader, { mains }),
+    createElement(AgentsHeader, { mainAgents }),
     createElement(AgentsNav, { orchestrators, subagents }),
   ),
 )
