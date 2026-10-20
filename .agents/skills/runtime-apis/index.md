@@ -32,6 +32,7 @@ runs under the system Node while Docker and Vercel serve it under Bun.
 | `packages/scripts/src/auth-schema.ts` | Bun | `node:path` (join, resolve) |
 | `packages/scripts/src/data-table-metrics.ts` | Bun | `node:path` (join, resolve) |
 | `packages/scripts/src/generate-env.ts` | Bun | `node:path` (resolve) |
+| `packages/scripts/src/provider-logos.ts` | Bun | `node:path` (resolve) |
 | `packages/scripts/src/release-version.ts` | Bun | `node:path` (join) |
 | `packages/scripts/src/sources.ts` | Bun | `node:fs` (renameSync, rmSync); `node:path` (join, resolve) |
 | `packages/scripts/src/terms.ts` | Bun | `node:path` (join) |
@@ -49,10 +50,13 @@ runs under the system Node while Docker and Vercel serve it under Bun.
 | `tests/packages/cli/src/skills.test.ts` | Bun | `node:fs` (mkdtempSync, rmSync); `node:os` (tmpdir); `node:path` (join) |
 | `tests/packages/db/src/schema/auth.test.ts` | Bun | `node:path` (join) |
 | `tests/packages/scripts/src/agent-schemas.test.ts` | Bun | `node:fs` (mkdtempSync, rmSync); `node:os` (tmpdir); `node:path` (join) |
+| `tests/packages/scripts/src/provider-logos.test.ts` | Bun | `node:fs` (mkdtempSync, rmSync); `node:os` (tmpdir); `node:path` (join) |
 | `tests/packages/scripts/src/release-version.test.ts` | Bun | `node:fs` (mkdtempSync, rmSync); `node:os` (tmpdir); `node:path` (join) |
 | `tests/packages/scripts/src/sources.test.ts` | Bun | `node:fs` (mkdtempSync, rmSync); `node:os` (tmpdir); `node:path` (join) |
 | `tests/packages/scripts/src/terms.test.ts` | Bun | `node:fs` (mkdtempSync, rmSync); `node:os` (tmpdir); `node:path` (join) |
+| `tests/web/next/content/docs/ui/icons.test.ts` | Bun | `node:path` (join) |
 | `tests/web/next/source.config.test.ts` | Bun | `node:path` (join) |
+| `tests/web/next/src/components/common/provider-logos.test.ts` | Bun | `node:path` (join) |
 | `web/next/next.config.ts` | Both | `node:fs` (readFileSync); `node:path` (resolve) |
 | `web/next/source.config.ts` | Both | `node:path` (join) |
 | `web/next/src/app/layout.tsx` | Both | `node:fs` (existsSync); `node:path` (join) |
