@@ -38,7 +38,7 @@ now:    UI ─► server ─► Harness ─► claude-code (cli) ─► Bridge �
 later:  UI ─► server ─► Harness ─► claude-code (sdk) ─► @anthropic-ai/claude-agent-sdk
 ```
 
-The server calls one **harness** contract for every agent session, whatever runs underneath. Only the CLI implementation uses the **bridge** contract, which drives a terminal host. The split has precedent: the AI SDK's Claude Code adapter is a `HarnessV1` that hides its own bridge process and sandbox behind the contract ("The adapter ships a bridge process that runs inside a sandbox and talks to the host over a WebSocket", `@ai-sdk/harness-claude-code` README [Docs]), and the Claude Agent SDK's own `bridge` export is the transport that connects a session to claude.ai for Remote Control (`BridgeSessionHandle`, "Per-session bridge transport handle" [Types]).
+The server calls one **harness** contract for every agent session, whatever runs underneath. Only the CLI implementation uses the **bridge** contract, which drives the terminal panes a bridge hosts. The split has precedent: the AI SDK's Claude Code adapter is a `HarnessV1` that hides its own bridge process and sandbox behind the contract ("The adapter ships a bridge process that runs inside a sandbox and talks to the host over a WebSocket", `@ai-sdk/harness-claude-code` README [Docs]), and the Claude Agent SDK's own `bridge` export is the transport that connects a session to claude.ai for Remote Control (`BridgeSessionHandle`, "Per-session bridge transport handle" [Types]).
 
 ## 2. The harness contract
 
@@ -168,7 +168,7 @@ The TUI waits and continues by itself; the SDK never waits. On the SDK route a `
 | failed    | `StopFailure` with another error; `API Error:` text; the process ends unexpectedly                        | `result.is_error: true` with a `terminal_reason`   |
 | cancelled | ZeroSDK interrupted or closed it                                                                          | `interrupt()`, `close()`                           |
 
-`completed`, `cancelled` and `stuck` are ZeroSDK's own verdicts on both routes: no bridge reports them, and nobody has a general stuck detector. The nearest are 60 s of silence after an interrupt (Sculptor), 10 s with no hook after a send (Superset), 30 s with no transcript (Happy) and a 600 s stall watchdog (Nimbalyst) [Source]. herdr's `unknown` should stay a value of its own, not fold into `idle`.
+`completed`, `cancelled` and `stuck` are ZeroSDK's own verdicts on both routes: no bridge reports them, and nobody has a general stuck detector. The nearest are 30 s with no transcript (Happy), a 600 s stall watchdog (Nimbalyst), 60 s of silence after an interrupt (Sculptor) and 10 s with no hook after a send (Superset) [Source]. herdr's `unknown` should stay a value of its own, not fold into `idle`.
 
 ## 6. Peers across routes
 
@@ -185,18 +185,18 @@ Messages are plain text, about one million characters at most, and cannot approv
 
 | Tool, route               | Start                                    | Send into a running session                              | Answer a permission                      | Detect waiting                               | Detect idle                             | Detect a usage limit                 | Stop                               |
 | ------------------------- | ---------------------------------------- | -------------------------------------------------------- | ---------------------------------------- | -------------------------------------------- | --------------------------------------- | ------------------------------------ | ---------------------------------- |
+| ccmanager, TUI            | `claude` in a pty                        | the user only                                            | Enter after a model's verdict (optional) | `do you want`, `esc to cancel`               | no busy marker for 1.5 s                | no                                   | kill the pty                       |
 | Claude Squad, TUI in tmux | `tmux new-session -d ... claude`         | pty write, 100 ms, then `\r`                             | Enter on the default (auto-yes)          | `No, and tell Claude what to do differently` | pane hash unchanged for one 500 ms tick | no                                   | `tmux kill-session`                |
-| Superset, TUI             | argv typed into a shell                  | bracketed paste, 500 ms, `\r`, serialized                | keys only                                | `PermissionRequest`, `Notification` hooks    | `Stop` hook                             | `StopFailure` read as failed         | Esc or Ctrl+C, SIGHUP              |
 | Emdash, TUI               | `claude --session-id <id>` in node-pty   | raw pty write, separate `\r`                             | the human                                | `Notification` hook                          | `Stop` hook                             | no                                   | SIGTERM to the group, then SIGKILL |
-| Sculptor, TUI             | command typed into a login shell         | bracketed paste, 0.75 s, `\r`, only when idle or waiting | the human                                | `Notification` and `PreToolUse` hooks        | `Stop`, `idle_prompt` hooks             | no                                   | close the pty                      |
 | Nimbalyst, TUI            | `claude --session-id <uuid>` in node-pty | bracketed paste, gap scaled by bytes, `\r`               | `PreToolUse` hook `permissionDecision`   | the session's PID file says `waiting`        | PID file `idle`                         | a proxy sees HTTP 429                | Ctrl+C twice, SIGINT               |
 | Omnara (legacy), TUI      | `claude --session-id <id>` in a pty      | text, 0.25 s, `\r`                                       | parse `Do you want` and type the digit   | idle after a tool use                        | 3.5 s without `esc to interrupt`        | no                                   | SIGTERM                            |
-| ccmanager, TUI            | `claude` in a pty                        | the user only                                            | Enter after a model's verdict (optional) | `do you want`, `esc to cancel`               | no busy marker for 1.5 s                | no                                   | kill the pty                       |
+| Sculptor, TUI             | command typed into a login shell         | bracketed paste, 0.75 s, `\r`, only when idle or waiting | the human                                | `Notification` and `PreToolUse` hooks        | `Stop`, `idle_prompt` hooks             | no                                   | close the pty                      |
+| Superset, TUI             | argv typed into a shell                  | bracketed paste, 500 ms, `\r`, serialized                | keys only                                | `PermissionRequest`, `Notification` hooks    | `Stop` hook                             | `StopFailure` read as failed         | Esc or Ctrl+C, SIGHUP              |
+| T3 Code, SDK              | `query()` with `sessionId`               | queued; steer with `priority: "now"`                     | `canUseTool`                             | a pending runtime request                    | the `result`                            | `rate_limit_event`, 429, `api_retry` | `interrupt()`, then `close()`      |
 | uzi, TUI in tmux          | `send-keys 'claude "<prompt>"' C-m`      | `send-keys <msg> Enter`                                  | Enter on prompt substrings               | `Do you want to`, `Allow command`            | no `esc to interrupt` or `Thinking`     | no                                   | `tmux kill-session`                |
 | vibe-kanban, headless     | `claude -p --output-format=stream-json`  | one queued message, run after exit                       | `control_response` to `can_use_tool`     | an approval request row                      | the `result`, then exit                 | parsed, ignored                      | stdin interrupt, then signals      |
-| T3 Code, SDK              | `query()` with `sessionId`               | queued; steer with `priority: "now"`                     | `canUseTool`                             | a pending runtime request                    | the `result`                            | `rate_limit_event`, 429, `api_retry` | `interrupt()`, then `close()`      |
 
-On the TUI route, status comes from hooks (Superset, Emdash, Sculptor), the session's PID file (Nimbalyst) or screen text (Claude Squad, Omnara, ccmanager, uzi). Hooks miss a user's Escape and interrupts; screen reading misreads redraws [Source]. Every tool that answers permissions by program does it headless or through a `PreToolUse` hook; tools that answer by keys only press Enter on the highlighted default or type a digit after parsing the screen [Source].
+On the TUI route, status comes from hooks (Emdash, Sculptor, Superset), the session's PID file (Nimbalyst) or screen text (ccmanager, Claude Squad, Omnara, uzi). Hooks miss a user's Escape and interrupts; screen reading misreads redraws [Source]. Every tool that answers permissions by program does it headless or through a `PreToolUse` hook; tools that answer by keys only press Enter on the highlighted default or type a digit after parsing the screen [Source].
 
 ## 8. Pitfalls
 
@@ -348,7 +348,7 @@ type Harness = {
   watch(session: Id, onChange: (status: Status, reason?: string) => void): () => void
 }
 
-// What a CLI harness uses to drive a terminal host
+// What a CLI harness uses to drive the panes a bridge hosts
 type Bridge = {
   open(input: {
     cwd: string
@@ -375,7 +375,7 @@ type Bridge = {
 }
 ```
 
-- **start** folds in resume and keeps the runtime's id as an opaque `resume` payload beside ZeroSDK's own `Id`, as the AI SDK and Cloudflare do; for Claude that payload holds its UUID and the full launch settings, since a resume does not restore them.
+- **start** folds in resume and keeps the harness's own session id as an opaque `resume` payload beside ZeroSDK's own `Id`, as the AI SDK and Cloudflare do; for Claude that payload holds its UUID and the full launch settings, since a resume does not restore them.
 - **send** takes a delivery choice: Claude queues by default, OpenCode V2 steers by default ("While OpenCode is working, Enter steers the active session" [Docs]).
 - **answer** is one call for both kinds, with a cancel.
 - **interrupt** and **stop** stay apart, as in every source.
