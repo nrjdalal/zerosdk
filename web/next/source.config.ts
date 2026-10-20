@@ -1,3 +1,5 @@
+import { join } from "node:path"
+
 import { rehypeCodeDefaultOptions } from "fumadocs-core/mdx-plugins"
 import { pageSchema } from "fumadocs-core/source/schema"
 import { defineConfig, defineDocs } from "fumadocs-mdx/config"
@@ -75,16 +77,26 @@ type HastNode = {
   value?: string
 }
 
-// A twoslash block shows its doc comments on hover and needs its leading imports only to type-check, so both are cut from the code with Twoslash's notation (https://twoslash.netlify.app/refs/notations#cutting-code), before rehypeCode where fumadocs-twoslash reads it and after the page's markdown copy is taken, which keeps them.
+// fumadocs' include keeps a file's final newline in its block (only the markdown copy drops it) and rehypeCode strips just the one hast appends, so every block drops one more; an included block keeps its include's position, so it cannot be told from a fence here, and a fence loses only a trailing blank line, which no doc has.
+function rehypeTrimFinalNewline() {
+  const visit = (node: HastNode) => {
+    const last = node.tagName === "code" ? node.children?.at(-1) : undefined
+    if (last?.type === "text" && last.value) last.value = last.value.replace(/\n$/, "")
+    node.children?.forEach(visit)
+  }
+  return visit
+}
+
+// A twoslash block shows its doc comments on hover, needs its leading imports only to type-check, and an oxfmt-ignore only keeps a long line whole in the source, so all three are cut from the code with Twoslash's notation (https://twoslash.netlify.app/refs/notations#cutting-code), before rehypeCode where fumadocs-twoslash reads it and after the page's markdown copy is taken, which keeps them.
 function rehypeTwoslashCuts() {
   const visit = (node: HastNode) => {
     if (node.tagName === "code" && node.data?.meta?.includes("twoslash"))
       for (const child of node.children ?? [])
         if (child.type === "text" && child.value)
           child.value = child.value
-            .replace(/^(?:import\b[^"']*["'][^"'\n]*["'][^\n]*\n)+\n*/, "$&// ---cut---\n")
+            .replace(/^(?:import\b[^"']*["'][^"'\n]*["'][^\n]*\n+)+/, "$&// ---cut---\n")
             .replace(
-              /^([ \t]*)(\/\*\*[\s\S]*?\*\/)[ \t]*\n/gm,
+              /^([ \t]*)(\/\*\*[\s\S]*?\*\/|\/\/ oxfmt-ignore)[ \t]*\n/gm,
               "$1// ---cut-start---\n$1$2\n$1// ---cut-end---\n",
             )
     node.children?.forEach(visit)
@@ -105,9 +117,17 @@ export default defineConfig({
       transformers: [
         ...(rehypeCodeDefaultOptions.transformers ?? []),
         // The hovers are kept in git, since a build under Bun cannot run TypeScript 7's sync API (oven-sh/bun#39747) and reads them from here instead.
-        transformerTwoslash({ typesCache: createFileSystemTypesCache({ dir: "twoslash-cache" }) }),
+        transformerTwoslash({
+          // An included schema file imports its siblings through @/, which resolves to packages/schema/src in a block.
+          twoslashOptions: {
+            compilerOptions: {
+              paths: { "@/*": [join(process.cwd(), "../../packages/schema/src/*")] },
+            },
+          },
+          typesCache: createFileSystemTypesCache({ dir: "twoslash-cache" }),
+        }),
       ],
     },
-    rehypePlugins: (plugins) => [rehypeTwoslashCuts, ...plugins],
+    rehypePlugins: (plugins) => [rehypeTrimFinalNewline, rehypeTwoslashCuts, ...plugins],
   },
 })
