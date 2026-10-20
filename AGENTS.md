@@ -26,6 +26,7 @@ Guidance for AI coding agents working in this repository, a Bun monorepo: the `w
 ## UI
 
 - ALWAYS: Follow the `design` skill for UI, styling, and design decisions (it holds the canonical conventions). Update it in the same change when a convention changes.
+- ALWAYS: Build each shadcn component the way shadcn uses it, from its primary demo with the defaults, and record our usage and every deviation, with its reason, in the `design` skill's `shadcn.md` in the same change. See the `design` skill's "shadcn's own usage first" principle.
 - ALWAYS: For any frontend or UI change, verify it in a real browser with agent-browser before opening or updating a PR; drive the actual page or flow, do not rely on type-check and lint alone. Run the end-to-end flow when the change spans it or when asked. Capture screenshots and attach them to the PR with `gh pr comment --attach`. See the `ui-verify` skill.
 
 ## Commits

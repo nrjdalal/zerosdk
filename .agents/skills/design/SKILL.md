@@ -14,6 +14,7 @@ When a change establishes or alters a convention, update this file in the same c
 ## Principles
 
 - **Defaults first.** Use primitives bare at their defaults and add a class only where a spot genuinely needs it. Per-instance overrides are how drift starts. Example: `<Spinner />`, not `<Spinner className="size-5" />`.
+- **shadcn's own usage first.** Start every shadcn component from its docs page's primary demo, its default use case. Use only its documented variants and sizes, and nest it with other components the way shadcn's named examples and blocks do. For example, shadcn's `questionnaire-card` puts `Card` inside `Questionnaire`, and renders the questionnaire's title and description as Card parts through `render`. Keep the defaults until a need shows, then change only what the need asks for. [`shadcn.md`](shadcn.md) records, for each component the app uses, how shadcn uses it, where we use it, and every deliberate deviation with its reason. Update it in the same change. An open deviation goes to the dated shadcn audit in `.github/notes/audits/`.
 - **One source per concern.** Shared styling lives in the component or its variant, never copy-pasted across call sites. Brand identity (name, description, social links) is `@packages/config/site`.
 
 ## Cursor
