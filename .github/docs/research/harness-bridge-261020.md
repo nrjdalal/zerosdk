@@ -164,8 +164,8 @@ The TUI waits and continues by itself; the SDK never waits. On the SDK route a `
 | idle      | herdr `idle` or `done`; `Stop` hook                                                                       | `idle` and a `result` with `is_error: false`       |
 | paused    | the usage-limit lines on screen; `StopFailure` `error: "rate_limit"`; `quota_auto_resume_*` notifications | `rate_limit_event` `rejected` with `resetsAt`      |
 | stuck     | herdr `working` with no screen `revision` change, or `unknown`, past a threshold; `agent_prompt_stalled`  | no messages but heartbeats past a threshold        |
-| failed    | `StopFailure` with another error; `API Error:` text; the process ends unexpectedly                        | `result.is_error: true` with a `terminal_reason`   |
 | completed | the session's work is done (a ZeroSDK verdict; herdr reports no exit code)                                | same                                               |
+| failed    | `StopFailure` with another error; `API Error:` text; the process ends unexpectedly                        | `result.is_error: true` with a `terminal_reason`   |
 | cancelled | ZeroSDK interrupted or closed it                                                                          | `interrupt()`, `close()`                           |
 
 `completed`, `cancelled` and `stuck` are ZeroSDK's own verdicts on both routes: no bridge reports them, and nobody has a general stuck detector. The nearest are 60 s of silence after an interrupt (Sculptor), 10 s with no hook after a send (Superset), 30 s with no transcript (Happy) and a 600 s stall watchdog (Nimbalyst) [Source]. herdr's `unknown` should stay a value of its own, not fold into `idle`.
