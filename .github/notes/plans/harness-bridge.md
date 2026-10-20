@@ -19,6 +19,7 @@ later:  UI ─► server ─► Harness ─► claude-code (sdk) ─► @anthrop
 5. **The bridge is herdr first, cmux later** (2026-10-20), behind one bridge contract, chosen by one setting.
 6. **Hooks and the screen, both from the start** (2026-10-20). Claude Code hooks passed at launch through `--settings` post events to the local server and are the main signal; the screen read through herdr is the backup, since Escape fires no hook.
 7. **Prompts are answered through the hook reply** (2026-10-20): `PermissionRequest`, and `PreToolUse` for questions, so the answer reaches the exact question; keys typed through the bridge are only the fallback for a prompt that sends no hook.
+8. **A permission flipper in each main agent's pane** (2026-10-20): Ask me, Rules or Allow all, deciding how the server answers permission requests for that main agent and every agent it started, followed down the recorded parents. The flip lives in the server, not in Claude: agents run in Claude Code's ask-first mode (`default`), so every request reaches the hook, and the server records each answer and what gave it.
 
 ## Steps
 
@@ -33,5 +34,4 @@ later:  UI ─► server ─► Harness ─► claude-code (sdk) ─► @anthrop
 
 To ask the user one at a time, each with a recommendation:
 
-1. **The permission mode agents run in.** Recommended: to be settled with the agent roles, since it decides which prompts appear and how peer messages are held.
-2. **First launch in a new worktree.** Recommended: pre-seed the workspace trust dialog, so a session never starts behind it.
+1. **First launch in a new worktree.** Recommended: pre-seed the workspace trust dialog, so a session never starts behind it.
