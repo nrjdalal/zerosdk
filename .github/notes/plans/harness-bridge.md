@@ -18,6 +18,7 @@ later:  UI ─► server ─► Harness ─► claude-code (sdk) ─► @anthrop
 4. **CLIs first, no SDK and no ACP yet** (2026-10-20). The SDK route comes later as a second implementation of the same harness contract.
 5. **The bridge is herdr first, cmux later** (2026-10-20), behind one bridge contract, chosen by one setting.
 6. **Hooks and the screen, both from the start** (2026-10-20). Claude Code hooks passed at launch through `--settings` post events to the local server and are the main signal; the screen read through herdr is the backup, since Escape fires no hook.
+7. **Prompts are answered through the hook reply** (2026-10-20): `PermissionRequest`, and `PreToolUse` for questions, so the answer reaches the exact question; keys typed through the bridge are only the fallback for a prompt that sends no hook.
 
 ## Steps
 
@@ -32,6 +33,5 @@ later:  UI ─► server ─► Harness ─► claude-code (sdk) ─► @anthrop
 
 To ask the user one at a time, each with a recommendation:
 
-1. **How prompts get answered.** Recommended: through the hook reply (`PermissionRequest`, and `PreToolUse` for questions), with keys typed through the bridge as the fallback, so typed keys never land in the wrong box.
-2. **The permission mode agents run in.** Recommended: to be settled with the agent roles, since it decides which prompts appear and how peer messages are held.
-3. **First launch in a new worktree.** Recommended: pre-seed the workspace trust dialog, so a session never starts behind it.
+1. **The permission mode agents run in.** Recommended: to be settled with the agent roles, since it decides which prompts appear and how peer messages are held.
+2. **First launch in a new worktree.** Recommended: pre-seed the workspace trust dialog, so a session never starts behind it.
