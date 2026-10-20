@@ -45,7 +45,7 @@ Bun-first therefore applies to the Bun-only files: `.github/scripts/*.ts`, `pack
 
 ## Built-ins with no Bun equivalent (always `node:`)
 
-`node:path`, `node:os`, `node:util`, `node:crypto`, `node:readline/promises`, and the directory/sync parts of `node:fs` (`existsSync` in sync code, `mkdirSync`, `mkdtempSync`, `readdirSync`, `rmSync`). Bun ships no `Bun.path`/`Bun.os`, so `node:` is the idiomatic API for these even in pure-Bun files.
+`node:path`, `node:os`, `node:util`, `node:crypto`, `node:readline/promises`, and the directory/sync parts of `node:fs` (`existsSync` in sync code, `mkdirSync`, `mkdtempSync`, `readdirSync`, `renameSync`, `rmSync`). Bun ships no `Bun.path`/`Bun.os`, so `node:` is the idiomatic API for these even in pure-Bun files.
 
 ## Audit
 

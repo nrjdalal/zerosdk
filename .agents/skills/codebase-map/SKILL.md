@@ -12,7 +12,7 @@ source: https://github.com/nrjdalal/zerostarter
 One Bun + Turborepo monorepo: two deployable apps over shared packages. Imports use `@api/hono`, `@packages/*`, and the `@/` alias, never deep relative paths.
 
 ```
-.generated/       # repo-root home for build-time generated assets (gitignored)
+.generated/       # repo-root home for build-time generated assets (gitignored), the sources' docs cache among them
 api/hono/         # backend (Hono): routers, middlewares, the AppType export
 web/next/         # frontend (Next.js App Router): app/, components/, lib/, content/
 packages/auth/    # Better Auth instance
@@ -20,7 +20,7 @@ packages/db/      # Drizzle schema + client
 packages/env/     # type-safe env, one validated entry per consumer
 packages/config/  # TS base, tsdown factory, and site.ts (brand identity)
 packages/schema/  # Zod schemas the factory shares, one file per entity (agent.ts); web/next depends on it so the docs that include it rebuild with it
-packages/scripts/ # build-only bun tooling (agent-schemas, auth-schema, data-table-metrics, generate-env, release-version); every new script lands here, never bundled
+packages/scripts/ # build-only bun tooling (agent-schemas, auth-schema, data-table-metrics, generate-env, release-version, sources, terms); every new script lands here, never bundled
 packages/cli/     # the zerostarter scaffolding CLI (canonical repo only; init strips it)
 tests/            # the whole suite, mirroring each subject's path; *.e2e.test.ts drive a running stack (init strips the canonical suite; this repo keeps its own)
 ```
