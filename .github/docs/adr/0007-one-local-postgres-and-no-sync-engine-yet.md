@@ -1,6 +1,6 @@
 # One local Postgres, and no sync engine yet
 
-The factory's data lives in one Postgres running in Docker on the user's machine, with Drizzle and Better Auth as before. The UI holds what it shows in TanStack DB collections fed by the server's API, and the server pushes each change, so the sidebar updates live without a second database. With one machine and one writer there is nothing for a sync engine to converge: "Not every app needs local, offline writes" ([ElectricSQL](https://electric.ax/docs/guides/writes)). Once a second database exists, ElectricSQL with TanStack DB's Electric collection is the upgrade, since it syncs existing tables and leaves writes to the server's API ([research](../research/local-data-261020.md)).
+The factory's data lives in one Postgres running in Docker on the user's machine, with Drizzle and Better Auth as before. The UI holds what it shows in TanStack DB collections fed by the server's API, and the server pushes each change, so the sidebar updates live without a second database. With one machine and one writer there is nothing for a sync engine to converge: "Not every app needs local, offline writes" ([ElectricSQL](https://electric.ax/docs/guides/writes)). Once a second database exists, ElectricSQL with TanStack DB's Electric collection is the upgrade, since it syncs existing tables and leaves writes to the server's API ([research](../research/0003-local-data.md)).
 
 ## Considered Options
 

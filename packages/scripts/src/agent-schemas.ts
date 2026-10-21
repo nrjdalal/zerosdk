@@ -241,7 +241,7 @@ export const render = (blocks: Block[]) =>
     .join("\n\n")}\n`
 
 // Writes each content to its own file in the cache, so sources that export the same name never meet, and opens them as one project through TypeScript's compiler API.
-async function compile({ api, cache }: Session, prefix: string, contents: string[]) {
+export async function compile({ api, cache }: Session, prefix: string, contents: string[]) {
   const files = contents.map((_, i) => resolve(cache, `${prefix}-${i}.ts`))
   const config = resolve(cache, `${prefix}.tsconfig.json`)
   await Promise.all(contents.map((content, i) => Bun.write(files[i], content)))
@@ -279,6 +279,17 @@ const modifiers = async (symbol: Symbol, project: Project) => {
 
 const has = (symbol: Symbol, flag: SymbolFlags) => (symbol.flags & flag) !== 0
 
+// A symbol's type as the compiler prints it, untruncated; `?` already says an optional one may be left out, so its undefined is dropped.
+export const printType = async (checker: Checker, symbol: Symbol) => {
+  const optional = has(symbol, SymbolFlags.Optional)
+  const printed = await checker.typeToString(
+    (await checker.getTypeOfSymbol(symbol))!,
+    undefined,
+    NodeBuilderFlags.NoTruncation,
+  )
+  return { optional, type: optional ? printed.replace(/ \| undefined$/, "") : printed }
+}
+
 const isPublic = (symbol: Symbol, written: Set<SyntaxKind>) =>
   !/^[_#]/.test(symbol.name) &&
   !written.has(SyntaxKind.PrivateKeyword) &&
@@ -294,22 +305,12 @@ async function fromNpm(session: Session, npm: NpmSource[]): Promise<Source[]> {
     ),
   )
   const checker: Checker = project.checker
-  const field = async (symbol: Symbol, isStatic = false): Promise<Field> => {
-    const optional = has(symbol, SymbolFlags.Optional)
-    const printed = await checker.typeToString(
-      (await checker.getTypeOfSymbol(symbol))!,
-      undefined,
-      NodeBuilderFlags.NoTruncation,
-    )
-    return {
-      description: await symbol.getDocumentationComment(checker),
-      name: symbol.name,
-      optional,
-      ...(isStatic && { static: true }),
-      // `?` already says the field may be left out.
-      type: optional ? printed.replace(/ \| undefined$/, "") : printed,
-    }
-  }
+  const field = async (symbol: Symbol, isStatic = false): Promise<Field> => ({
+    description: await symbol.getDocumentationComment(checker),
+    name: symbol.name,
+    ...(isStatic && { static: true }),
+    ...(await printType(checker, symbol)),
+  })
   // The public symbols that pass test, which also sees the modifier keywords written on each, as fields.
   const fieldsOf = async (
     symbols: readonly Symbol[],

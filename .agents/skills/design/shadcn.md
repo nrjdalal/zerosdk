@@ -500,4 +500,4 @@ The skeletons below keep only nesting and key props. Paths under "Our usage" sta
   - A title's tooltip cancels its own opening when the text fits, through `onOpenChange` and `details.cancel()` (design skill, State).
   - `DataTableCellText` measures overflow with `useState`, legacy code the design skill (State) names and says not to copy.
 
-Open items, the deviations with no recorded reason, are in `.github/notes/audits/2026-10-20-shadcn-usage.md`.
+Open items, the deviations with no recorded reason, are in `.github/notes/audits/0001-shadcn-usage.md`.

@@ -1,7 +1,7 @@
 # Run agents through a harness and a bridge
 
 - Status: planned
-- Links: [ADR 0005](../../docs/adr/0005-agents-run-in-cli-harnesses-through-a-bridge.md) · [ADR 0006](../../docs/adr/0006-the-server-answers-permission-requests.md) · [research](../../docs/research/harness-bridge-261020.md) · [the Session schema plan](session-schema.md) · [the local data plan](local-data.md) · PR #28
+- Links: [ADR 0005](../../docs/adr/0005-agents-run-in-cli-harnesses-through-a-bridge.md) · [ADR 0006](../../docs/adr/0006-the-server-answers-permission-requests.md) · [research](../../docs/research/0002-harness-bridge.md) · [the Session schema plan](0003-session-schema.md) · [the local data plan](0005-local-data.md) · PR #28
 
 ZeroSDK runs each session of an agent as its own Claude Code CLI in a herdr pane on the user's machine, behind the harness and bridge contracts of ADR 0005, and answers permission requests as ADR 0006 sets out.
 
@@ -63,7 +63,7 @@ zerosdk/
     └── screen.test.ts              checked against real screen captures
 ```
 
-The server calls only the Harness contract, and only the CLI implementations use a Bridge, so adding `sdk.ts` or `cmux.ts` changes nothing else. `packages/cli` still means zerostarter's npm CLI in `AGENTS.md`, the `add-package`, `audit`, `codebase-map` and `runtime-apis` skills (its `index.md` too) and `.github/scripts/build-sizes.ts`, which leaves it out of the build-size graph; each gets updated when the `zerosdk` command lands there, and the `runtime-apis` rules (Node, `node:` only) apply to it. A custom status line, which `until` needs, hides Claude Code's `esc to interrupt` hint, so the screen check and herdr rely on the title spinner to see a session working. The name of the sessions table waits on the [icebox: the sign-in session table](auth-session-name.md), since the sign-in table is already called `session`.
+The server calls only the Harness contract, and only the CLI implementations use a Bridge, so adding `sdk.ts` or `cmux.ts` changes nothing else. `packages/cli` still means zerostarter's npm CLI in `AGENTS.md`, the `add-package`, `audit`, `codebase-map` and `runtime-apis` skills (its `index.md` too) and `.github/scripts/build-sizes.ts`, which leaves it out of the build-size graph; each gets updated when the `zerosdk` command lands there, and the `runtime-apis` rules (Node, `node:` only) apply to it. A custom status line, which `until` needs, hides Claude Code's `esc to interrupt` hint, so the screen check and herdr rely on the title spinner to see a session working. The name of the sessions table waits on the [icebox: the sign-in session table](0002-auth-session-name.md), since the sign-in table is already called `session`.
 
 ## Steps
 

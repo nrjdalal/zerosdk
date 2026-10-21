@@ -1,6 +1,6 @@
 # Names follow the sources
 
-ZeroSDK names its concepts, fields and docs by the consensus of nine TypeScript agent frameworks, in their current generation only: Anomaly OpenCode, Claude Agent SDK, Claude Code, Cloudflare Agents, Mastra, OpenAI Agents SDK, OpenAI Codex, Vercel AI SDK and Vercel eve. A term is chosen by how many of them use it, counted with `bun run terms` over their docs as `bun run sources` caches them, so someone coming from any of them meets familiar words and no name is invented.
+ZeroSDK names its concepts, fields and docs by the consensus of nine TypeScript agent frameworks, in their current generation only: Anomaly OpenCode, Claude Agent SDK, Claude Code, Cloudflare Agents, Mastra, OpenAI Agents SDK, OpenAI Codex, Vercel AI SDK and Vercel eve. A term is chosen by how many of them use it, counted with `bun run terms` over their docs as `bun run sources` caches them, so someone coming from any of them meets familiar words and no name is invented. An agent's own fields are the exception, under Claude Code's names ([ADR 0009](0009-an-agent-is-built-around-claude-and-known-by-a-uuid.md)).
 
 ## Considered Options
 

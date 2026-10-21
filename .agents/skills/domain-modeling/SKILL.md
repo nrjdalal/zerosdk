@@ -16,14 +16,17 @@ ZeroSDK has a single context, kept in `.github/docs/`:
 
 ```
 .github/docs/
+├── README.md
 ├── GLOSSARY.md
 ├── adr/
-│   └── NNNN-slug.md
+│   ├── README.md
+│   └── NNNN-<name>.md
 └── research/
-    └── <topic>-YYMMDD.md
+    ├── README.md
+    └── NNNN-<name>.md
 ```
 
-`research/` holds the evidence behind terms and decisions, one note per study, named by topic and the date it was done. Redoing a study writes a new dated note rather than editing the old one. The repo is public, so a note keeps only what public primary sources confirm.
+`research/` holds the evidence behind terms and decisions, one note per study, numbered in the order the studies were done and dated at its top. Redoing a study writes a new note rather than editing the old one. Each folder's `README.md` indexes its files, so list a new ADR or note there as you write it. The repo is public, so a note keeps only what public primary sources confirm.
 
 If a `.github/docs/GLOSSARY-MAP.md` exists, the repo has multiple contexts; the map points to where each one lives, each with its own `GLOSSARY.md` and `adr/`.
 
@@ -65,4 +68,4 @@ If any of the three is missing, skip the ADR. Use the format in [ADR-FORMAT.md](
 
 ## Choose terms by the sources
 
-ZeroSDK takes its terms from the consensus of nine agent frameworks ([ADR 0001](../../../.github/docs/adr/0001-names-follow-the-sources.md)). Count the candidates for a term with `bun run terms` (run `bun run sources` first to fill the cache), pick the one most sources use, list the others under `_Avoid_`, and put the counts in the ADR when one is due.
+ZeroSDK takes its terms from the consensus of nine agent frameworks ([ADR 0001](../../../.github/docs/adr/0001-names-follow-the-sources.md)). Count the candidates for a term with `bun run terms` (run `bun run sources` first to fill the cache), pick the one most sources use, list the others under `_Avoid_`, and put the counts in the ADR when one is due. An agent's own fields are the exception: they take Claude Code's names, since Claude is the first harness ([ADR 0009](../../../.github/docs/adr/0009-an-agent-is-built-around-claude-and-known-by-a-uuid.md)).

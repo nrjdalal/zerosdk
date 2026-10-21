@@ -1,7 +1,7 @@
 # Keep the factory's dynamic data local
 
 - Status: planned
-- Links: [ADR 0007](../../docs/adr/0007-one-local-postgres-and-no-sync-engine-yet.md) · [ADR 0008](../../docs/adr/0008-memory-and-skills-live-in-the-database-behind-a-cli.md) · [research](../../docs/research/local-data-261020.md) · [the harness and bridge plan](harness-bridge.md) · PR #28
+- Links: [ADR 0007](../../docs/adr/0007-one-local-postgres-and-no-sync-engine-yet.md) · [ADR 0008](../../docs/adr/0008-memory-and-skills-live-in-the-database-behind-a-cli.md) · [research](../../docs/research/0003-local-data.md) · [the harness and bridge plan](0004-harness-bridge.md) · PR #28
 
 The factory is mostly dynamic: agents add and change memory, permission decisions, sessions, settings such as the chosen bridge, and skills all the time, and the UI reads them fast and live. The data stays on the user's machine, free and local first, with throwaway databases on demand and room for a remote Postgres later.
 

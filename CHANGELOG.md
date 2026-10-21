@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.0.9
+
+[compare changes](https://github.com/nrjdalal/zerosdk/compare/v0.0.8...v0.0.9)
+
+### 🚀 Enhancements
+
+- **web:** List the human's threads in the agents sidebar, five to a page ([#25](https://github.com/nrjdalal/zerosdk/pull/25))
+- **web:** Give each thread row a menu, draw icons in Fill, and build UI from shadcn's own usage ([#27](https://github.com/nrjdalal/zerosdk/pull/27))
+
+### 📖 Documentation
+
+- Plan how ZeroSDK runs agents, with research, glossary and ADRs ([#28](https://github.com/nrjdalal/zerosdk/pull/28))
+
+### ❤️ Contributors
+
+- Neeraj Dalal @nrjdalal
+
 ## v0.0.8
 
 [compare changes](https://github.com/nrjdalal/zerosdk/compare/v0.0.7...v0.0.8)

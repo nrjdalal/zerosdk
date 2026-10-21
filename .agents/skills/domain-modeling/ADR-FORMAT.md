@@ -1,6 +1,6 @@
 # ADR Format
 
-ADRs live in `.github/docs/adr/` and use sequential numbering: `0001-slug.md`, `0002-slug.md`, etc.
+ADRs live in `.github/docs/adr/` and use sequential numbering: `0001-<name>.md`, `0002-<name>.md`, etc.
 
 Create the `.github/docs/adr/` directory lazily: only when the first ADR is needed.
 
@@ -24,7 +24,7 @@ Only include these when they add genuine value. Most ADRs won't need them.
 
 ## Numbering
 
-Scan `.github/docs/adr/` for the highest existing number and increment by one.
+Scan `.github/docs/adr/` for the highest existing number and increment by one, then list the ADR in `adr/README.md`.
 
 ## When to offer an ADR
 

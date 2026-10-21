@@ -4,21 +4,21 @@ Research date: 2026-10-20. Gathered by three research subagents from each projec
 
 Labels: [Docs] official documentation · [Source] source code or license file at the commit named · [npm] package metadata on 2026-10-20 · [Unconfirmed] not settled by a primary source · [Example] built from documented fields, not a captured output.
 
-| Project          | Read from                                                                                                                                          |
-| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ElectricSQL      | github.com/electric-sql/electric at `3f9809f`                                                                                                      |
-| InstantDB        | github.com/instantdb/instant at `b97a116`                                                                                                          |
-| Jazz             | github.com/garden-co/jazz at `ededd88`                                                                                                             |
-| LiveStore        | github.com/livestorejs/livestore at `aafda20` and livestore-contrib at `a5543eb`                                                                   |
-| PGlite           | github.com/electric-sql/pglite at `5573bb0`                                                                                                        |
-| PowerSync        | github.com/powersync-ja: powersync-docs at `cbd070f`, powersync-js at `7d5255f`, powersync-service at `51a1a89`                                    |
-| RxDB             | github.com/pubkey/rxdb at `345a475`                                                                                                                |
-| TanStack DB      | github.com/TanStack/db at `31dad2d`                                                                                                                |
-| TinyBase         | github.com/tinyplex/tinybase at `3938658`                                                                                                          |
-| Triplit          | github.com/aspen-cloud/triplit at `d3029ee`                                                                                                        |
-| Zero             | github.com/rocicorp: mono at `80f6a7a`, zero-docs at `618142c`                                                                                     |
-| The nine sources | the npm packages of [the session research](agent-session-261020.md), OpenCode at tag `v2.0.32`, Codex at `e1b9c94`, and their docs cached that day |
-| Docs only        | libSQL, PostgreSQL (postgresql.org), Replicache, SQLite                                                                                            |
+| Project          | Read from                                                                                                                                        |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| ElectricSQL      | github.com/electric-sql/electric at `3f9809f`                                                                                                    |
+| InstantDB        | github.com/instantdb/instant at `b97a116`                                                                                                        |
+| Jazz             | github.com/garden-co/jazz at `ededd88`                                                                                                           |
+| LiveStore        | github.com/livestorejs/livestore at `aafda20` and livestore-contrib at `a5543eb`                                                                 |
+| PGlite           | github.com/electric-sql/pglite at `5573bb0`                                                                                                      |
+| PowerSync        | github.com/powersync-ja: powersync-docs at `cbd070f`, powersync-js at `7d5255f`, powersync-service at `51a1a89`                                  |
+| RxDB             | github.com/pubkey/rxdb at `345a475`                                                                                                              |
+| TanStack DB      | github.com/TanStack/db at `31dad2d`                                                                                                              |
+| TinyBase         | github.com/tinyplex/tinybase at `3938658`                                                                                                        |
+| Triplit          | github.com/aspen-cloud/triplit at `d3029ee`                                                                                                      |
+| Zero             | github.com/rocicorp: mono at `80f6a7a`, zero-docs at `618142c`                                                                                   |
+| The nine sources | the npm packages of [the session research](0001-agent-session.md), OpenCode at tag `v2.0.32`, Codex at `e1b9c94`, and their docs cached that day |
+| Docs only        | libSQL, PostgreSQL (postgresql.org), Replicache, SQLite                                                                                          |
 
 ## Contents
 
