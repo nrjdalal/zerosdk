@@ -65,7 +65,7 @@ Restart the same way after changing `@packages/*` exports the API consumes: they
 
 ## Large-page hot reload trap
 
-After `bun run agent:schemas` or `bun run agent:type` regenerates a file under `web/next/src/schemas/`, or after any edit to the Agent schema page while the stack runs, restart the stack with the recipe above before loading the page. On the first render after a hot reload, Next 16 dev re-parses the page module's whole inline source map once per JSX element, so a page this size (one Twoslash block per source, plus the schema) stalls for tens of seconds and can exhaust the heap (`FATAL ERROR: ... JavaScript heap out of memory`, then a 502). Plain reloads and production builds are unaffected; a fresh start reads source maps from files and renders the page in seconds.
+After `bun run agent:schemas`, `bun run agent:type` or `bun run session:type` regenerates a file under `web/next/src/schemas/`, or after any edit to the Agent or Session schema page while the stack runs, restart the stack with the recipe above before loading the page. On the first render after a hot reload, Next 16 dev re-parses the page module's whole inline source map once per JSX element, so a page this size (one Twoslash block per source, plus the schema) stalls for tens of seconds and can exhaust the heap (`FATAL ERROR: ... JavaScript heap out of memory`, then a 502). Plain reloads and production builds are unaffected; a fresh start reads source maps from files and renders the page in seconds.
 
 ## Agent login
 

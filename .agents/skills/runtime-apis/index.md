@@ -29,12 +29,12 @@ runs under the system Node while Docker and Vercel serve it under Bun.
 | `packages/env/src/load-dotenv.ts` | Both | `node:path` (path) |
 | `packages/env/tsdown.config.ts` | Build | `node:child_process` (execSync) |
 | `packages/scripts/src/agent-schemas.ts` | Bun | `node:path` (resolve) |
-| `packages/scripts/src/agent-type.ts` | Bun | `node:path` (resolve) |
 | `packages/scripts/src/auth-schema.ts` | Bun | `node:path` (join, resolve) |
 | `packages/scripts/src/data-table-metrics.ts` | Bun | `node:path` (join, resolve) |
 | `packages/scripts/src/generate-env.ts` | Bun | `node:path` (resolve) |
 | `packages/scripts/src/provider-logos.ts` | Bun | `node:path` (resolve) |
 | `packages/scripts/src/release-version.ts` | Bun | `node:path` (join) |
+| `packages/scripts/src/schema-type.ts` | Bun | `node:path` (resolve) |
 | `packages/scripts/src/sources.ts` | Bun | `node:fs` (renameSync, rmSync); `node:path` (join, resolve) |
 | `packages/scripts/src/terms.ts` | Bun | `node:path` (join) |
 | `tests/github/scripts/ensure-remote-branches.test.ts` | Bun | `node:fs` (mkdtempSync, rmSync); `node:os` (tmpdir); `node:path` (join) |
@@ -51,9 +51,9 @@ runs under the system Node while Docker and Vercel serve it under Bun.
 | `tests/packages/cli/src/skills.test.ts` | Bun | `node:fs` (mkdtempSync, rmSync); `node:os` (tmpdir); `node:path` (join) |
 | `tests/packages/db/src/schema/auth.test.ts` | Bun | `node:path` (join) |
 | `tests/packages/scripts/src/agent-schemas.test.ts` | Bun | `node:fs` (mkdtempSync, rmSync); `node:os` (tmpdir); `node:path` (join) |
-| `tests/packages/scripts/src/agent-type.test.ts` | Bun | `node:fs` (mkdtempSync, rmSync); `node:os` (tmpdir); `node:path` (join) |
 | `tests/packages/scripts/src/provider-logos.test.ts` | Bun | `node:fs` (mkdtempSync, rmSync); `node:os` (tmpdir); `node:path` (join) |
 | `tests/packages/scripts/src/release-version.test.ts` | Bun | `node:fs` (mkdtempSync, rmSync); `node:os` (tmpdir); `node:path` (join) |
+| `tests/packages/scripts/src/schema-type.test.ts` | Bun | `node:fs` (mkdtempSync, rmSync); `node:os` (tmpdir); `node:path` (join) |
 | `tests/packages/scripts/src/sources.test.ts` | Bun | `node:fs` (mkdtempSync, rmSync); `node:os` (tmpdir); `node:path` (join) |
 | `tests/packages/scripts/src/terms.test.ts` | Bun | `node:fs` (mkdtempSync, rmSync); `node:os` (tmpdir); `node:path` (join) |
 | `tests/web/next/content/docs/ui/icons-page.ts` | Bun | `node:path` (join) |
