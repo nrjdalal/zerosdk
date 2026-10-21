@@ -148,8 +148,9 @@ function Status({ row }: { row: SubagentRow }) {
   )
 }
 
-// On hover, a title follows its agent's name, and a bare name shows only when the row cuts it short.
+// On hover, a title follows its agent's name, or its description when it has none, and a bare name shows only when the row cuts it short.
 function Title({ row }: { row: Pick<SubagentRow, "agent" | "title"> }) {
+  const name = row.agent.metadata?.name || row.agent.description
   return (
     <Tooltip
       onOpenChange={(open, details) => {
@@ -158,13 +159,11 @@ function Title({ row }: { row: Pick<SubagentRow, "agent" | "title"> }) {
           details.cancel()
       }}
     >
-      <TooltipTrigger render={<span className="truncate" />}>
-        {row.title ?? row.agent.name}
-      </TooltipTrigger>
+      <TooltipTrigger render={<span className="truncate" />}>{row.title ?? name}</TooltipTrigger>
       <TooltipContent>
         {/* One span, as the tooltip spaces its children apart */}
         <span>
-          {row.agent.name}
+          {name}
           {row.title && `: ${row.title}`}
         </span>
       </TooltipContent>

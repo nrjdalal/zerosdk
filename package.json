@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "agent:schemas": "bun packages/scripts/src/agent-schemas.ts && bun run twoslash:cache",
+    "agent:type": "bun packages/scripts/src/agent-type.ts && bun run twoslash:cache",
     "auth:schema": "bun packages/scripts/src/auth-schema.ts",
     "build": "turbo run build --summarize && bun .github/scripts/build-sizes.ts",
     "check-types": "turbo run check-types --summarize && bun run check-types:scripts && bun run check-types:tests",

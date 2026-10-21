@@ -5,7 +5,7 @@ A multi-agent software factory: the human talks to a main agent, and a team of a
 ## Agents
 
 **Agent**:
-A language model given its own instructions to carry out one kind of work in the factory.
+A language model given one kind of work in the factory.
 
 **Role**:
 An agent's place in the team: main agent, orchestrator or subagent.

@@ -68,4 +68,4 @@ If any of the three is missing, skip the ADR. Use the format in [ADR-FORMAT.md](
 
 ## Choose terms by the sources
 
-ZeroSDK takes its terms from the consensus of nine agent frameworks ([ADR 0001](../../../.github/docs/adr/0001-names-follow-the-sources.md)). Count the candidates for a term with `bun run terms` (run `bun run sources` first to fill the cache), pick the one most sources use, list the others under `_Avoid_`, and put the counts in the ADR when one is due.
+ZeroSDK takes its terms from the consensus of nine agent frameworks ([ADR 0001](../../../.github/docs/adr/0001-names-follow-the-sources.md)). Count the candidates for a term with `bun run terms` (run `bun run sources` first to fill the cache), pick the one most sources use, list the others under `_Avoid_`, and put the counts in the ADR when one is due. An agent's own fields are the exception: they take Claude Code's names, since Claude is the first harness ([ADR 0009](../../../.github/docs/adr/0009-an-agent-is-built-around-claude-and-known-by-a-uuid.md)).
