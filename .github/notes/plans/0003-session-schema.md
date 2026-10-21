@@ -1,9 +1,9 @@
 # A Session schema for the agents sidebar
 
-- Status: in progress (the schema and its page are built; the sidebar is next)
+- Status: in progress (the schema, its page and the sidebar's rows are built; the sessions table is left)
 - Links: [research](../../docs/research/0001-agent-session.md) · PR #18 (the agents sidebar) · PR #20 (Session in the glossary) · [icebox: the sign-in session table](0002-auth-session-name.md) · PR #28 · [ADR 0010](../../docs/adr/0010-a-session-keeps-what-most-sources-keep.md)
 
-The agents sidebar keeps each row's `state`, task kind, title and nesting in the web app alone. `AgentState` and `AgentTask` are the keys of `stateIcons` and `taskIcons` in `web/next/src/components/agents/icons.ts`, and `title` and `subagents` sit on the row types in `agents/sidebar.tsx`. All four describe one run of an agent, which the glossary calls a Session, so they move into a `Session` schema in `packages/schema`, beside `Agent`. A subagent's run becomes a child session that points at the session that started it, as OpenCode, Codex and eve model it.
+The agents sidebar kept each row's `state`, task kind, title and nesting in the web app alone: `AgentState` and `AgentTask` were the keys of `stateIcons` and `taskIcons` in `web/next/src/components/agents/icons.ts`, and `title` and `subagents` sat on the row types in `agents/sidebar.tsx`. All four describe one run of an agent, which the glossary calls a Session, so they moved into a `Session` schema in `packages/schema`, beside `Agent`. A subagent's run becomes a child session that points at the session that started it, as OpenCode, Codex and eve model it.
 
 ## Decided
 
@@ -20,7 +20,7 @@ The agents sidebar keeps each row's `state`, task kind, title and nesting in the
 ## Steps
 
 1. Done: add `packages/schema/src/session.ts` on the conventions `Agent` follows (Zod 4, fields grouped under `// required`, `// optional` and `// metadata` and A to Z within each, `id` as a UUID version 7, as `Agent`'s, a JSDoc description per field drafted from the sources' own wording), show it to the user before anything uses it, and record its shape in an ADR. Add a Session reference page after Agent, showing the type a session is written as and the sources' session types, each printed by a script, as `bun run schema:types` and `bun run schema:sources` do.
-2. Key `stateIcons` and `taskIcons` by the schema's values, the way `effortIcons` is keyed by `Agent["effort"]`, and rename the icons page's State section to Status.
-3. Make each sidebar row an `Agent` and its `Session`, build the nesting from the parent field, and fold `AgentRow`, `SubagentRow` and `NestedSubagentRow` into one row type.
+2. Done: key the icons by the schema's values, the way `effortIcons` is keyed by `Agent["effort"]`, as `statusIcons` (renamed from `stateIcons`) and `taskIcons`, and rename the icons page's State section to Status.
+3. Done: make each sidebar row an `Agent` and its `Session`, build the nesting from the parent field, and fold `AgentRow`, `SubagentRow` and `NestedSubagentRow` into one row type, `SessionRow`.
 4. Settle the [icebox: the sign-in session table](0002-auth-session-name.md) when the sessions table is designed, since agent sessions then get a table beside the sign-in `session` table.
-5. Update the tests under `tests/web/next/src/components/agents/`, the `/docs/ui/sidebar` page and the `codebase-map` and `design` skills, and check the sidebar in a real browser.
+5. Done: update the tests under `tests/web/next/src/components/agents/`, the `/docs/ui/sidebar` page and the `codebase-map` and `design` skills, and check the sidebar in a real browser.
