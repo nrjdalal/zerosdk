@@ -15,10 +15,10 @@ const component = (name = "") =>
   remix[name.replaceAll("`", "")] ?? logos[name.replaceAll("`", "") as keyof typeof logos]
 
 describe("agents icons", () => {
-  test("give each effort, state and task the icon the Icons page gives it, in its order", () => {
+  test("give each effort, status and task the icon the Icons page gives it, in its order", () => {
     for (const [section, map] of [
       ["Effort", icons.effortIcons],
-      ["State", icons.stateIcons],
+      ["Status", icons.statusIcons],
       ["Task", icons.taskIcons],
     ] as const) {
       const rows = tables[section] ?? []
@@ -37,7 +37,7 @@ describe("agents icons", () => {
   })
 
   test("hold an icon for each status and task a session can have", () => {
-    expect(Object.keys(icons.stateIcons)).toEqual(Session.shape.status.options)
+    expect(Object.keys(icons.statusIcons)).toEqual(Session.shape.status.options)
     expect(Object.keys(icons.taskIcons)).toEqual(
       Session.shape.metadata.unwrap().shape.task.unwrap().options,
     )

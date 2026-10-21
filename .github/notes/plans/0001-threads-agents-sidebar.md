@@ -8,17 +8,17 @@ The agents sidebar on `/docs/ui/sidebar` lists the human's [threads](../../docs/
 ## Decided
 
 1. **Where the group sits:** above Orchestrators.
-2. **Which statuses a thread shows:** running, waiting, stuck, idle and completed, from `stateIcons`, with no new icon.
+2. **Which statuses a thread shows:** running, waiting, stuck, idle and completed, from `statusIcons`, with no new icon.
 3. **Unread:** a count in the shadcn `SidebarMenuBadge`, nothing once all are read. Named `unread` after the sources: Codex shows "an unread indicator" and offers "Mark all as read", and Claude Code's sessions list marks a session unread; a general UI word, so no glossary entry.
 4. **The title's tooltip:** the agent holding the thread, such as AgentOne: Rename the CLI flags while it stands in. The title is what the human asked and no update changes it.
 5. **Order and paging:** most recently updated first, five to a page, with an arrow on each side of the page number in the group label and no pager at five or fewer. The list keeps five rows' height while it pages.
 6. **Selection:** one across the sidebar, threads included; AgentZero first until a pane exists to show a thread.
-7. **No `Thread` schema** in the mockup: `ThreadRow` is a UI type, as the agent rows' `state` is.
+7. **No `Thread` schema** in the mockup: `ThreadRow` is a UI type, while the agent rows are an `Agent` and its `Session` since plan 0003.
 8. **The row menu:** a ⋯ in the unread count's place on hover, composed as shadcn sidebar-07's `nav-projects`. It holds Mark as read or unread, Rename, Pin and Fork; Export transcript and Share link; Archive and Delete. Picked from the nine sources: Rename 6/9, Delete 6/9, Fork 6/9, Pin 3/9, Mark as read or unread 3/9, Export 3/9, Archive 2/9 and Share 2/9. Recap (3/9) is left out, as the thread view opens on what the human asked and what they have not read. Run controls (Stop 9/9, Compact 7/9, Rewind 5/9, Set model 5/9) belong to the thread view, not the row. Transcript, like unread, is a general UI word, so no glossary entry. Open for the human: on a phone the menu always shows, so the count does not; showing both side by side is the alternative.
 
 ## Built (the mockup)
 
-- `web/next/src/components/agents/sidebar.tsx`: `ThreadRow` and `ThreadState`, the Threads group in `AgentsNav`, and `useSelection` over `pickedRowIdAtom` (renamed from `pickedAgentIdAtom`), shared by agents and threads.
+- `web/next/src/components/agents/sidebar.tsx`: `ThreadRow` and `ThreadStatus`, the Threads group in `AgentsNav`, and `useSelection` over `pickedRowIdAtom` (renamed from `pickedAgentIdAtom`), shared by agents and threads.
 - `web/next/src/components/agents/sidebar-demo.tsx`: 22 fake threads, five pages, one held by AgentOne.
 - `/docs/ui/sidebar`: the Threads row in Sections, a Threads section, and the thread rules in Hover and Selection.
 - `ThreadMenu` in `sidebar.tsx`: the row menu, its items inert until real data.
