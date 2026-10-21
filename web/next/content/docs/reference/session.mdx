@@ -1,0 +1,13 @@
+---
+slug: /docs/reference/session
+title: Session
+description: Reference for the Session schema.
+---
+
+<include>../../../src/schemas/session.type.mdx</include>
+
+## Sources
+
+Each source's record of one agent's run. The OpenAI Agents SDK keeps a whole run, across the agents it hands off to, in `RunState` fields it marks internal, and the Vercel AI SDK keeps no record of a run.
+
+<include>../../../src/schemas/session.sources.mdx</include>

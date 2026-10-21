@@ -3,5 +3,5 @@
   "semi": false,
   "experimentalSortImports": {},
   "experimentalTailwindcss": {},
-  "ignorePatterns": [".agents/**", "web/next/twoslash-cache/**"],
+  "ignorePatterns": [".agents/**", "web/next/src/schemas/*.type.mdx", "web/next/twoslash-cache/**"],
 }

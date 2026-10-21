@@ -16,7 +16,7 @@ Labels: [Docs] official documentation · [Types] a published `.d.ts` · [Schema]
 | Vercel AI SDK     | `ai@7.0.146`, https://ai-sdk.dev/docs                                                                     |
 | Vercel eve        | `eve@0.81.1`, https://eve.dev/docs                                                                        |
 
-ZeroSDK's glossary terms, used throughout: a **Session** is one agent's working context, from its start until it stops; a **Thread** is a conversation the human returns to, which holds turns and outlives any one session; a **Turn** is one message from the human and all the work it starts, delegated work included.
+ZeroSDK's glossary terms, used throughout: a **Session** is one agent's working context, from its start until it stops; a **Thread** is a conversation the human returns to, which holds turns and outlives any one session (since 2026-10-21 the glossary defines it as something new the human asks AgentZero, to which the agents add each update, and which belongs to no session); a **Turn** is one message from the human and all the work it starts, delegated work included.
 
 ## Contents
 
