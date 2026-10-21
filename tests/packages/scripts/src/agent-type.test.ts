@@ -1,14 +1,20 @@
-import { beforeAll, describe, expect, test } from "bun:test"
+import { afterAll, beforeAll, describe, expect, test } from "bun:test"
+import { mkdtempSync, rmSync } from "node:fs"
+import { tmpdir } from "node:os"
+import { join } from "node:path"
 
 import { generate, inSourceOrder, OUT } from "../../../../packages/scripts/src/agent-type"
 
 // The generator against the real schema: the Agent page's block has to be what it prints now, so a schema change that skips `bun run agent:type` fails here rather than leaving the page behind.
 
+const cache = mkdtempSync(join(tmpdir(), "agent-type-"))
 let generated = ""
 
 beforeAll(async () => {
-  generated = await generate()
+  generated = await generate({ cache })
 })
+
+afterAll(() => rmSync(cache, { force: true, recursive: true }))
 
 describe("agent type", () => {
   test("is the block the Agent page shows", async () => {

@@ -1,25 +1,18 @@
 import { resolve } from "node:path"
 
-import {
-  API,
-  type Checker,
-  NodeBuilderFlags,
-  type Project,
-  type Symbol,
-  SymbolFlags,
-  type Type,
-} from "typescript/unstable/async"
+import type { SourceFile } from "typescript/unstable/ast"
+import { API, type Checker, type Project, type Symbol, type Type } from "typescript/unstable/async"
 
-import { jsdoc } from "@/agent-schemas"
+import { compile, jsdoc, printType } from "@/agent-schemas"
 import { capture } from "@/capture"
 
 // Prints the Agent schema as the TypeScript type an agent is written as, its fields grouped and ordered as the schema lays them out, and writes it into the Agent docs page; run with `bun run agent:type` after changing packages/schema/src/agent.ts.
 
 const ROOT = resolve(import.meta.dir, "../../..")
-const CACHE = resolve(ROOT, ".generated/agent-type")
+const SCHEMA = resolve(ROOT, "packages/schema/src/agent.ts")
 export const OUT = resolve(ROOT, "web/next/src/schemas/agent.type.mdx")
 
-// group is the line comment above a field that opens a group, such as required.
+// group is the comment above a field that opens one of the schema's groups.
 type Field = {
   description: string
   fields?: Field[]
@@ -31,9 +24,9 @@ type Field = {
 
 // The compiler sorts a union's members, while a schema lists an enum's in the order it means, such as effort from low to max, so members found in the field's source keep its order.
 export const inSourceOrder = (type: string, source: string) => {
-  const members = type.split(" | ")
-  if (!members.every((m) => source.includes(m))) return type
-  return members.sort((a, b) => source.indexOf(a) - source.indexOf(b)).join(" | ")
+  const parts = type.split(" | ")
+  if (!parts.every((p) => source.includes(p))) return type
+  return parts.sort((a, b) => source.indexOf(a) - source.indexOf(b)).join(" | ")
 }
 
 const members = (fields: Field[], indent: string): string =>
@@ -52,62 +45,48 @@ async function fieldsOf(checker: Checker, project: Project, type: Type): Promise
   const field = async (symbol: Symbol) => {
     const node = (await symbol.declarations![0]!.resolve(project))!
     const file = node.getSourceFile()
-    const optional = (symbol.flags & SymbolFlags.Optional) !== 0
-    const value = (await checker.getTypeOfSymbol(symbol))!
-    const printed = await checker.typeToString(value, undefined, NodeBuilderFlags.NoTruncation)
-    // `?` already says the field may be left out.
-    const bare = optional ? printed.replace(/ \| undefined$/, "") : printed
-    return {
+    const { optional, type: printed } = await printType(checker, symbol)
+    const group = file.text
+      .slice(node.pos, node.getStart(file))
+      .match(/^\s*\/\/ (metadata|optional|required)$/m)?.[1]
+    const object = printed.startsWith("{")
+      ? await checker.getNonNullableType((await checker.getTypeOfSymbol(symbol))!)
+      : undefined
+    const read: Field = {
       description: await symbol.getDocumentationComment(checker),
-      group: file.text.slice(node.pos, node.getStart(file)).match(/\/\/ (?!oxfmt-ignore)(.+)/)?.[1],
+      ...(object && { fields: await fieldsOf(checker, project, object) }),
+      group,
       name: symbol.name,
       optional,
-      type: inSourceOrder(bare, node.getText(file)),
-      ...(bare.startsWith("{") && {
-        fields: await fieldsOf(checker, project, (await checker.getNonNullableType(value))!),
-      }),
-      pos: node.pos,
+      type: inSourceOrder(printed, node.getText(file)),
     }
+    return [node.pos, read] as const
   }
   const fields = await Promise.all((await checker.getPropertiesOfType(type)).map(field))
-  return fields.sort((a, b) => a.pos - b.pos).map(({ pos: _, ...f }) => f)
+  return fields.sort(([a], [b]) => a - b).map(([, f]) => f)
 }
 
-// Reads the schema through TypeScript's compiler API, from a file in the cache that names its input type, and returns the formatted docs block.
-export async function generate(): Promise<string> {
-  const target = resolve(CACHE, "target.ts")
-  const config = resolve(CACHE, "tsconfig.json")
-  await Bun.write(
-    target,
-    // z.input spelled out, since zod resolves only from the schema package.
-    `import type { Agent } from "../../packages/schema/src/agent"\nexport type Target = (typeof Agent)["_zod"]["input"]\n`,
-  )
-  await Bun.write(
-    config,
-    JSON.stringify({
-      compilerOptions: {
-        module: "esnext",
-        moduleResolution: "bundler",
-        noEmit: true,
-        strict: true,
-      },
-      files: [target],
-    }),
-  )
-  const api = new API({ cwd: CACHE })
+// Reads the schema through TypeScript's compiler API, from a file in cache that names its input type, and returns the formatted docs block.
+export async function generate(options: { cache: string }): Promise<string> {
+  const { cache } = options
+  const api = new API({ cwd: cache })
   try {
-    const project = (await api.updateSnapshot({ openProjects: [config] })).getProject(config)
-    if (!project) throw new Error(`Could not open ${config}`)
+    const { project, sourceFiles } = await compile({ api, cache }, "target", [
+      // z.input spelled out, since zod resolves only from the schema package.
+      `import type { Agent } from "${SCHEMA}"\nexport type Target = (typeof Agent)["_zod"]["input"]\n`,
+    ])
     const checker = project.checker
-    const exportsOf = async (path: string) =>
-      checker.getExportsOfModule(
-        (await checker.getSymbolAtLocation((await project.program.getSourceFile(path))!))!,
-      )
-    const schema = (await exportsOf(resolve(ROOT, "packages/schema/src/agent.ts"))).find(
-      (e) => e.name === "Agent",
-    )!
-    const input = (await exportsOf(target)).find((e) => e.name === "Target")!
-    const fields = await fieldsOf(checker, project, (await checker.getDeclaredTypeOfSymbol(input))!)
+    const exported = async (file: SourceFile | undefined, name: string) =>
+      (await checker.getExportsOfModule((await checker.getSymbolAtLocation(file!))!)).find(
+        (e) => e.name === name,
+      )!
+    const schema = await exported(await project.program.getSourceFile(SCHEMA), "Agent")
+    const target = await exported(sourceFiles[0], "Target")
+    const fields = await fieldsOf(
+      checker,
+      project,
+      (await checker.getDeclaredTypeOfSymbol(target))!,
+    )
     // Formatted as the repo formats the committed file, so a run with no schema change leaves no diff.
     return capture(
       ["bunx", "oxfmt", "--stdin-filepath", OUT],
@@ -120,6 +99,9 @@ export async function generate(): Promise<string> {
 }
 
 if (import.meta.main) {
-  await Bun.write(OUT, await generate())
+  await Bun.write(OUT, await generate({ cache: resolve(ROOT, ".generated/agent-type") }))
   console.log(`Wrote ${OUT}`)
+  console.log(
+    "Restart bun run dev if it is running: its first render of a regenerated page this large can stall.",
+  )
 }
