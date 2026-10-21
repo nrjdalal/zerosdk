@@ -36,14 +36,14 @@ _Avoid_: job
 ## Threads
 
 **Thread**:
-A conversation the human returns to and is kept updated on, held with AgentZero or a fallback agent standing in for it; it holds turns and outlives any one agent's session.
+Something new the human asks AgentZero, to which the agents add each update as there is news about it; the sidebar lists threads so the human can come back to one and see what is new. It belongs to no session.
 _Avoid_: chat, conversation, session
 
 **Turn**:
 One message from the human and all the work it starts, delegated work included; not a single model step.
 
 **Session**:
-One agent's working context, from its start until it stops; a thread can outlast several of AgentZero's sessions.
+One agent's working context, from its start until it stops.
 
 ## Execution
 

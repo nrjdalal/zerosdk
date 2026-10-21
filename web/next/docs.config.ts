@@ -19,6 +19,12 @@ const docsConfig = {
           description: "Reference for the Agent schema.",
         },
       },
+      {
+        "/docs/reference/session": {
+          title: "Session",
+          description: "Reference for the Session schema.",
+        },
+      },
     ],
     UI: [
       {

@@ -1,5 +1,21 @@
 # Changelog
 
+## v0.0.10
+
+[compare changes](https://github.com/nrjdalal/zerosdk/compare/v0.0.9...v0.0.10)
+
+### 🚀 Enhancements
+
+- **schema:** Rebuild the agent around claude, and show it as a grouped type ([#31](https://github.com/nrjdalal/zerosdk/pull/31))
+
+### 📖 Documentation
+
+- Number every doc and note, and index each folder ([#29](https://github.com/nrjdalal/zerosdk/pull/29))
+
+### ❤️ Contributors
+
+- Neeraj Dalal @nrjdalal
+
 ## v0.0.9
 
 [compare changes](https://github.com/nrjdalal/zerosdk/compare/v0.0.8...v0.0.9)
