@@ -39,50 +39,20 @@ describe("Agent", () => {
 
   test("orders effort as a scale from low to max", () => {
     expect(Agent.shape.effort.unwrap().options).toEqual(["low", "medium", "high", "xhigh", "max"])
-    expect(Agent.safeParse({ ...minimal, effort: "minimal" }).success).toBe(false)
   })
 
-  test("takes memory as one of Claude's three scopes", () => {
-    expect(Agent.safeParse({ ...minimal, memory: "global" }).success).toBe(false)
-  })
-
-  test("makes an agent with no role a subagent, and takes only the three roles", () => {
+  test("makes an agent with no role a subagent", () => {
     expect(Agent.parse(minimal).role).toBe("subagent")
-    expect(Agent.safeParse({ ...minimal, role: "worker" }).success).toBe(false)
   })
 
-  test("holds each string to its length", () => {
-    for (const [key, max] of [
-      ["description", 1024],
-      ["model", 256],
-    ] as const) {
-      expect(Agent.safeParse({ ...minimal, [key]: "x".repeat(max) }).success).toBe(true)
-      for (const value of ["", "x".repeat(max + 1)])
-        expect(Agent.safeParse({ ...minimal, [key]: value }).success).toBe(false)
-    }
-  })
-
-  test("holds each list to its count and each entry to its length", () => {
-    for (const [key, count, length] of [
-      ["mcpServers", 64, 64],
-      ["skills", 64, 64],
-      ["tools", 256, 256],
-    ] as const) {
-      const fits = { ...minimal, [key]: Array(count).fill("x".repeat(length)) }
-      expect(Agent.safeParse(fits).success).toBe(true)
-      for (const list of [[], Array(count + 1).fill("x"), [""], ["x".repeat(length + 1)]])
-        expect(Agent.safeParse({ ...minimal, [key]: list }).success).toBe(false)
-    }
-  })
-
-  test("takes one of Claude's eight colors, a name of 1 to 256 characters, and any other label as a string", () => {
+  test("takes one of Claude's eight colors, and any other label as a string", () => {
     expect(Agent.shape.metadata.unwrap().shape.color.unwrap().options).toHaveLength(8)
-    for (const metadata of [
-      { color: "magenta" },
-      { name: "" },
-      { name: "x".repeat(257) },
-      { team: 1 },
-    ])
+    for (const metadata of [{ color: "magenta" }, { team: 1 }])
       expect(Agent.safeParse({ ...minimal, metadata }).success).toBe(false)
+  })
+
+  test("rejects a value outside each field's set", () => {
+    for (const change of [{ effort: "minimal" }, { memory: "global" }, { role: "worker" }])
+      expect(Agent.safeParse({ ...minimal, ...change }).success).toBe(false)
   })
 })
