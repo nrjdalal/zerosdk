@@ -1,0 +1,11 @@
+# A session keeps what most sources keep, and its labels in metadata
+
+A session's fields are what most of the seven sources that keep a record of one agent's run keep, under their most common names (the OpenAI Agents SDK and the Vercel AI SDK keep none): `id`, `status`, `cwd`, `parentId` and `prompt`, with `agentId` naming the agent by its UUID, eve's spelling, since the sources' agent type names an agent by its name ([ADR 0009](0009-an-agent-is-built-around-claude-and-known-by-a-uuid.md)), and `updatedAt` and `resetsAt` in milliseconds since the epoch, as four of the five sources that keep a time store one. What only labels or shows a session goes in its `metadata`: `branch`, `issue` (its `key` and `url`; Linear, Jira and GitHub call it an issue), `pr` (its `number` and `url`, the shape of Claude Code's status line, which also carries GitLab merge requests), `reason`, `task` (one of the thirteen kinds on the icons page, ZeroSDK's own) and `title`. A start time, depth, root and model are left out because something else holds them: the UUID version 7 `id` holds the start, the `parentId` chain gives depth and root, and the agent names its model. A fork's origin, a live summary, usage and a pull request's review state return when the factory needs them. A session points at no thread, since a thread is a main message picked out of the human's conversation with AgentZero ([ADR 0004](0004-threads-not-sessions.md)).
+
+## Considered Options
+
+- **Claude's names throughout, as Agent takes them:** an agent is configuration Claude reads, while a session is the factory's record of a run, which most harnesses keep, so the consensus names fit; Claude's decide where a source's shape is what the harness copies, as `pr` is.
+- **A `createdAt` field:** five sources keep a start time, but a UUID version 7 already holds it to the millisecond, and sorting by `id` sorts by it.
+- **`root` beside `parent`** (eve's `rootSessionId`): the chain to the top is a few sessions long, and two of the seven keep it.
+- **`threadId` on AgentZero's sessions:** a thread is picked out of the conversation and is not tied to a session.
+- **`ticket` and `pullRequest`:** "Jira issue" appears in three sources against "Jira ticket" in one, and `pr` is the field Claude Code fills.
