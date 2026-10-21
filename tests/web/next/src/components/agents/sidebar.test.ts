@@ -86,6 +86,28 @@ describe("agents sidebar", () => {
     expect(html.match(/data-active(?:="true"|="")/g)).toHaveLength(1)
   })
 
+  test("shows an agent's description when it has no name", () => {
+    const unnamed = (metadata: Agent["metadata"]): AgentRow => ({
+      agent: {
+        description: "Talks with the human",
+        id: Bun.randomUUIDv7(),
+        metadata,
+        role: "main",
+      },
+      state: "idle",
+    })
+    for (const metadata of [undefined, { name: "" }])
+      expect(
+        renderToStaticMarkup(
+          createElement(
+            SidebarProvider,
+            null,
+            createElement(AgentsHeader, { mainAgents: [unnamed(metadata)] }),
+          ),
+        ),
+      ).toContain("Talks with the human")
+  })
+
   test("counts each section's agents, nested ones included", () => {
     expect(html).toMatch(/Orchestrators<span class="ml-auto flex w-4 justify-center">1<\/span>/)
     expect(html).toMatch(/Subagents<span class="ml-auto flex w-4 justify-center">4<\/span>/)

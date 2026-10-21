@@ -150,7 +150,7 @@ function Status({ row }: { row: SubagentRow }) {
 
 // On hover, a title follows its agent's name, or its description when it has none, and a bare name shows only when the row cuts it short.
 function Title({ row }: { row: Pick<SubagentRow, "agent" | "title"> }) {
-  const name = row.agent.metadata?.name ?? row.agent.description
+  const name = row.agent.metadata?.name || row.agent.description
   return (
     <Tooltip
       onOpenChange={(open, details) => {

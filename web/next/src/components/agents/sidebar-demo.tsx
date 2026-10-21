@@ -68,7 +68,7 @@ const subagents: SubagentRow[] = [
     ),
     state: "running",
     task: "build",
-    title: "ZS-16#48 Common page",
+    title: "ZS-16#48 Agent page",
   },
   {
     agent: agent(
