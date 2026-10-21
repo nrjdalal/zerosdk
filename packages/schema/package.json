@@ -16,9 +16,6 @@
     "build": "tsdown",
     "check-types": "tsc --noEmit"
   },
-  "dependencies": {
-    "zod": "catalog:"
-  },
   "devDependencies": {
     "@packages/config": "workspace:*",
     "@types/bun": "catalog:",
