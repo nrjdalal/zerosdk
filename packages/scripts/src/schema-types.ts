@@ -3,7 +3,6 @@ import { resolve } from "node:path"
 import type { SourceFile } from "typescript/unstable/ast"
 import { API, type Checker, type Project, type Symbol, type Type } from "typescript/unstable/async"
 
-import { capture } from "@/capture"
 import { compile, jsdoc, printType, SCHEMAS, type SchemaName } from "@/schema-sources"
 
 // Prints each schema in packages/schema as the TypeScript type its records are written as, its fields grouped and ordered as the schema lays them out, and writes it into the schema's docs page; run with `bun run schema:types` after changing a schema.
@@ -29,7 +28,7 @@ type Field = {
   type: string
 }
 
-// The compiler sorts a union's members, while a schema lists an enum's in the order it means, such as effort from low to max or a session's status from pending to cancelled, so members found in the field's source keep its order.
+// The compiler sorts a union's members, while a schema lists an enum's in the order it means, such as effort from low to max, so members found in the field's source keep its order.
 export const inSourceOrder = (type: string, source: string) => {
   const parts = type.split(" | ")
   if (!parts.every((p) => source.includes(p))) return type
@@ -76,7 +75,7 @@ async function fieldsOf(checker: Checker, project: Project, type: Type): Promise
 // Reads the schema through TypeScript's compiler API, from a file in cache that names its input type, and returns the formatted docs block.
 export async function generate(options: { cache: string; name: SchemaName }): Promise<string> {
   const { cache, name } = options
-  const { out, schema: path, type } = locate(name)
+  const { schema: path, type } = locate(name)
   const api = new API({ cwd: cache })
   try {
     const { project, sourceFiles } = await compile({ api, cache }, name, [
@@ -95,12 +94,8 @@ export async function generate(options: { cache: string; name: SchemaName }): Pr
       project,
       (await checker.getDeclaredTypeOfSymbol(target))!,
     )
-    // Formatted as the repo formats the committed file, so a run with no schema change leaves no diff.
-    return capture(
-      ["bunx", "oxfmt", "--stdin-filepath", out],
-      ROOT,
-      render(name, await schema.getDocumentationComment(checker), fields),
-    )
+    // Left unformatted, as .oxfmtrc.jsonc leaves these files, so each field stays on one line as the schema keeps it.
+    return render(name, await schema.getDocumentationComment(checker), fields)
   } finally {
     await api.close()
   }

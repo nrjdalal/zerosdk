@@ -44,18 +44,8 @@ describe("Session", () => {
         expect(Session.safeParse({ ...minimal, [key]: id }).success).toBe(false)
   })
 
-  test("orders the statuses through a session's life, from pending to cancelled", () => {
-    expect(Session.shape.status.options).toEqual([
-      "pending",
-      "running",
-      "waiting",
-      "idle",
-      "paused",
-      "stuck",
-      "completed",
-      "failed",
-      "cancelled",
-    ])
+  test("lists the statuses A to Z", () => {
+    expect(Session.shape.status.options).toEqual(Session.shape.status.options.toSorted())
   })
 
   test("takes as a task only one of the thirteen kinds", () => {

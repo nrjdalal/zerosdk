@@ -9,9 +9,9 @@ export const Session = z.object({
   cwd: z.string(),
   /** Unique identifier for the session, a UUID version 7, which also holds the time it started, e.g. 0193b2c5-1a2b-7c3d-8e4f-5a6b7c8d9e0f */
   id: z.uuidv7(),
-  /** Where the session is in its life; pending has not started work; running is working; waiting asked the human something, a question or a permission, and holds for the answer; idle finished its turn and can take more; paused is held until a limit lifts; stuck is not moving and asked nothing the factory understands, so a person has to look at it; completed finished its task; failed ended on an error; and cancelled was stopped, e.g. running */
+  /** Where the session is in its life; cancelled was stopped; completed finished its task; failed ended on an error; idle finished its turn and can take more; paused is held until a limit lifts; pending has not started work; running is working; stuck is not moving and asked nothing the factory understands, so a person has to look at it; and waiting asked the human something, a question or a permission, and holds for the answer, e.g. running */
   // oxfmt-ignore
-  status: z.enum(["pending", "running", "waiting", "idle", "paused", "stuck", "completed", "failed", "cancelled"]),
+  status: z.enum(["cancelled", "completed", "failed", "idle", "paused", "pending", "running", "stuck", "waiting"]),
   /** Time the session last changed, in milliseconds since the epoch; the sidebar sorts by it, e.g. 1792573920000 */
   updatedAt: z.int(),
   // optional

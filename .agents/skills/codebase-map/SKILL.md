@@ -20,7 +20,7 @@ packages/auth/    # Better Auth instance
 packages/db/      # Drizzle schema + client
 packages/env/     # type-safe env, one validated entry per consumer
 packages/config/  # TS base, tsdown factory, and site.ts (brand identity)
-packages/schema/  # Zod schemas the factory shares, one file per entity (agent.ts, session.ts), fields grouped under `// required`, `// optional` and `// metadata`, A to Z within each; its `/docs/reference` page shows each as the type it is written as, which `bun run schema:types` prints; a line the formatter would split, such as a long enum, stays whole under `// oxfmt-ignore`
+packages/schema/  # Zod schemas the factory shares, one file per entity (agent.ts, session.ts), fields grouped under `// required`, `// optional` and `// metadata`, A to Z within each; its `/docs/reference` page shows each as the type it is written as, which `bun run schema:types` prints with each field on one line, unformatted; a line the formatter would split, such as a long enum, stays whole under `// oxfmt-ignore`
 packages/scripts/ # build-only bun tooling (auth-schema, data-table-metrics, generate-env, provider-logos, release-version, schema-sources, schema-types, sources, terms); every new script lands here, never bundled
 packages/cli/     # the zerostarter scaffolding CLI (canonical repo only; init strips it)
 tests/            # the whole suite, mirroring each subject's path; *.e2e.test.ts drive a running stack (init strips the canonical suite; this repo keeps its own)

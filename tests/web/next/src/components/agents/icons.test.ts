@@ -37,7 +37,7 @@ describe("agents icons", () => {
   })
 
   test("hold an icon for each status and task a session can have", () => {
-    expect(Object.keys(icons.stateIcons)).toEqual(Session.shape.status.options.toSorted())
+    expect(Object.keys(icons.stateIcons)).toEqual(Session.shape.status.options)
     expect(Object.keys(icons.taskIcons)).toEqual(
       Session.shape.metadata.unwrap().shape.task.unwrap().options,
     )

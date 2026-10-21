@@ -52,13 +52,11 @@ describe("schema types", () => {
     expect(generated.agent).toContain('  role?: "main" | "orchestrator" | "subagent"\n')
   })
 
-  test("keeps an enum's members in the order the schema lists them", () => {
+  test("keeps an enum's members on one line, in the order the schema lists them", () => {
     expect(generated.agent).toContain('  effort?: "low" | "medium" | "high" | "xhigh" | "max"\n')
-    expect(generated.session.match(/^ {4}\| "(\w+)"$/gm)?.slice(0, 3)).toEqual([
-      '    | "pending"',
-      '    | "running"',
-      '    | "waiting"',
-    ])
+    expect(generated.session).toContain(
+      '  status: "cancelled" | "completed" | "failed" | "idle" | "paused" | "pending" | "running" | "stuck" | "waiting"\n',
+    )
     expect(inSourceOrder('"high" | "low"', 'z.enum(["low", "high"])')).toBe('"low" | "high"')
     expect(inSourceOrder("string[]", "z.array(z.string())")).toBe("string[]")
   })

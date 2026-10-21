@@ -10,17 +10,8 @@ export type Session = {
   cwd: string
   /** Unique identifier for the session, a UUID version 7, which also holds the time it started, e.g. 0193b2c5-1a2b-7c3d-8e4f-5a6b7c8d9e0f */
   id: string
-  /** Where the session is in its life; pending has not started work; running is working; waiting asked the human something, a question or a permission, and holds for the answer; idle finished its turn and can take more; paused is held until a limit lifts; stuck is not moving and asked nothing the factory understands, so a person has to look at it; completed finished its task; failed ended on an error; and cancelled was stopped, e.g. running */
-  status:
-    | "pending"
-    | "running"
-    | "waiting"
-    | "idle"
-    | "paused"
-    | "stuck"
-    | "completed"
-    | "failed"
-    | "cancelled"
+  /** Where the session is in its life; cancelled was stopped; completed finished its task; failed ended on an error; idle finished its turn and can take more; paused is held until a limit lifts; pending has not started work; running is working; stuck is not moving and asked nothing the factory understands, so a person has to look at it; and waiting asked the human something, a question or a permission, and holds for the answer, e.g. running */
+  status: "cancelled" | "completed" | "failed" | "idle" | "paused" | "pending" | "running" | "stuck" | "waiting"
   /** Time the session last changed, in milliseconds since the epoch; the sidebar sorts by it, e.g. 1792573920000 */
   updatedAt: number
   // optional
@@ -52,20 +43,7 @@ export type Session = {
     /** Why the session has its status, in a few words, e.g. usage limit */
     reason?: string
     /** Kind of work the session does, one of the kinds on the icons page, which picks its row's icon; set by whoever starts the session, e.g. debug */
-    task?:
-      | "build"
-      | "data"
-      | "debug"
-      | "deploy"
-      | "docs"
-      | "explain"
-      | "explore"
-      | "plan"
-      | "refactor"
-      | "research"
-      | "review"
-      | "security"
-      | "test"
+    task?: "build" | "data" | "debug" | "deploy" | "docs" | "explain" | "explore" | "plan" | "refactor" | "research" | "review" | "security" | "test"
     /** Short name for the session, generated from its prompt or set by a person, e.g. Fix login */
     title?: string
   }
