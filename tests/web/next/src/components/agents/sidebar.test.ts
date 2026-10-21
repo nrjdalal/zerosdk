@@ -130,13 +130,20 @@ describe("agents sidebar", () => {
     expect(html).toMatch(/>Engineering</)
   })
 
-  test("nests each subagent session under the topmost one above it, however deep", () => {
+  test("nests each subagent session under the topmost one above it, however deep, and keeps one whose parent is gone at the top", () => {
     const grandchild = row("01a15e51-fa00-7000-8000-000000000001", builder, "idle", {
       parentId: "01a15e51-f99d-72b5-b994-823e1a4385f2",
     })
+    const orphan = row("01a15e51-fa00-7000-8000-000000000002", builder, "idle", {
+      parentId: "01a15e51-fa00-7000-8000-00000000dead",
+    })
     const subagents = rows.filter((r) => r.agent.role === "subagent")
-    const tops = nest([...subagents, grandchild])
-    expect(tops.map((r) => r.session.id)).toEqual([parent, "01a15e51-f9c5-7799-9bb2-b4a5ab827f2d"])
+    const tops = nest([...subagents, grandchild, orphan])
+    expect(tops.map((r) => r.session.id)).toEqual([
+      parent,
+      "01a15e51-f9c5-7799-9bb2-b4a5ab827f2d",
+      orphan.session.id,
+    ])
     expect(tops[0]!.subagents?.map((r) => r.session.id)).toEqual([
       "01a15e51-f99d-72b5-b994-823e1a4385f2",
       "01a15e51-f9b0-75d5-9ad6-99eb1416a2e4",

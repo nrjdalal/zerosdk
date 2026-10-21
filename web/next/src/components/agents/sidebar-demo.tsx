@@ -67,7 +67,7 @@ const tester = agent(
   "medium",
 )
 
-const session = (
+const row = (
   id: string,
   runs: Agent,
   status: Session["status"],
@@ -90,27 +90,27 @@ const pr = (number: number) => ({
   url: `https://github.com/nrjdalal/zerosdk/pull/${number}`,
 })
 
-// Each session and the agent it runs; a subagent's session nests under the one that started it by parentId
+// Each session and the agent it runs; a subagent's session nests under the topmost subagent session above it on its parentId chain
 const rows: SessionRow[] = [
-  session("01a15e51-f919-74d6-b2d8-f9dfbfbd1ce9", agentZero, "running"),
-  session("01a15e51-f930-762b-8cfb-0bc612079392", agentOne, "idle"),
-  session("01a15e51-f945-7589-829f-79f0d0ecc4a2", engineering, "running"),
-  session("01a15e51-f95b-77a4-a86f-1896dbb5acf8", research, "idle"),
-  session("01a15e51-f971-7053-a736-1af3665fde44", builder, "running", {
+  row("01a15e51-f919-74d6-b2d8-f9dfbfbd1ce9", agentZero, "running"),
+  row("01a15e51-f930-762b-8cfb-0bc612079392", agentOne, "idle"),
+  row("01a15e51-f945-7589-829f-79f0d0ecc4a2", engineering, "running"),
+  row("01a15e51-f95b-77a4-a86f-1896dbb5acf8", research, "idle"),
+  row("01a15e51-f971-7053-a736-1af3665fde44", builder, "running", {
     metadata: { issue: issue("ZS-16"), pr: pr(48), task: "build", title: "Agent page" },
   }),
-  session("01a15e51-f987-775c-99f8-c0c2cdcddaaf", builder, "waiting", {
+  row("01a15e51-f987-775c-99f8-c0c2cdcddaaf", builder, "waiting", {
     metadata: { issue: issue("ZS-12"), pr: pr(45), task: "build", title: "Add tools" },
   }),
-  session("01a15e51-f99d-72b5-b994-823e1a4385f2", reviewer, "running", {
+  row("01a15e51-f99d-72b5-b994-823e1a4385f2", reviewer, "running", {
     metadata: { task: "review" },
     parentId: "01a15e51-f987-775c-99f8-c0c2cdcddaaf",
   }),
-  session("01a15e51-f9b0-75d5-9ad6-99eb1416a2e4", tester, "idle", {
+  row("01a15e51-f9b0-75d5-9ad6-99eb1416a2e4", tester, "idle", {
     metadata: { task: "test" },
     parentId: "01a15e51-f987-775c-99f8-c0c2cdcddaaf",
   }),
-  session("01a15e51-f9c5-7799-9bb2-b4a5ab827f2d", builder, "completed", {
+  row("01a15e51-f9c5-7799-9bb2-b4a5ab827f2d", builder, "completed", {
     metadata: { issue: issue("ZS-15"), task: "build", title: "Fix login" },
   }),
 ]

@@ -199,7 +199,7 @@ function Row({ row, titled }: { row: NestedRow; titled?: boolean }) {
   )
 }
 
-// The id of the row picked last, an agent's or a thread's, null until a row is picked
+// The id of the row picked last, a session's or a thread's, null until a row is picked
 const pickedRowIdAtom = atom<string | null>(null)
 
 // The Threads group's page, counted from 0
@@ -287,13 +287,12 @@ export function nest(rows: SessionRow[]): NestedRow[] {
     const parent = row.session.parentId && byId.get(row.session.parentId)
     return parent ? top(parent) : row
   }
+  const roots = new Map(rows.map((row) => [row, top(row)]))
   const nested = new Map<SessionRow, SessionRow[]>()
-  for (const row of rows) {
-    const root = top(row)
+  for (const [row, root] of roots)
     if (root !== row) nested.set(root, [...(nested.get(root) ?? []), row])
-  }
   return rows
-    .filter((row) => top(row) === row)
+    .filter((row) => roots.get(row) === row)
     .map((row) => ({ ...row, subagents: nested.get(row) }))
 }
 

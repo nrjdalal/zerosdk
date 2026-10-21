@@ -15,7 +15,7 @@ import { AgentsSidebarDemo } from "@/components/agents/sidebar-demo"
 
 ## Sections
 
-Each row is one session and the agent it runs, an `Agent` and its `Session`, grouped by the agent's role. A subagent's session nests under the topmost subagent session above it on its `parentId` chain, however deep it was started. The orchestrators' and subagents' labels end with how many sessions they hold, nested ones included. The threads' label pages through them instead.
+Each agent row is one session and the agent it runs, an `Agent` and its `Session`, grouped by the agent's role. A subagent's session nests under the topmost subagent session above it on its `parentId` chain, however deep it was started. The orchestrators' and subagents' labels end with how many sessions they hold, nested ones included. The threads' label pages through them instead.
 
 | Section       | Holds                                                                                             | Nests |
 | ------------- | ------------------------------------------------------------------------------------------------- | ----- |
@@ -58,7 +58,7 @@ Past five threads, the label pages through them with an arrow on each side of th
 
 ## Hover
 
-Each part names what it shows: the status its task or status, the provider its model, and the effort its level. A row with subagents shows its toggle in its effort's place while the mouse is on it, while it has keyboard focus or is open, and always on a phone. A subagent's title names the agent running it, such as Builder: ZS-15 Fix login, and a name alone shows only when the row cuts it short. A thread's title names the agent holding it, such as AgentZero: Rewrite the pricing page copy, or AgentOne while it stands in. A thread's unread count gives way to its menu by the toggle's rules, so on a phone the menu shows and the count does not, and the menu stays while it is open.
+Each part names what it shows: the status icon its task or status, the provider its model, and the effort its level. A row with subagents shows its toggle in its effort's place while the mouse is on it, while it has keyboard focus or is open, and always on a phone. A subagent's title names the agent running it, such as Builder: ZS-15 Fix login, and a name alone shows only when the row cuts it short. A thread's title names the agent holding it, such as AgentZero: Rewrite the pricing page copy, or AgentOne while it stands in. A thread's unread count gives way to its menu by the toggle's rules, so on a phone the menu shows and the count does not, and the menu stays while it is open.
 
 ## Selection
 
