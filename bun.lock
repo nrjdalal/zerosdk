@@ -118,6 +118,9 @@
     "packages/schema": {
       "name": "@packages/schema",
       "version": "0.0.0",
+      "dependencies": {
+        "zod": "catalog:",
+      },
       "devDependencies": {
         "@packages/config": "workspace:*",
         "@types/bun": "catalog:",
