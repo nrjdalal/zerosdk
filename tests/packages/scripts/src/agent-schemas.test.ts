@@ -7,8 +7,10 @@ import {
   cells,
   checkLink,
   type DocsSource,
+  downloadGit,
   fromDocs,
   generate,
+  type GitSource,
   jsdoc,
   type NpmSource,
   parseDocsTable,
@@ -46,6 +48,32 @@ const CODEX_MD = `## Custom agents
 `
 
 const CLAUDE_URL = "https://code.claude.com/docs/en/sub-agents#supported-frontmatter-fields"
+
+const SESSIONS_MD = `### List sessions as JSON
+
+| Field | Present | Description |
+| :- | :- | :- |
+| \`cwd\`, \`kind\` | Always | The directory and the kind |
+| \`id\` | Background sessions | Short ID |
+`
+
+// A schema file as a code generator writes one: each doc comment on the previous member's line, and the types it uses in files beside and above it.
+const GIT_FILES: Record<string, string> = {
+  "schema/Shared.ts": "export type Shared = { note: string }\n",
+  "schema/v2/Status.ts": 'export type Status = "idle" | "active"\n',
+  "schema/v2/Thread.ts": `import type { Shared } from "../Shared";
+import type { Status } from "./Status";
+
+/** One conversation. */
+export type Thread = {/**
+ * The thread's id.
+ */
+id: string, /**
+ * Where it stands.
+ */
+status: Status, shared: Shared, };
+`,
+}
 
 // Three packages the emulated registry serves: a config type that references a type the block will not declare, a class with a definition surface to pick out of its API, and a schema class whose encoded side, what a config file holds, is read through a target.
 const PACKAGES = {
@@ -123,6 +151,8 @@ const server = Bun.serve({
     if (pathname === "/github") return new Response('<h2 id="user-content-options">Options</h2>')
     if (pathname === "/plain") return new Response("<p>no anchors</p>")
     if (pathname === "/zerosdk-fixture-docs/latest") return Response.json({ version: "9.9.9" })
+    const raw = pathname.match(/^\/raw\/owner\/repo\/v9\.9\.9\/(.+)$/)
+    if (raw && GIT_FILES[raw[1]]) return new Response(GIT_FILES[raw[1]])
     const [, name, rest] = pathname.match(/^\/([^/]+)(\/.*)?$/) ?? []
     const pkg = PACKAGES[name as keyof typeof PACKAGES]
     const tarball = tarballs.get(name)
@@ -212,6 +242,35 @@ describe("parseDocsTable", () => {
     ])
   })
 
+  test("finds the table under a named section where the markdown drops the url's anchor", () => {
+    const fields = parseDocsTable(
+      CLAUDE_MD.replace('<a id="supported-frontmatter-fields"></a>\n', ""),
+      CLAUDE_URL,
+      "frontmatter-reference",
+    )
+    expect(fields.map((f) => f.name)).toEqual(["description", "name", "tools"])
+  })
+
+  test("reads a Present column as when a field appears, and a row naming several fields as one each", () => {
+    const fields = parseDocsTable(
+      SESSIONS_MD,
+      "https://example.com/agent-view#list-sessions-as-json",
+    )
+    expect(fields).toEqual([
+      {
+        description: "The directory and the kind (one row for `cwd`, `kind`)",
+        name: "cwd",
+        optional: false,
+      },
+      { description: "Short ID (Background sessions)", name: "id", optional: true },
+      {
+        description: "The directory and the kind (one row for `cwd`, `kind`)",
+        name: "kind",
+        optional: false,
+      },
+    ])
+  })
+
   test("fails loudly when the anchor or its table is gone", () => {
     expect(() => parseDocsTable(CLAUDE_MD, "https://example.com/page#missing")).toThrow(
       "#missing is gone",
@@ -295,6 +354,15 @@ describe("render", () => {
     )
     expect(mdx.match(/---cut---/g)).toHaveLength(1)
   })
+
+  test("writes one heading over several types of the same product", () => {
+    const mdx = render([
+      { source: { ...source([]), product: "Alpha" }, stubs: "" },
+      { source: { ...source([]), name: "AgentRun", product: "Alpha" }, stubs: "" },
+    ])
+    expect(mdx.match(/^### .+$/gm)).toEqual(["### Alpha"])
+    expect(mdx.match(/```ts twoslash/g)).toHaveLength(2)
+  })
 })
 
 describe("checkLink", () => {
@@ -328,6 +396,40 @@ describe("fromDocs", () => {
   })
 })
 
+const gitSource = {
+  path: "schema/v2/Thread.ts",
+  pkg: "zerosdk-fixture-docs",
+  product: "Fixture Git",
+  repo: "owner/repo",
+  tag: "v{version}",
+  type: "Thread",
+  url: `${origin}/config#options`,
+} satisfies GitSource
+
+describe("downloadGit", () => {
+  test("downloads the file at the package's tag with every file it imports, as a local module", async () => {
+    const cache = join(work, "git-cache")
+    const [read] = await downloadGit([gitSource], {
+      cache,
+      rawBase: `${origin}/raw`,
+      registry: origin,
+    })
+    expect(read).toEqual({
+      module: "./git/owner/repo/v9.9.9/schema/v2/Thread",
+      pkg: "zerosdk-fixture-docs",
+      product: "Fixture Git",
+      title: "owner/repo@v9.9.9 · schema",
+      type: "Thread",
+      url: gitSource.url,
+    })
+    for (const path of Object.keys(GIT_FILES))
+      expect(await Bun.file(join(cache, "git/owner/repo/v9.9.9", path)).exists()).toBe(true)
+    expect(
+      await Bun.file(join(cache, "git/owner/repo/v9.9.9/schema/v2/Thread.ts")).text(),
+    ).toContain("{\n/**\n * The thread's id.")
+  })
+})
+
 describe("generate", () => {
   test(
     "installs from the registry, reads types and docs, and writes the formatted section",
@@ -337,36 +439,38 @@ describe("generate", () => {
       // A throwaway install cache, so a fixture never resolves from a stale tarball of the same version.
       process.env.BUN_INSTALL_CACHE_DIR = join(work, "bun-cache")
       try {
-        await generate({
-          cache: join(work, "cache"),
-          docs: [docsSource],
-          npm: [
-            {
-              module: "zerosdk-fixture-config",
-              pkg: "zerosdk-fixture-config",
-              product: "Fixture Config",
-              type: "AgentConfig",
-              url: `${origin}/config#options`,
-            } satisfies NpmSource,
-            {
-              module: "zerosdk-fixture-class",
-              pkg: "zerosdk-fixture-class",
-              product: "Fixture Class",
-              type: "Agent",
-              url: `${origin}/class#agent-class`,
-            } satisfies NpmSource,
-            {
-              module: "zerosdk-fixture-schema",
-              pkg: "zerosdk-fixture-schema",
-              product: "Fixture Schema",
-              target: '(typeof ConfigAgent.Info)["Encoded"]',
-              type: "ConfigAgent",
-              url: `${origin}/config#options`,
-            } satisfies NpmSource,
-          ],
-          out,
-          registry: origin,
-        })
+        await generate(
+          {
+            docs: [docsSource],
+            git: [gitSource],
+            npm: [
+              {
+                module: "zerosdk-fixture-config",
+                pkg: "zerosdk-fixture-config",
+                product: "Fixture Config",
+                type: "AgentConfig",
+                url: `${origin}/config#options`,
+              } satisfies NpmSource,
+              {
+                module: "zerosdk-fixture-class",
+                pkg: "zerosdk-fixture-class",
+                product: "Fixture Class",
+                type: "Agent",
+                url: `${origin}/class#agent-class`,
+              } satisfies NpmSource,
+              {
+                module: "zerosdk-fixture-schema",
+                pkg: "zerosdk-fixture-schema",
+                product: "Fixture Schema",
+                target: '(typeof ConfigAgent.Info)["Encoded"]',
+                type: "ConfigAgent",
+                url: `${origin}/config#options`,
+              } satisfies NpmSource,
+            ],
+            out,
+          },
+          { cache: join(work, "cache"), rawBase: `${origin}/raw`, registry: origin },
+        )
       } finally {
         if (cacheDir === undefined) delete process.env.BUN_INSTALL_CACHE_DIR
         else process.env.BUN_INSTALL_CACHE_DIR = cacheDir
@@ -377,10 +481,15 @@ describe("generate", () => {
         "### Fixture Class",
         "### Fixture Config",
         "### Fixture Docs",
+        "### Fixture Git",
         "### Fixture Schema",
       ])
       expect(mdx).toContain('title="zerosdk-fixture-config@1.2.3"')
       expect(mdx).toContain('title="zerosdk-fixture-docs@9.9.9 · docs"')
+      // The git source's comments document its members, and the types it imports print by name, stubbed as an npm source's are.
+      expect(mdx).toContain(
+        "interface Shared {}\ninterface Status {}\n// ---cut---\n/** One conversation. */\ntype Thread = {\n  /** The thread's id. */\n  id: string\n  shared: Shared\n  /** Where it stands. */\n  status: Status\n}",
+      )
       expect(mdx).toContain(
         "interface LanguageModel {}\n// ---cut---\n/** How an agent is configured. */\ntype AgentConfig = {\n  /** What the agent does. */\n  description?: string\n  /** The model to call. */\n  model: LanguageModel\n  /** What the agent is called. */\n  name: string\n}",
       )

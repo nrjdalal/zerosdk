@@ -3,7 +3,7 @@ import { mkdtempSync, rmSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 
-import { DOCS, NPM } from "../../../../packages/scripts/src/agent-schemas"
+import { SCHEMAS } from "../../../../packages/scripts/src/agent-schemas"
 import {
   fetchSources,
   fileOf,
@@ -42,9 +42,16 @@ afterAll(() => {
 })
 
 describe("SOURCES", () => {
-  test("lists the same products as the generator, which reads one type from each", () => {
+  test("lists the same products as the Agent schema, which reads one type from each", () => {
     const products = (list: { product: string }[]) => list.map((s) => s.product).sort()
-    expect(products(SOURCES)).toEqual(products([...NPM, ...DOCS]))
+    const { docs, git, npm } = SCHEMAS.agent
+    expect(products(SOURCES)).toEqual(products([...npm, ...docs, ...git]))
+  })
+
+  test("names every Session source among them, since not every product keeps a run", () => {
+    const { docs, git, npm } = SCHEMAS.session
+    const known = new Set(SOURCES.map((s) => s.product))
+    for (const s of [...npm, ...docs, ...git]) expect(known.has(s.product)).toBe(true)
   })
 })
 

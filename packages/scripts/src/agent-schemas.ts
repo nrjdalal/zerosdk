@@ -1,4 +1,4 @@
-import { resolve } from "node:path"
+import { dirname, join, resolve } from "node:path"
 
 import {
   type Node,
@@ -19,10 +19,9 @@ import {
 import { capture } from "@/capture"
 import { fetchOk } from "@/fetch-ok"
 
-// Reads how each TypeScript source defines an agent, from its npm types or, where it exports none, its docs table, and writes the comparison into the Agent docs page; run with `bun run agent:schemas`, which installs each package at its latest into .generated/agent-schemas/.
+// Reads how each TypeScript source defines an agent and a session, from its npm types, the schema its repository generates, or, where it exports none, its docs table, and writes each comparison into its docs page; run with `bun run agent:schemas`, which installs each package at its latest into .generated/agent-schemas/.
 
 const ROOT = resolve(import.meta.dir, "../../..")
-const OUT = resolve(ROOT, "web/next/src/schemas/agent.sources.mdx")
 
 // static marks a class's static member; type is left out where the source documents none.
 type Field = {
@@ -46,18 +45,31 @@ export type NpmSource = Pick<Source, "product" | "url"> & {
   pkg: string
   // The shape to read when it is not the exported type itself, such as the encoded side of an Effect schema class; it reads as a type, never a class.
   target?: string
+  // Set for a type read from somewhere other than the package, which then only dates it.
+  title?: string
   type: string
 }
 export type DocsSource = Pick<Source, "description" | "name" | "product" | "url"> & {
   markdown: string
   pkg: string
+  // The slug of the heading the table sits under in the markdown, where the markdown drops the anchor the page's url uses.
+  section?: string
 }
+// A type the source publishes only as a file in its repository, read at the tag of the package's latest release, {version} in tag standing for it, together with the files it imports.
+export type GitSource = Pick<Source, "product" | "url"> & {
+  path: string
+  pkg: string
+  repo: string
+  tag: string
+  type: string
+}
+export type SchemaSources = { docs: DocsSource[]; git: GitSource[]; npm: NpmSource[]; out: string }
 type Block = { source: Source; stubs: string }
-// The compiler session and the directory the npm sources are installed into.
-type Session = { api: API; cache: string }
+// The compiler process and the directory the npm sources are installed into.
+type Compiler = { api: API; cache: string }
 
-// npm sources: the type each package exports for what an agent is defined with.
-export const NPM: NpmSource[] = [
+// Agent: the type each package exports for what an agent is defined with.
+const AGENT_NPM: NpmSource[] = [
   {
     module: "@opencode/schema/config/agent",
     pkg: "@opencode/schema",
@@ -110,14 +122,15 @@ export const NPM: NpmSource[] = [
   },
 ]
 
-// Docs sources: products whose agent file has no exported type, read from the table in their docs.
-export const DOCS: DocsSource[] = [
+// Agent: products whose agent file has no exported type, read from the table in their docs.
+const AGENT_DOCS: DocsSource[] = [
   {
     description: "A subagent file in .claude/agents/, configured by its YAML frontmatter.",
     markdown: "https://code.claude.com/docs/en/sub-agents.md",
     name: "subagent",
     pkg: "@anthropic-ai/claude-code",
     product: "Claude Code",
+    section: "frontmatter-reference",
     url: "https://code.claude.com/docs/en/sub-agents#supported-frontmatter-fields",
   },
   {
@@ -130,6 +143,102 @@ export const DOCS: DocsSource[] = [
     url: "https://learn.chatgpt.com/docs/agent-configuration/subagents#custom-agent-file-schema",
   },
 ]
+
+// Session: the type each source keeps one agent's run in.
+const SESSION_NPM: NpmSource[] = [
+  {
+    module: "@opencode/schema/session",
+    pkg: "@opencode/schema",
+    product: "Anomaly OpenCode",
+    target: '(typeof Session.Info)["Encoded"]',
+    type: "Session",
+    url: "https://opencode.ai/v2/docs/api#session.get",
+  },
+  {
+    module: "@anthropic-ai/claude-agent-sdk",
+    pkg: "@anthropic-ai/claude-agent-sdk",
+    product: "Claude Agent SDK",
+    type: "SDKSessionInfo",
+    url: "https://code.claude.com/docs/en/agent-sdk/typescript#return-type-sdksessioninfo",
+  },
+  {
+    module: "@anthropic-ai/claude-agent-sdk",
+    pkg: "@anthropic-ai/claude-agent-sdk",
+    product: "Claude Agent SDK",
+    type: "SDKTaskStartedMessage",
+    url: "https://code.claude.com/docs/en/agent-sdk/typescript#sdktaskstartedmessage",
+  },
+  {
+    module: "agents",
+    pkg: "agents",
+    product: "Cloudflare Agents",
+    type: "AgentToolRunState",
+    url: "https://developers.cloudflare.com/agents/runtime/execution/agent-tools/#render-child-timelines-in-react",
+  },
+  {
+    module: "@mastra/core/agent-controller",
+    pkg: "@mastra/core",
+    product: "Mastra",
+    type: "ActiveSubagentState",
+    url: "https://mastra.ai/reference/agent-controller/session#display-state",
+  },
+  {
+    module: "eve/context",
+    pkg: "eve",
+    product: "Vercel eve",
+    target: 'Pick<SessionContext, "session">',
+    type: "SessionContext",
+    url: "https://eve.dev/docs/reference/typescript-api#runtime-context-ctx",
+  },
+  {
+    module: "eve/context",
+    pkg: "eve",
+    product: "Vercel eve",
+    type: "SessionParent",
+    url: "https://eve.dev/docs/reference/typescript-api#runtime-context-ctx",
+  },
+]
+
+// Session: Codex publishes its thread only in the app-server schema its repository generates.
+const SESSION_GIT: GitSource[] = [
+  {
+    path: "codex-rs/app-server-protocol/schema/typescript/v2/Thread.ts",
+    pkg: "@openai/codex-sdk",
+    product: "OpenAI Codex",
+    repo: "openai/codex",
+    tag: "rust-v{version}",
+    type: "Thread",
+    url: "https://learn.chatgpt.com/docs/app-server#threads",
+  },
+]
+
+// Session: Claude Code lists its sessions as JSON, described by a table in its docs.
+const SESSION_DOCS: DocsSource[] = [
+  {
+    description: "One entry of `claude agents --json`, which lists the sessions agent view shows.",
+    markdown: "https://code.claude.com/docs/en/agent-view.md",
+    name: "session",
+    pkg: "@anthropic-ai/claude-code",
+    product: "Claude Code",
+    url: "https://code.claude.com/docs/en/agent-view#list-sessions-as-json",
+  },
+]
+
+// Each schema's sources and the page section they are written to.
+export const SCHEMAS = {
+  agent: {
+    docs: AGENT_DOCS,
+    git: [],
+    npm: AGENT_NPM,
+    out: resolve(ROOT, "web/next/src/schemas/agent.sources.mdx"),
+  },
+  session: {
+    docs: SESSION_DOCS,
+    git: SESSION_GIT,
+    npm: SESSION_NPM,
+    out: resolve(ROOT, "web/next/src/schemas/session.sources.mdx"),
+  },
+} satisfies Record<string, SchemaSources>
 
 const sortByName = <T extends { name: string }>(items: T[]) =>
   items.sort((a, b) => a.name.localeCompare(b.name))
@@ -151,9 +260,9 @@ const slug = (heading: string) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "")
 
-// The fields in the first table after the section url's anchor names: found by an id attribute or a heading whose slug is the anchor, since links rely on the anchor while heading text changes.
-export function parseDocsTable(markdown: string, url: string): Field[] {
-  const anchor = new URL(url).hash.slice(1)
+// The fields in the first table after the section url's anchor names, or section where the markdown drops that anchor: found by an id attribute or a heading whose slug is the anchor, since links rely on the anchor while heading text changes.
+export function parseDocsTable(markdown: string, url: string, section?: string): Field[] {
+  const anchor = section ?? new URL(url).hash.slice(1)
   const lines = markdown.split("\n")
   const start = lines.findIndex(
     (line) =>
@@ -167,34 +276,44 @@ export function parseDocsTable(markdown: string, url: string): Field[] {
   const table = lines.slice(first, end === -1 ? undefined : end)
   const header = cells(table[0]).map((cell) => cell.toLowerCase())
   const column = (...names: string[]) => header.findIndex((cell) => names.includes(cell))
-  const [field, required, type, description] = [
+  const [field, present, required, type, description] = [
     column("field"),
+    column("present"),
     column("required"),
     column("type"),
     column("description", "purpose"),
   ]
   return sortByName(
-    table.slice(2).map((row) => {
+    table.slice(2).flatMap((row) => {
       const values = cells(row)
-      return {
-        // Relative links are made absolute, so they still work from our page.
-        description: values[description].replace(
-          /\]\(((?:\/|#)[^)]*)\)/g,
-          (_, href: string) => `](${new URL(href, url).href})`,
-        ),
-        name: values[field].replaceAll("`", ""),
-        optional: values[required] !== "Yes",
+      // Relative links are made absolute, so they still work from our page.
+      const text = values[description].replace(
+        /\]\(((?:\/|#)[^)]*)\)/g,
+        (_, href: string) => `](${new URL(href, url).href})`,
+      )
+      // A Present column says when a field appears rather than whether it must: Always is required, and any other condition joins the description.
+      const when = present === -1 ? "" : values[present]
+      // A row may name several fields that share one description, as `cwd`, `kind`, `startedAt`, so each says which row it shares.
+      const names = values[field].split(/,\s*/)
+      const notes = [
+        names.length > 1 && `one row for ${names.join(", ")}`,
+        when && when !== "Always" && when,
+      ].filter(Boolean)
+      return names.map((name) => ({
+        description: notes.length ? `${text} (${notes.join("; ")})` : text,
+        name: name.replaceAll("`", ""),
+        optional: present === -1 ? values[required] !== "Yes" : when !== "Always",
         ...(type !== -1 && { type: values[type].replaceAll("`", "") }),
-      }
+      }))
     }),
   )
 }
 
 export async function fromDocs(source: DocsSource, registry: string): Promise<Source> {
-  const { markdown, pkg, ...rest } = source
+  const { markdown, pkg, section, ...rest } = source
   return {
     ...rest,
-    fields: parseDocsTable(await (await fetchOk(markdown)).text(), source.url),
+    fields: parseDocsTable(await (await fetchOk(markdown)).text(), source.url, section),
     kind: "type",
     // The fields come from the docs page, not the package, which only dates them.
     title: `${pkg}@${await npmLatest(pkg, registry)} · docs`,
@@ -231,17 +350,17 @@ export const typeDeclaration = (source: Source) => {
   return `${jsdoc(source.description)}${head} {\n${members}}\n`
 }
 
-// The Sources section: per source a heading, its docs link (on its own line, since headings are anchors already), and its twoslash block.
+// The Sources section: per product a heading, then per source its docs link (on its own line, since headings are anchors already) and its twoslash block.
 export const render = (blocks: Block[]) =>
   `{/* Generated by \`bun run agent:schemas\`; edit packages/scripts/src/agent-schemas.ts, not this file. */}\n\n${blocks
     .map(
-      ({ source: s, stubs }) =>
-        `### ${s.product}\n\n[${s.url}](${s.url})\n\n\`\`\`ts twoslash title="${s.title}"\n// @noErrors\n${stubs ? `${stubs}\n// ---cut---\n` : ""}${typeDeclaration(s)}\`\`\``,
+      ({ source: s, stubs }, i) =>
+        `${s.product === blocks[i - 1]?.source.product ? "" : `### ${s.product}\n\n`}[${s.url}](${s.url})\n\n\`\`\`ts twoslash title="${s.title}"\n// @noErrors\n${stubs ? `${stubs}\n// ---cut---\n` : ""}${typeDeclaration(s)}\`\`\``,
     )
     .join("\n\n")}\n`
 
 // Writes each content to its own file in the cache, so sources that export the same name never meet, and opens them as one project through TypeScript's compiler API.
-export async function compile({ api, cache }: Session, prefix: string, contents: string[]) {
+export async function compile({ api, cache }: Compiler, prefix: string, contents: string[]) {
   const files = contents.map((_, i) => resolve(cache, `${prefix}-${i}.ts`))
   const config = resolve(cache, `${prefix}.tsconfig.json`)
   await Promise.all(contents.map((content, i) => Bun.write(files[i], content)))
@@ -295,9 +414,9 @@ const isPublic = (symbol: Symbol, written: Set<SyntaxKind>) =>
   !written.has(SyntaxKind.PrivateKeyword) &&
   !written.has(SyntaxKind.ProtectedKeyword)
 
-async function fromNpm(session: Session, npm: NpmSource[]): Promise<Source[]> {
+async function fromNpm(compiler: Compiler, npm: NpmSource[]): Promise<Source[]> {
   const { project, sourceFiles } = await compile(
-    session,
+    compiler,
     "target",
     npm.map(
       (s) =>
@@ -352,16 +471,55 @@ async function fromNpm(session: Session, npm: NpmSource[]): Promise<Source[]> {
             )),
           ]
         : await fieldsOf(instance, (symbol) => has(symbol, SymbolFlags.Property))
-      const { version } = await Bun.file(
-        resolve(session.cache, "node_modules", s.pkg, "package.json"),
-      ).json()
+      const title =
+        s.title ??
+        `${s.pkg}@${(await Bun.file(resolve(compiler.cache, "node_modules", s.pkg, "package.json")).json()).version}`
       return {
         description: await declared.getDocumentationComment(checker),
         fields: sortByName(fields),
         kind: isClass ? ("class" as const) : ("type" as const),
         name: s.type,
         product: s.product,
-        title: `${s.pkg}@${version}`,
+        title,
+        url: s.url,
+      }
+    }),
+  )
+}
+
+// Downloads each git source's file and every file it imports, relative path by relative path, into the cache, and returns it as an npm source whose module is that local file.
+export async function downloadGit(
+  git: GitSource[],
+  options: { cache: string; rawBase: string; registry: string },
+): Promise<NpmSource[]> {
+  return Promise.all(
+    git.map(async (s) => {
+      const tag = s.tag.replace("{version}", await npmLatest(s.pkg, options.registry))
+      const root = `git/${s.repo}/${tag}`
+      const seen = new Set<string>()
+      const fetchFile = async (path: string): Promise<void> => {
+        if (seen.has(path)) return
+        // An import that climbs above the repository's root would write outside the cache.
+        if (path.startsWith("..")) throw new Error(`${path} leaves ${s.repo}`)
+        seen.add(path)
+        // A generated file may write a doc comment on the previous member's line, where TypeScript reads it as trailing; on a line of its own it documents the member after it.
+        const text = (
+          await (await fetchOk(`${options.rawBase}/${s.repo}/${tag}/${path}`)).text()
+        ).replace(/([{,])[ \t]*\/\*\*/g, "$1\n/**")
+        await Bun.write(resolve(options.cache, root, path), text)
+        const imports = [...text.matchAll(/from "(\.{1,2}\/[^"]+)"/g)].map(
+          ([, specifier]) =>
+            `${join(dirname(path), specifier.replace(/\.js$/, ""))}${specifier.endsWith(".ts") ? "" : ".ts"}`,
+        )
+        await Promise.all(imports.map(fetchFile))
+      }
+      await fetchFile(s.path)
+      return {
+        module: `./${root}/${s.path.replace(/\.ts$/, "")}`,
+        pkg: s.pkg,
+        product: s.product,
+        title: `${s.repo}@${tag} · schema`,
+        type: s.type,
         url: s.url,
       }
     }),
@@ -369,9 +527,9 @@ async function fromNpm(session: Session, npm: NpmSource[]): Promise<Source[]> {
 }
 
 // Each source with its stubs: the names its block references but nothing declares, as empty interfaces (in a namespace for a dotted name), each taking as many type arguments as its widest use passes.
-async function blocksOf(session: Session, sources: Source[]): Promise<Block[]> {
+async function blocksOf(compiler: Compiler, sources: Source[]): Promise<Block[]> {
   const { project, sourceFiles } = await compile(
-    session,
+    compiler,
     "block",
     sources.map((s) => `export {}\n${typeDeclaration(s)}`),
   )
@@ -412,23 +570,25 @@ async function blocksOf(session: Session, sources: Source[]): Promise<Block[]> {
   )
 }
 
-// The whole run: install the npm sources from the registry into cache, read them and the docs sources, check every link, and write the formatted Sources section to out.
-export async function generate(options: {
-  cache: string
-  docs: DocsSource[]
-  npm: NpmSource[]
-  out: string
-  registry: string
-}): Promise<Source[]> {
-  const { cache, docs, npm, out, registry } = options
+// The whole run for one schema: install its npm sources from the registry into cache, download its git sources, read them and its docs sources, check every link, and write the formatted Sources section to out.
+export async function generate(
+  schema: SchemaSources,
+  options: { cache: string; rawBase: string; registry: string },
+): Promise<Source[]> {
+  const { docs, out } = schema
+  const { cache, registry } = options
+  const npm = [...schema.npm, ...(await downloadGit(schema.git, options))]
   await Bun.write(resolve(cache, "package.json"), JSON.stringify({ private: true, type: "module" }))
-  await capture(["bun", "add", "--registry", registry, ...npm.map((s) => `${s.pkg}@latest`)], cache)
+  await capture(
+    ["bun", "add", "--registry", registry, ...new Set(schema.npm.map((s) => `${s.pkg}@latest`))],
+    cache,
+  )
 
-  // One compiler session reads the packages and checks the blocks; closing it ends the TypeScript process it runs.
-  const session: Session = { api: new API({ cwd: cache }), cache }
+  // One compiler process reads the packages and checks the blocks; closing it ends the TypeScript process it runs.
+  const compiler: Compiler = { api: new API({ cwd: cache }), cache }
   try {
     const sources = (
-      await Promise.all([fromNpm(session, npm), ...docs.map((s) => fromDocs(s, registry))])
+      await Promise.all([fromNpm(compiler, npm), ...docs.map((s) => fromDocs(s, registry))])
     )
       .flat()
       .sort((a, b) => a.product.localeCompare(b.product))
@@ -439,30 +599,30 @@ export async function generate(options: {
 
     // Formatted as the repo formats the committed file, so a run with no upstream change leaves no diff.
     const formatted = await capture(
-      ["bunx", "oxfmt", "--stdin-filepath", OUT],
+      ["bunx", "oxfmt", "--stdin-filepath", out],
       ROOT,
-      render(await blocksOf(session, sources)),
+      render(await blocksOf(compiler, sources)),
     )
     await Bun.write(out, formatted)
     return sources
   } finally {
-    await session.api.close()
+    await compiler.api.close()
   }
 }
 
 if (import.meta.main) {
-  const sources = await generate({
-    cache: resolve(ROOT, ".generated/agent-schemas"),
-    docs: DOCS,
-    npm: NPM,
-    out: OUT,
-    registry: "https://registry.npmjs.org",
-  })
-  for (const s of sources) {
-    const described = s.fields.filter((f) => f.description).length
-    console.log(`${s.product} · ${s.title} · ${s.fields.length} fields, ${described} described`)
+  for (const schema of Object.values(SCHEMAS)) {
+    const sources = await generate(schema, {
+      cache: resolve(ROOT, ".generated/agent-schemas"),
+      rawBase: "https://raw.githubusercontent.com",
+      registry: "https://registry.npmjs.org",
+    })
+    for (const s of sources) {
+      const described = s.fields.filter((f) => f.description).length
+      console.log(`${s.product} · ${s.title} · ${s.fields.length} fields, ${described} described`)
+    }
+    console.log(`Wrote ${schema.out}\n`)
   }
-  console.log(`\nWrote ${OUT}`)
   console.log(
     "Restart bun run dev if it is running: its first render of a regenerated page this large can stall.",
   )

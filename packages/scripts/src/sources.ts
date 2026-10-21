@@ -3,7 +3,7 @@ import { join, resolve } from "node:path"
 
 import { fetchOk } from "@/fetch-ok"
 
-// The 9 TypeScript sources ZeroSDK takes its names and terms from, and their docs cached as one markdown file per page so research reads them locally instead of from the web; run with `bun run sources`, then count terms with `bun run terms`. agent-schemas.ts keeps its own list, of the type each product defines an agent with; a test keeps the two lists to the same products.
+// The 9 TypeScript sources ZeroSDK takes its names and terms from, and their docs cached as one markdown file per page so research reads them locally instead of from the web; run with `bun run sources`, then count terms with `bun run terms`. agent-schemas.ts keeps its own lists, of the type each product defines an agent and keeps a session in; a test keeps the agent list to the same products and the session list within them.
 
 const ROOT = resolve(import.meta.dir, "../../..")
 export const CACHE = resolve(ROOT, ".generated/sources")
