@@ -54,7 +54,7 @@ export type DocsSource = Pick<Source, "description" | "name" | "product" | "url"
 }
 type Block = { source: Source; stubs: string }
 // The compiler session and the directory the npm sources are installed into.
-export type Session = { api: API; cache: string }
+type Session = { api: API; cache: string }
 
 // npm sources: the type each package exports for what an agent is defined with.
 export const NPM: NpmSource[] = [
