@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test"
 import { join } from "node:path"
 
+import { Session } from "../../../../../../packages/schema/src/session"
 import * as icons from "../../../../../../web/next/src/components/agents/icons"
 import * as logos from "../../../../../../web/next/src/components/common/provider-logos"
 import { tables } from "../../../content/docs/ui/icons-page"
@@ -33,5 +34,12 @@ describe("agents icons", () => {
     for (const [provider, , name] of rows)
       expect(icons.providerIcon(`${provider}/some-model`)).toBe(component(name))
     expect(icons.providerIcon("unknown/some-model")).toBeUndefined()
+  })
+
+  test("hold an icon for each status and task a session can have", () => {
+    expect(Object.keys(icons.stateIcons)).toEqual(Session.shape.status.options.toSorted())
+    expect(Object.keys(icons.taskIcons)).toEqual(
+      Session.shape.metadata.unwrap().shape.task.unwrap().options,
+    )
   })
 })

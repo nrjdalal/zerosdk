@@ -58,7 +58,7 @@ describe("Session", () => {
     ])
   })
 
-  test("takes as a task only the kinds the icons page shows", () => {
+  test("takes as a task only one of the thirteen kinds", () => {
     expect(Session.shape.metadata.unwrap().shape.task.unwrap().options).toHaveLength(13)
     expect(Session.safeParse({ ...minimal, metadata: { task: "triage" } }).success).toBe(false)
   })
