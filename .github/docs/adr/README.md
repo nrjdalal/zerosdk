@@ -10,3 +10,4 @@ One architecture decision record per hard-to-reverse choice, in the order they w
 - [0006 The server answers permission requests](0006-the-server-answers-permission-requests.md)
 - [0007 One local Postgres, and no sync engine yet](0007-one-local-postgres-and-no-sync-engine-yet.md)
 - [0008 Memory and skills live in the database, behind a CLI](0008-memory-and-skills-live-in-the-database-behind-a-cli.md)
+- [0009 An agent is built around Claude, and known by a UUID](0009-an-agent-is-built-around-claude-and-known-by-a-uuid.md)
