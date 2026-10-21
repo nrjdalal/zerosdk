@@ -28,6 +28,12 @@ const docsConfig = {
         },
       },
       {
+        "/docs/ui/onboarding": {
+          title: "Onboarding",
+          description: "Reference for the first-run setup of the human's machine.",
+        },
+      },
+      {
         "/docs/ui/sidebar": {
           title: "Sidebar",
           description: "Reference for the agents sidebar.",

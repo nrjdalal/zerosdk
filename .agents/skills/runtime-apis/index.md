@@ -61,6 +61,7 @@ runs under the system Node while Docker and Vercel serve it under Bun.
 | `tests/web/next/src/components/agents/icons.test.ts` | Bun | `node:path` (join) |
 | `tests/web/next/src/components/agents/sidebar.test.ts` | Bun | `node:path` (join) |
 | `tests/web/next/src/components/common/provider-logos.test.ts` | Bun | `node:path` (join) |
+| `tests/web/next/src/components/onboarding/onboarding.test.ts` | Bun | `node:path` (join) |
 | `web/next/next.config.ts` | Both | `node:fs` (readFileSync); `node:path` (resolve) |
 | `web/next/src/app/layout.tsx` | Both | `node:fs` (existsSync); `node:path` (join) |
 

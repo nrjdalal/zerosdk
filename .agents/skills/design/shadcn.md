@@ -19,7 +19,7 @@ The skeletons below keep only nesting and key props. Paths under "Our usage" sta
 
 ## Index
 
-[Alert dialog](#alert-dialog) · [Avatar](#avatar) · [Badge](#badge) · [Button](#button) · [Checkbox](#checkbox) · [Collapsible](#collapsible) · [Command](#command) · [Data table](#data-table) · [Dialog](#dialog) · [Dropdown menu](#dropdown-menu) · [Empty](#empty) · [Field](#field) · [Input](#input) · [Item](#item) · [Kbd](#kbd) · [Popover](#popover) · [Select](#select) · [Separator](#separator) · [Sheet](#sheet) · [Sidebar](#sidebar) · [Spinner](#spinner) · [Table](#table) · [Tabs](#tabs) · [Toast](#toast) · [Tooltip](#tooltip)
+[Alert dialog](#alert-dialog) · [Avatar](#avatar) · [Badge](#badge) · [Button](#button) · [Checkbox](#checkbox) · [Collapsible](#collapsible) · [Command](#command) · [Data table](#data-table) · [Dialog](#dialog) · [Dropdown menu](#dropdown-menu) · [Empty](#empty) · [Field](#field) · [Input](#input) · [Item](#item) · [Kbd](#kbd) · [Popover](#popover) · [Select](#select) · [Separator](#separator) · [Sheet](#sheet) · [Sidebar](#sidebar) · [Spinner](#spinner) · [Table](#table) · [Tabs](#tabs) · [Toast](#toast) · [Tooltip](#tooltip) · [Trace](#trace)
 
 ## Alert dialog
 
@@ -75,7 +75,7 @@ The skeletons below keep only nesting and key props. Paths under "Our usage" sta
   - An icon beside text takes `data-icon="inline-start"` or `"inline-end"` (`button-with-icon`). `button-spinner` keeps the label: `<Button disabled><Spinner data-icon="inline-start" />Generating</Button>`.
   - `button-rounded`: `className="rounded-full"`, the only documented class tweak. `button-render` ("As Link"): `<a className={buttonVariants({ variant: "secondary", size: "sm" })}>`. The docs say never `<Button render={<a />} />` for a link, as Base UI's Button sets `role="button"`.
   - `button-group-demo`: `ButtonGroup > ButtonGroup > Button`, and `DropdownMenuTrigger render={<Button variant="outline" size="icon" aria-label="More Options" />}`.
-- **Our usage:** `components/agents/sidebar.tsx`, `components/common/access.tsx`, `components/common/mode-toggle.tsx`, `components/common/navbar.tsx`, `components/common/route-error.tsx`, `components/common/route-not-found.tsx`, `components/dashboard/sidebar.tsx`, `components/data-table.tsx`, `components/docs/copy-as-markdown.tsx`, `app/waitlist/page.tsx`, and the console tables' `data-table.tsx` and `data-columns.tsx`.
+- **Our usage:** `components/agents/sidebar.tsx`, `components/common/access.tsx`, `components/common/mode-toggle.tsx`, `components/common/navbar.tsx`, `components/common/route-error.tsx`, `components/common/route-not-found.tsx`, `components/dashboard/sidebar.tsx`, `components/data-table.tsx`, `components/docs/copy-as-markdown.tsx`, `components/onboarding/onboarding.tsx`, `app/waitlist/page.tsx`, and the console tables' `data-table.tsx` and `data-columns.tsx`.
 - **Deliberate deviations:**
   - Fill icons inside buttons (see the top; Line outside the agents sidebar until the audit's switch).
   - `render` with `nativeButton={!render}` in `ui/button.tsx`: `patchButton()` in `shadcn-customize.ts`, so `XTrigger render={<Button />}` works. It is no licence for a Button rendered as a link.
@@ -421,7 +421,7 @@ The skeletons below keep only nesting and key props. Paths under "Our usage" sta
   ```
   - Variants and sizes: none. A `size-*` class resizes it from its default `size-4`. It renders `role="status" aria-label="Loading"`.
   - `spinner-button`: `<Button disabled size="sm"><Spinner data-icon="inline-start" />Loading...</Button>`, so the label stays. `spinner-badge` follows the same `data-icon` rule. `spinner-input-group`: `InputGroupAddon align="inline-end" > Spinner`. `spinner-empty`: `EmptyMedia variant="icon" > Spinner`.
-- **Our usage:** `components/common/access.tsx`, `components/common/navbar.tsx`, `components/dashboard/sidebar.tsx`, `components/data-table.tsx`, `app/waitlist/page.tsx`.
+- **Our usage:** `components/common/access.tsx`, `components/common/navbar.tsx`, `components/dashboard/sidebar.tsx`, `components/data-table.tsx`, `components/onboarding/onboarding.tsx`, `app/waitlist/page.tsx`.
 - **Deliberate deviations:**
   - Its loader in `ui/spinner.tsx` is to take a Fill icon through `shadcn-customize.ts` (see the top; still Line until the audit's switch).
   - Always bare at `size-4`, stricter than shadcn's `size-*` (design skill, Components: Loading).
@@ -477,7 +477,7 @@ The skeletons below keep only nesting and key props. Paths under "Our usage" sta
   ```
   - Variants and sizes: none. `type` is `success`, `info`, `warning`, `error` or `loading`. `priority` is `low` (the default, announced politely) or `high` (announced urgently).
   - `toast-types`: `toast.add({ type: "success", description })`; the error call adds `priority: "high"`. `toast-promise`: `toast.promise(promise, { loading, success, error })`.
-- **Our usage:** mounted in `app/providers.tsx`. Raised from `lib/api/bulk.ts`, `lib/clipboard.ts`, `app/waitlist/page.tsx`, `components/common/access.tsx`, `components/dashboard/sidebar.tsx`, `components/docs/copy-as-markdown.tsx`, `components/shell/sidebar-user-menu.tsx`, and the console's allowlist `data-table.tsx` and users `role-select.tsx`.
+- **Our usage:** mounted in `app/providers.tsx`. Raised from `lib/api/bulk.ts`, `lib/clipboard.ts`, `app/waitlist/page.tsx`, `components/common/access.tsx`, `components/dashboard/sidebar.tsx`, `components/docs/copy-as-markdown.tsx`, `components/onboarding/onboarding-demo.tsx`, `components/shell/sidebar-user-menu.tsx`, and the console's allowlist `data-table.tsx` and users `role-select.tsx`.
 - **Deliberate deviations:**
   - Its status icons in `ui/toast.tsx` are to take Fill icons through `shadcn-customize.ts` (see the top; still Line until the audit's switch).
   - The `Toaster` is mounted in `providers.tsx`, not `layout.tsx`: design skill, the toast rule under Data tables; `shadcn-customize.ts` also resets `app/layout.tsx` after every sync.
@@ -499,5 +499,25 @@ The skeletons below keep only nesting and key props. Paths under "Our usage" sta
   - Fill icons on its triggers (see the top; Line outside the agents sidebar until the audit's switch).
   - A title's tooltip cancels its own opening when the text fits, through `onOpenChange` and `details.cancel()` (design skill, State).
   - `DataTableCellText` measures overflow with `useState`, legacy code the design skill (State) names and says not to copy.
+
+
+## Trace
+
+- **shadcn's usage:** https://ui.shadcn.com/docs/components/base/trace, for the steps an agent takes. The primary demo (`trace-demo`) renders an AI SDK conversation, each tool call a `TraceCollapsible` around a `TraceLine`; the status example (`trace-status`) shows one line per status:
+  ```tsx
+  <Trace className="max-w-sm">
+    <TraceLine><TraceIcon><CircleCheckIcon /></TraceIcon><TraceTitle>Ran pnpm install</TraceTitle></TraceLine>
+    <TraceLine status="error"><TraceIcon><CircleAlertIcon /></TraceIcon><TraceTitle>Failed to run pnpm lint</TraceTitle></TraceLine>
+    <TraceLine status="running"><TraceIcon><LoaderCircleIcon className="animate-spin" /></TraceIcon><TraceTitle>Running pnpm build</TraceTitle></TraceLine>
+    <TraceLine status="pending"><TraceIcon><CircleIcon /></TraceIcon><TraceTitle>Run pnpm test</TraceTitle></TraceLine>
+  </Trace>
+  ```
+  - Variants and sizes: `TraceLine status` is `running`, `error` or `pending`, and none for work that is done; a running title shimmers. The title's tense follows the status: "Ran", "Failed to run", "Running", "Run".
+  - `trace-description`: a `TraceDescription` after the `TraceTitle` for a count, a duration or a diff stat. A line acts by being wrapped in a trigger, link or `TraceCollapsible`.
+- **Our usage:** `components/onboarding/onboarding.tsx`.
+- **Deliberate deviations:**
+  - Fill status icons, and a bare `Spinner` while running, as the design skill's Loading rule asks, in place of a spinning loader icon (see the top). The chevron `ui/trace.tsx` draws is still Line until the audit's switch.
+  - A `Button` (`variant="outline"`, `ml-6` to start under the title, then stretched to the right edge) on its own row under each line, named for the fix in the step's tense (Install, Installing, Installed) and held while it runs or once done: a fix is an action the human chooses, not the line itself, so it is a button rather than a line wrapped in a trigger. The line sits in a full-width wrapper, as `Trace` fits a row that holds a line to its width, so `TraceDescription` (`ml-auto`) can put the version at its right end.
+  - `max-w-sm` sits on the wrapper that also holds Set up everything, not on `Trace`.
 
 Open items, the deviations with no recorded reason, are in `.github/notes/audits/0001-shadcn-usage.md`.

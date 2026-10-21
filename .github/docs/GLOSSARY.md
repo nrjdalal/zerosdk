@@ -59,6 +59,10 @@ _Avoid_: host, multiplexer, terminal, workspace
 A main agent's setting for how the factory answers permission requests from it and every agent under it: ask the human, follow saved rules, or allow all.
 _Avoid_: permission mode
 
+**Onboarding**:
+The setup ZeroSDK runs the first time, checking what it needs on the human's machine and fixing what is missing, one step at a time.
+_Avoid_: first run, setup step, setup wizard
+
 **Status**:
 Where a session is in its life: pending, running, waiting, idle, paused, stuck, completed, failed or cancelled.
 _Avoid_: state

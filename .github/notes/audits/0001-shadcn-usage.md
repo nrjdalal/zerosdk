@@ -33,7 +33,7 @@ Below are the deviations with no recorded reason, and those whose recorded reaso
 
   No icon outside `components/ui` is a Fill-less editor icon such as `RiLink`. **Fix:** switch each one to its `*Fill` twin. Some twins change shape, not only weight: `RiArrowRightSFill` and `RiExpandUpDownFill` are solid triangles where the Line icons are chevrons, while `RiCheckFill` draws the same path as `RiCheckLine`. Check each swap in the browser.
 
-  Generated components hard-code 89 matches of 16 Line icons in 22 files under `components/ui/`. Each has a Fill twin. Change them through `.github/scripts/shadcn-customize.ts`, never by hand, as the sync re-scaffolds `ui/`:
+  Generated components hard-code 91 matches of 16 Line icons in 23 files under `components/ui/`. Each has a Fill twin. Change them through `.github/scripts/shadcn-customize.ts`, never by hand, as the sync re-scaffolds `ui/`:
   - `accordion.tsx`: `RiArrowDownSLine`, `RiArrowUpSLine`
   - `breadcrumb.tsx`: `RiArrowRightSLine`, `RiMoreLine`
   - `calendar.tsx`: `RiArrowDownSLine`, `RiArrowLeftSLine`, `RiArrowRightSLine`
@@ -56,6 +56,7 @@ Below are the deviations with no recorded reason, and those whose recorded reaso
   - `sidebar.tsx`: `RiSideBarLine`
   - `spinner.tsx`: `RiLoaderLine`
   - `toast.tsx`: `RiCheckboxCircleLine`, `RiCloseCircleLine`, `RiCloseLine`, `RiErrorWarningLine`, `RiInformationLine`, `RiLoaderLine`
+  - `trace.tsx`: `RiArrowRightSLine`
 
   **Fix:** add a Line-to-Fill rewrite of `ui/` to `shadcn-customize.ts`. The script itself names Line icons: `patchCheckbox()` injects `RiCheckLine` and `RiSubtractLine`, and `patchSidebar()` finds `RiSideBarLine` by name. Move those to the Fill names in the same change. The design skill's Loading rule names `RiLoaderLine` too.
 

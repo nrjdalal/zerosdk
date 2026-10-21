@@ -11,7 +11,7 @@ ZeroSDK runs each session of an agent as its own Claude Code CLI in a herdr pane
 2. **UI, server, bridge, CLI** (2026-10-20). Both the UI and the agents start new sessions through the server, agents through the `zerosdk` CLI, and the server records who started each one, since herdr keeps no parent.
 3. **Agents talk as Claude Code peers** (2026-10-20), through cross-session messaging; each session's unique name is its peer address.
 4. **CLIs first, the SDK later, and no ACP** (2026-10-20); the SDK comes as a second implementation of the same harness contract, with no change to the server.
-5. **herdr first, cmux later** (2026-10-20), behind one bridge contract. The bridge is chosen in a setup step, where each bridge and harness checks itself, and the choice is saved in the database, not in an env setting.
+5. **herdr first, cmux later** (2026-10-20), behind one bridge contract. The bridge is chosen during onboarding, where each bridge and harness checks itself, and the choice is saved in the database, not in an env setting.
 6. **Hooks and the screen from the start** (2026-10-20), hooks as the main signal and the screen as the fallback, as ADR 0005 sets out.
 7. **Prompts are answered through the hook reply** (2026-10-20), with keys typed through the bridge as the fallback, as ADR 0006 sets out.
 8. **A permission flipper on each main agent** (2026-10-20): Ask me, Rules or Allow all, for that main agent and every session under it, as ADR 0006 sets out.
@@ -67,8 +67,8 @@ The server calls only the Harness contract, and only the CLI implementations use
 
 ## Steps
 
-1. Write the two contracts as the Layout lists them, from section 10 of the research plus `check()` for the setup step, with the herdr bridge and the Claude Code CLI harness.
-2. Add the server routes the Layout lists (hooks, memory, sessions, setup, skills) and the setup page that runs each `check()` and saves the choice.
+1. Write the two contracts as the Layout lists them, from section 10 of the research plus `check()` for onboarding, with the herdr bridge and the Claude Code CLI harness.
+2. Add the server routes the Layout lists (hooks, memory, sessions, setup, skills) and the onboarding page that runs each `check()` and saves the choices (mocked up at `/docs/ui/onboarding`).
 3. Build the `zerosdk` CLI and the one skill that teaches its commands.
 4. Store each session's Claude UUID and full launch settings beside its ZeroSDK id, so a resume can pass them again.
 5. Compute the nine statuses in the harness from hook events, herdr's status and pattern events, and a no-progress timer.

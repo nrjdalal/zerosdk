@@ -1,0 +1,47 @@
+---
+slug: /docs/ui/onboarding
+title: Onboarding
+description: Reference for the first-run setup of the human's machine.
+---
+
+import { OnboardingDemo } from "@/components/onboarding/onboarding-demo"
+
+<DocsPreview>
+  <OnboardingDemo />
+  <include cwd lang="tsx" meta='title="web/next/src/components/onboarding/onboarding-demo.tsx"'>
+    src/components/onboarding/onboarding-demo.tsx
+  </include>
+</DocsPreview>
+
+## Steps
+
+Onboarding asks nothing. Installing ZeroSDK, with `npx zerosdk`, puts the `zerosdk` command and its skill on the machine up front, so the first step is done when onboarding opens. Onboarding then checks the rest of what the factory needs, in this order, and fixes what is missing when the human says so.
+
+| Step                  | Checks                                 | Fix                                                            |
+| --------------------- | -------------------------------------- | -------------------------------------------------------------- |
+| zerosdk CLI and skill | The agents' `zerosdk` command is there | Installs the command and the skill that teaches it             |
+| Docker                | Docker is installed and running        | Installs it, then starts it                                    |
+| Postgres              | The factory's database is up           | Starts it in Docker and runs the migrations                    |
+| herdr                 | herdr is installed and answering       | Installs it                                                    |
+| Claude Code           | Claude Code is installed and signed in | Installs it, or opens its sign-in in the browser               |
+| herdr's Claude hook   | herdr's hook is in Claude Code         | Adds it, so a session resumes after a restart                  |
+| Repo trust            | Claude Code trusts the repo            | Marks the repo's main checkout trusted, which covers worktrees |
+
+## Statuses
+
+Each step is a line with its name, and its button under it, as wide as the line, names the fix in the step's tense. Once a step is done, the line ends with what its check found, such as a version.
+
+| Status  | Line                         | Button, as for herdr |
+| ------- | ---------------------------- | -------------------- |
+| Pending | Faded                        | Install              |
+| Running | A spinner, the name shimmers | Installing, held     |
+| Done    | A check, then the version    | Installed, held      |
+| Error   | Red                          | Install              |
+
+## Fixing
+
+- **A step's button** runs its fix while the step is pending or failed.
+- **Set up everything** runs every fix that is left, in order.
+- **Continue** replaces it once every step is done.
+
+Only one fix runs at a time, so the buttons wait while one does. The demo runs on a pretend machine with ZeroSDK installed, no Docker, and Claude Code signed out, and each fix takes a moment and succeeds.

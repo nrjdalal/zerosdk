@@ -7,6 +7,8 @@ Distinct from the audit reports, which `AGENTS.md` puts in `../audits/` and whic
 ## In progress
 
 - [0001 Threads in the agents sidebar](0001-threads-agents-sidebar.md) - the mockup lists the human's threads above the orchestrators, five to a page with unread counts and a menu on each row; real data and the thread view are next (PR #25).
+- [0006 Onboarding](0006-onboarding.md) - the first-run setup that checks and fixes the human's machine in seven steps, from the zerosdk CLI to repo trust; the mockup is built and parked on `feat/onboarding`.
+- [0007 AskUserQuestion](0007-ask-user-question.md) - an agent's questions shown as Claude's `AskUserQuestion` on shadcn's default Questionnaire; parked on `feat/ask-user-question`.
 
 ## Planned
 
