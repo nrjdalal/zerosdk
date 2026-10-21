@@ -36,7 +36,7 @@ _Avoid_: job
 ## Threads
 
 **Thread**:
-A main message picked out of the human's conversation with AgentZero, which the sidebar lists so the human can come back to it and see its updates; it belongs to no session.
+Something new the human asks AgentZero, to which the agents add each update as there is news about it; the sidebar lists threads so the human can come back to one and see what is new. It belongs to no session.
 _Avoid_: chat, conversation, session
 
 **Turn**:
