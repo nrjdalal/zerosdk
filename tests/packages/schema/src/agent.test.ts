@@ -15,7 +15,7 @@ describe("Agent", () => {
       effort: "high",
       mcpServers: ["github"],
       memory: "project",
-      metadata: { color: "purple", name: "builder", team: "platform" },
+      metadata: { color: "purple", name: "builder" },
       model: "anthropic/claude-opus-5-5",
       role: "orchestrator",
       skills: ["api-conventions"],
@@ -45,10 +45,9 @@ describe("Agent", () => {
     expect(Agent.parse(minimal).role).toBe("subagent")
   })
 
-  test("takes one of Claude's eight colors, and any other label as a string", () => {
+  test("takes one of Claude's eight colors as a label", () => {
     expect(Agent.shape.metadata.unwrap().shape.color.unwrap().options).toHaveLength(8)
-    for (const metadata of [{ color: "magenta" }, { team: 1 }])
-      expect(Agent.safeParse({ ...minimal, metadata }).success).toBe(false)
+    expect(Agent.safeParse({ ...minimal, metadata: { color: "magenta" } }).success).toBe(false)
   })
 
   test("rejects a value outside each field's set", () => {

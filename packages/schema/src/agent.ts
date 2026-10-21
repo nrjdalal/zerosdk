@@ -23,14 +23,14 @@ export const Agent = z.object({
   /** Tools the agent may use, Claude's own or an MCP server's; left out, it may use every tool, e.g. Read */
   tools: z.array(z.string()).optional(),
   // metadata
-  /** Labels for classifying, filtering and tracing the agent; color and name are named, and any other label is a string, e.g. { color: purple, name: builder, team: platform } */
+  /** Labels that show the agent but do not change how it runs, e.g. { color: purple, name: builder } */
   // oxfmt-ignore
   metadata: z.object({
     /** Color Claude draws the agent in, in its task list and transcript, e.g. purple */
     color: z.enum(["blue", "cyan", "green", "orange", "pink", "purple", "red", "yellow"]).optional(),
     /** Name people see for the agent, free to change while its id stays, e.g. builder */
     name: z.string().optional(),
-  }).catchall(z.string()).optional(),
+  }).optional(),
 })
 
 export type Agent = z.infer<typeof Agent>
