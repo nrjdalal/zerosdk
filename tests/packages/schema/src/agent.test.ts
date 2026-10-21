@@ -14,7 +14,6 @@ describe("Agent", () => {
       ...minimal,
       effort: "high",
       mcpServers: ["github"],
-      memory: "project",
       metadata: { color: "purple", name: "builder" },
       model: "anthropic/claude-opus-5-5",
       role: "orchestrator",
@@ -51,7 +50,7 @@ describe("Agent", () => {
   })
 
   test("rejects a value outside each field's set", () => {
-    for (const change of [{ effort: "minimal" }, { memory: "global" }, { role: "worker" }])
+    for (const change of [{ effort: "minimal" }, { role: "worker" }])
       expect(Agent.safeParse({ ...minimal, ...change }).success).toBe(false)
   })
 })

@@ -12,8 +12,6 @@ export const Agent = z.object({
   effort: z.enum(["low", "medium", "high", "xhigh", "max"]).optional(),
   /** MCP servers the agent can reach, by the name of a server configured elsewhere, e.g. github */
   mcpServers: z.array(z.string()).optional(),
-  /** Folder the agent keeps notes in across sessions, named after its id; user spans every project, project is committed with the repo, and local stays out of version control, e.g. project */
-  memory: z.enum(["local", "project", "user"]).optional(),
   /** Model the agent runs on, as provider/model with the provider's own model id; left out, Claude picks one, e.g. anthropic/claude-opus-5-5 */
   model: z.string().optional(),
   /** Place of the agent in the team; a main agent sits at the top, above the orchestrators; an orchestrator is persistent, owns one area of the work and splits it into tasks for subagents; a subagent is started for one task and ends when it is done, and an agent with no role is one, e.g. orchestrator */
