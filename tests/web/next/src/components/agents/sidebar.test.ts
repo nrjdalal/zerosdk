@@ -1,12 +1,13 @@
 import { describe, expect, test } from "bun:test"
 import { join } from "node:path"
 
-import { stateIcons, taskIcons } from "../../../../../../web/next/src/components/agents/icons"
+import { statusIcons, taskIcons } from "../../../../../../web/next/src/components/agents/icons"
 import {
-  type AgentRow,
   AgentsHeader,
   AgentsNav,
-  type SubagentRow,
+  nest,
+  sessionTitle,
+  type SessionRow,
   type ThreadRow,
 } from "../../../../../../web/next/src/components/agents/sidebar"
 import { SidebarProvider } from "../../../../../../web/next/src/components/ui/sidebar"
@@ -16,7 +17,8 @@ const web = join(import.meta.dir, "../../../../../../web/next")
 const { createElement } = await import(Bun.resolveSync("react", web))
 const { renderToStaticMarkup } = await import(Bun.resolveSync("react-dom/server", web))
 
-type Agent = AgentRow["agent"]
+type Agent = SessionRow["agent"]
+type Session = SessionRow["session"]
 
 const agent = (id: string, name: string, role: Agent["role"]): Agent => ({
   description: `${name} agent`,
@@ -25,45 +27,66 @@ const agent = (id: string, name: string, role: Agent["role"]): Agent => ({
   role,
 })
 
-const mainAgents: AgentRow[] = [
-  { agent: agent("01a15d1f-2a28-7709-ab2d-b667e682dce6", "AgentZero", "main"), state: "running" },
-  { agent: agent("01a15d1f-2a2b-72d9-979f-034d4f840245", "AgentOne", "main"), state: "idle" },
-]
-const orchestrators: AgentRow[] = [
-  {
-    agent: agent("01a15d1f-2a2d-73cd-a39e-411bc732fb3f", "Engineering", "orchestrator"),
-    state: "idle",
-  },
-]
-const subagents: SubagentRow[] = [
-  {
-    agent: agent("01a15d1f-2a34-7641-aa32-003fe284870e", "Builder", "subagent"),
-    state: "waiting",
-    subagents: [
-      {
-        agent: agent("01a15d1f-2a36-70db-abd7-fbef67f2d42c", "Reviewer", "subagent"),
-        state: "running",
-        task: "review",
-      },
-      {
-        agent: agent("01a15d1f-2a38-7503-b5df-ac1aa377b75a", "Tester", "subagent"),
-        state: "idle",
-        task: "test",
-      },
-    ],
-    task: "build",
-    title: "ZS-12#45 Add tools",
-  },
-  {
-    agent: agent("01a15d1f-2a31-70d8-9729-4deffa74724d", "Builder", "subagent"),
-    state: "completed",
-    title: "ZS-15 Fix login",
-  },
+const row = (
+  id: string,
+  runs: Agent,
+  status: Session["status"],
+  more?: Partial<Session>,
+): SessionRow => ({
+  agent: runs,
+  session: { agentId: runs.id, cwd: "/home/dev/zerosdk", id, status, updatedAt: 0, ...more },
+})
+
+const builder = agent("01a15d1f-2a31-70d8-9729-4deffa74724d", "Builder", "subagent")
+const parent = "01a15e51-f987-775c-99f8-c0c2cdcddaaf"
+
+const rows: SessionRow[] = [
+  row(
+    "01a15e51-f919-74d6-b2d8-f9dfbfbd1ce9",
+    agent("01a15d1f-2a28-7709-ab2d-b667e682dce6", "AgentZero", "main"),
+    "running",
+  ),
+  row(
+    "01a15e51-f930-762b-8cfb-0bc612079392",
+    agent("01a15d1f-2a2b-72d9-979f-034d4f840245", "AgentOne", "main"),
+    "idle",
+  ),
+  row(
+    "01a15e51-f945-7589-829f-79f0d0ecc4a2",
+    agent("01a15d1f-2a2d-73cd-a39e-411bc732fb3f", "Engineering", "orchestrator"),
+    "idle",
+  ),
+  row(parent, builder, "waiting", {
+    metadata: {
+      issue: { key: "ZS-12", url: "https://tracker.example.com/ZS-12" },
+      pr: { number: 45, url: "https://github.com/nrjdalal/zerosdk/pull/45" },
+      task: "build",
+      title: "Add tools",
+    },
+  }),
+  row(
+    "01a15e51-f99d-72b5-b994-823e1a4385f2",
+    agent("01a15d1f-2a36-70db-abd7-fbef67f2d42c", "Reviewer", "subagent"),
+    "running",
+    { metadata: { task: "review" }, parentId: parent },
+  ),
+  row(
+    "01a15e51-f9b0-75d5-9ad6-99eb1416a2e4",
+    agent("01a15d1f-2a38-7503-b5df-ac1aa377b75a", "Tester", "subagent"),
+    "idle",
+    { metadata: { task: "test" }, parentId: parent },
+  ),
+  row("01a15e51-f9c5-7799-9bb2-b4a5ab827f2d", builder, "completed", {
+    metadata: {
+      issue: { key: "ZS-15", url: "https://tracker.example.com/ZS-15" },
+      title: "Fix login",
+    },
+  }),
 ]
 const threads: ThreadRow[] = Array.from({ length: 7 }, (_, i) => ({
-  agent: mainAgents[0]!.agent,
+  agent: rows[0]!.agent,
   id: `thread-${i + 1}`,
-  state: i === 0 ? "waiting" : "completed",
+  status: i === 0 ? "waiting" : "completed",
   title: `Ask ${i + 1}`,
   unread: i === 0 ? 2 : undefined,
 }))
@@ -73,8 +96,8 @@ const render = (nav: { threads: ThreadRow[] }) =>
     createElement(
       SidebarProvider,
       null,
-      createElement(AgentsHeader, { mainAgents }),
-      createElement(AgentsNav, { orchestrators, subagents, ...nav }),
+      createElement(AgentsHeader, { rows }),
+      createElement(AgentsNav, { rows, ...nav }),
     ),
   ) as string
 
@@ -87,25 +110,38 @@ describe("agents sidebar", () => {
   })
 
   test("shows an agent's description when it has no name", () => {
-    const unnamed = (metadata: Agent["metadata"]): AgentRow => ({
-      agent: {
-        description: "Talks with the human",
-        id: Bun.randomUUIDv7(),
-        metadata,
-        role: "main",
-      },
-      state: "idle",
-    })
-    for (const metadata of [undefined, { name: "" }])
+    for (const metadata of [undefined, { name: "" }]) {
+      const main = {
+        ...rows[0]!,
+        agent: { ...rows[0]!.agent, description: "Talks with the human", metadata },
+      }
       expect(
         renderToStaticMarkup(
-          createElement(
-            SidebarProvider,
-            null,
-            createElement(AgentsHeader, { mainAgents: [unnamed(metadata)] }),
-          ),
+          createElement(SidebarProvider, null, createElement(AgentsHeader, { rows: [main] })),
         ),
       ).toContain("Talks with the human")
+    }
+  })
+
+  test("titles a subagent's row by its session after its issue's key and pull request's number, and names any other row", () => {
+    expect(html).toContain("ZS-12#45 Add tools")
+    expect(html).toContain("ZS-15 Fix login")
+    expect(sessionTitle(rows[0]!.session)).toBeUndefined()
+    expect(html).toMatch(/>Engineering</)
+  })
+
+  test("nests each subagent session under the topmost one above it, however deep", () => {
+    const grandchild = row("01a15e51-fa00-7000-8000-000000000001", builder, "idle", {
+      parentId: "01a15e51-f99d-72b5-b994-823e1a4385f2",
+    })
+    const subagents = rows.filter((r) => r.agent.role === "subagent")
+    const tops = nest([...subagents, grandchild])
+    expect(tops.map((r) => r.session.id)).toEqual([parent, "01a15e51-f9c5-7799-9bb2-b4a5ab827f2d"])
+    expect(tops[0]!.subagents?.map((r) => r.session.id)).toEqual([
+      "01a15e51-f99d-72b5-b994-823e1a4385f2",
+      "01a15e51-f9b0-75d5-9ad6-99eb1416a2e4",
+      grandchild.session.id,
+    ])
   })
 
   test("counts each section's agents, nested ones included", () => {
@@ -123,7 +159,7 @@ describe("agents sidebar", () => {
     )
     expect(html).toMatch(
       new RegExp(
-        `<span class="[^"]*group-data-\\[open\\]:inline[^"]*"[^>]*>${RegExp.escape(icon(stateIcons.waiting))}`,
+        `<span class="[^"]*group-data-\\[open\\]:inline[^"]*"[^>]*>${RegExp.escape(icon(statusIcons.waiting))}`,
       ),
     )
   })

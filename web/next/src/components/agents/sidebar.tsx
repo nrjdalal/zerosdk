@@ -1,6 +1,7 @@
 "use client"
 
 import type { Agent } from "@packages/schema/agent"
+import type { Session } from "@packages/schema/session"
 import {
   RiArchiveFill,
   RiArrowLeftSFill,
@@ -20,11 +21,10 @@ import { cn } from "cn"
 import { atom, useAtom } from "jotai"
 
 import {
-  type AgentState,
-  type AgentTask,
   effortIcons,
   providerIcon,
-  stateIcons,
+  type SessionTask,
+  statusIcons,
   taskIcons,
 } from "@/components/agents/icons"
 import { Button } from "@/components/ui/button"
@@ -51,23 +51,14 @@ import {
 } from "@/components/ui/sidebar"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
-type RowBase = { agent: Agent; state: AgentState }
+// One session and the agent it runs; the sidebar groups rows by the agent's role, in the order given
+export type SessionRow = { agent: Agent; session: Session }
 
-// A main agent or an orchestrator: a fixed name, no task, nothing nested
-export type AgentRow = RowBase & { subagents?: never; task?: never; title?: never }
+// A subagent's row with the sessions started under it, however deep
+type NestedRow = SessionRow & { subagents?: SessionRow[] }
 
-// A subagent run by another, shown by its agent's name, with nothing nested
-export type NestedSubagentRow = RowBase & { subagents?: never; task?: AgentTask; title?: never }
-
-// A subagent: a title of its own, its task, and the subagents it runs
-export type SubagentRow = RowBase & {
-  subagents?: NestedSubagentRow[]
-  task?: AgentTask
-  title?: string
-}
-
-export type ThreadState = Extract<
-  AgentState,
+export type ThreadStatus = Extract<
+  Session["status"],
   "completed" | "idle" | "running" | "stuck" | "waiting"
 >
 
@@ -75,7 +66,7 @@ export type ThreadState = Extract<
 export type ThreadRow = {
   agent: Agent
   id: string
-  state: ThreadState
+  status: ThreadStatus
   title: string
   unread?: number
 }
@@ -120,51 +111,65 @@ function IconWithTooltip({
 
 function StatusIcon({
   className,
-  row,
+  status,
+  task,
 }: {
   className?: string
-  row: Pick<SubagentRow, "state" | "task">
+  status: Session["status"]
+  task?: SessionTask
 }) {
-  const task = row.state === "running" ? row.task : undefined
+  const shown = status === "running" ? task : undefined
   return (
     <IconWithTooltip
       className={className}
-      icon={task ? taskIcons[task] : stateIcons[row.state]}
-      iconClassName={!task && row.state === "running" ? "motion-safe:animate-spin" : undefined}
-      label={task ?? row.state}
+      icon={shown ? taskIcons[shown] : statusIcons[status]}
+      iconClassName={!shown && status === "running" ? "motion-safe:animate-spin" : undefined}
+      label={shown ?? status}
     />
   )
 }
 
+const sessionStatus = ({ session }: SessionRow) => ({
+  status: session.status,
+  task: session.metadata?.task,
+})
+
 // A closed row shows the first of its subagents that is running, and its own status once open.
-function Status({ row }: { row: SubagentRow }) {
-  const running = row.subagents?.find((subagent) => subagent.state === "running")
-  if (!running) return <StatusIcon row={row} />
+function Status({ row }: { row: NestedRow }) {
+  const running = row.subagents?.find((subagent) => subagent.session.status === "running")
+  if (!running) return <StatusIcon {...sessionStatus(row)} />
   return (
     <>
-      <StatusIcon row={running} className="group-data-[open]:hidden" />
-      <StatusIcon row={row} className="hidden group-data-[open]:inline" />
+      <StatusIcon {...sessionStatus(running)} className="group-data-[open]:hidden" />
+      <StatusIcon {...sessionStatus(row)} className="hidden group-data-[open]:inline" />
     </>
   )
 }
 
+// A session's title after its issue's key and its pull request's number, as many as it has, e.g. ZS-12#45 Add tools
+export function sessionTitle({ metadata }: Session) {
+  const issue = metadata?.issue?.key ?? ""
+  const pr = metadata?.pr ? `#${metadata.pr.number}` : ""
+  return [`${issue}${pr}`, metadata?.title].filter(Boolean).join(" ") || undefined
+}
+
 // On hover, a title follows its agent's name, or its description when it has none, and a bare name shows only when the row cuts it short.
-function Title({ row }: { row: Pick<SubagentRow, "agent" | "title"> }) {
-  const name = row.agent.metadata?.name || row.agent.description
+function Title({ agent, title }: { agent: Agent; title?: string }) {
+  const name = agent.metadata?.name || agent.description
   return (
     <Tooltip
       onOpenChange={(open, details) => {
         const trigger = details.trigger
-        if (open && !row.title && trigger && trigger.scrollWidth <= trigger.clientWidth)
+        if (open && !title && trigger && trigger.scrollWidth <= trigger.clientWidth)
           details.cancel()
       }}
     >
-      <TooltipTrigger render={<span className="truncate" />}>{row.title ?? name}</TooltipTrigger>
+      <TooltipTrigger render={<span className="truncate" />}>{title ?? name}</TooltipTrigger>
       <TooltipContent>
         {/* One span, as the tooltip spaces its children apart */}
         <span>
           {name}
-          {row.title && `: ${row.title}`}
+          {title && `: ${title}`}
         </span>
       </TooltipContent>
     </Tooltip>
@@ -182,11 +187,12 @@ function EffortIcon({ className, effort }: { className?: string; effort?: Agent[
   return <IconWithTooltip className={className} icon={effortIcons[effort]} label={effort} />
 }
 
-function Row({ row }: { row: SubagentRow }) {
+// A subagent's own row is titled by its session; a main agent's, an orchestrator's and a nested row show the agent's name.
+function Row({ row, titled }: { row: NestedRow; titled?: boolean }) {
   return (
     <>
       <Status row={row} />
-      <Title row={row} />
+      <Title agent={row.agent} title={titled ? sessionTitle(row.session) : undefined} />
       <ProviderIcon model={row.agent.model} />
       <EffortIcon className={row.subagents && effortHidden} effort={row.agent.effort} />
     </>
@@ -207,24 +213,32 @@ function useSelection(defaultSelected?: string) {
   return { selectable, selected }
 }
 
-function AgentsMenu({ defaultSelected, rows }: { defaultSelected?: string; rows: SubagentRow[] }) {
+function AgentsMenu({
+  defaultSelected,
+  rows,
+  titled,
+}: {
+  defaultSelected?: string
+  rows: NestedRow[]
+  titled?: boolean
+}) {
   const { selectable, selected } = useSelection(defaultSelected)
 
   return (
     <SidebarMenu className="space-y-0.5">
       {rows.map((row) =>
         row.subagents ? (
-          <Collapsible key={row.agent.id} className="group" render={<SidebarMenuItem />}>
+          <Collapsible key={row.session.id} className="group" render={<SidebarMenuItem />}>
             {/* A closed row stands in for its selected subagent, as the arrow never changes the selection */}
             <SidebarMenuButton
-              {...selectable(row.agent.id)}
+              {...selectable(row.session.id)}
               className={cn(
                 "group-has-data-[sidebar=menu-action]/menu-item:pr-2 data-active:font-normal",
-                row.subagents.some((subagent) => subagent.agent.id === selected) &&
+                row.subagents.some((subagent) => subagent.session.id === selected) &&
                   "group-data-[closed]:bg-sidebar-accent group-data-[closed]:text-sidebar-accent-foreground",
               )}
             >
-              <Row row={row} />
+              <Row row={row} titled={titled} />
             </SidebarMenuButton>
             <CollapsibleTrigger
               render={<SidebarMenuAction className={cn("right-1.5", toggleShown)} />}
@@ -235,9 +249,9 @@ function AgentsMenu({ defaultSelected, rows }: { defaultSelected?: string; rows:
             <CollapsibleContent>
               <SidebarMenuSub className="mr-0 gap-y-0.5 pr-0 pb-0 pl-2">
                 {row.subagents.map((subagent) => (
-                  <SidebarMenuSubItem key={subagent.agent.id}>
+                  <SidebarMenuSubItem key={subagent.session.id}>
                     <SidebarMenuSubButton
-                      {...selectable(subagent.agent.id)}
+                      {...selectable(subagent.session.id)}
                       render={<button type="button" className="w-full" />}
                     >
                       <Row row={subagent} />
@@ -248,9 +262,9 @@ function AgentsMenu({ defaultSelected, rows }: { defaultSelected?: string; rows:
             </CollapsibleContent>
           </Collapsible>
         ) : (
-          <SidebarMenuItem key={row.agent.id}>
-            <SidebarMenuButton {...selectable(row.agent.id)} className="data-active:font-normal">
-              <Row row={row} />
+          <SidebarMenuItem key={row.session.id}>
+            <SidebarMenuButton {...selectable(row.session.id)} className="data-active:font-normal">
+              <Row row={row} titled={titled} />
             </SidebarMenuButton>
           </SidebarMenuItem>
         ),
@@ -259,8 +273,28 @@ function AgentsMenu({ defaultSelected, rows }: { defaultSelected?: string; rows:
   )
 }
 
-function count(rows: SubagentRow[]): number {
+function count(rows: NestedRow[]): number {
   return rows.reduce((total, row) => total + 1 + (row.subagents?.length ?? 0), 0)
+}
+
+const ofRole = (rows: SessionRow[], role: Agent["role"]) =>
+  rows.filter((row) => row.agent.role === role)
+
+// Each subagent session under the topmost subagent session above it on its parentId chain, so a subagent's own subagents nest however deep they were started
+export function nest(rows: SessionRow[]): NestedRow[] {
+  const byId = new Map(rows.map((row) => [row.session.id, row]))
+  const top = (row: SessionRow): SessionRow => {
+    const parent = row.session.parentId && byId.get(row.session.parentId)
+    return parent ? top(parent) : row
+  }
+  const nested = new Map<SessionRow, SessionRow[]>()
+  for (const row of rows) {
+    const root = top(row)
+    if (root !== row) nested.set(root, [...(nested.get(root) ?? []), row])
+  }
+  return rows
+    .filter((row) => top(row) === row)
+    .map((row) => ({ ...row, subagents: nested.get(row) }))
 }
 
 // The actions on one thread, in its unread count's place, composed as shadcn's sidebar-07 nav-projects
@@ -364,8 +398,8 @@ function Threads({ rows }: { rows: ThreadRow[] }) {
         {rows.slice(page * THREADS_PER_PAGE, (page + 1) * THREADS_PER_PAGE).map((row) => (
           <SidebarMenuItem key={row.id}>
             <SidebarMenuButton {...selectable(row.id)} className="data-active:font-normal">
-              <StatusIcon row={row} />
-              <Title row={row} />
+              <StatusIcon status={row.status} />
+              <Title agent={row.agent} title={row.title} />
             </SidebarMenuButton>
             {row.unread ? (
               <SidebarMenuBadge className={cn("right-1.5", unreadHidden)}>
@@ -380,19 +414,14 @@ function Threads({ rows }: { rows: ThreadRow[] }) {
   )
 }
 
-export function AgentsHeader({ mainAgents }: { mainAgents: AgentRow[] }) {
-  return <AgentsMenu defaultSelected={mainAgents[0]?.agent.id} rows={mainAgents} />
+export function AgentsHeader({ rows }: { rows: SessionRow[] }) {
+  const mainAgents = ofRole(rows, "main")
+  return <AgentsMenu defaultSelected={mainAgents[0]?.session.id} rows={mainAgents} />
 }
 
-export function AgentsNav({
-  orchestrators,
-  subagents,
-  threads,
-}: {
-  orchestrators: AgentRow[]
-  subagents: SubagentRow[]
-  threads: ThreadRow[]
-}) {
+export function AgentsNav({ rows, threads }: { rows: SessionRow[]; threads: ThreadRow[] }) {
+  const orchestrators = ofRole(rows, "orchestrator")
+  const subagents = nest(ofRole(rows, "subagent"))
   return (
     <>
       {threads.length > 0 && <Threads rows={threads} />}
@@ -408,7 +437,7 @@ export function AgentsNav({
           Subagents
           <span className={countCell}>{count(subagents)}</span>
         </SidebarGroupLabel>
-        <AgentsMenu rows={subagents} />
+        <AgentsMenu rows={subagents} titled />
       </SidebarGroup>
     </>
   )

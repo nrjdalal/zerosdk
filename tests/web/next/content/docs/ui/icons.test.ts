@@ -14,8 +14,8 @@ describe("Icons", () => {
     expect(sections).toEqual([...sections].sort())
   })
 
-  test("lists the states and the tasks A to Z", () => {
-    for (const section of ["State", "Task"]) {
+  test("lists the statuses and the tasks A to Z", () => {
+    for (const section of ["Status", "Task"]) {
       const values = tables[section]?.map(([value]) => value) ?? []
       expect(values.length).toBeGreaterThan(0)
       expect(values).toEqual([...values].sort())

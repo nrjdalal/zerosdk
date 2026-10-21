@@ -1,4 +1,5 @@
 import type { Agent } from "@packages/schema/agent"
+import type { Session } from "@packages/schema/session"
 import {
   RiAlertFill,
   RiBinocularsFill,
@@ -51,7 +52,7 @@ export function providerIcon(model: string): RemixiconComponentType | undefined 
   return providerIcons[model.split("/")[0].replaceAll(/[-.]/g, "")]
 }
 
-export const stateIcons = {
+export const statusIcons: Record<Session["status"], RemixiconComponentType> = {
   cancelled: RiForbidFill,
   completed: RiFlag2Fill,
   failed: RiCloseCircleFill,
@@ -61,9 +62,11 @@ export const stateIcons = {
   running: RiLoader4Fill,
   stuck: RiAlertFill,
   waiting: RiTimeFill,
-} satisfies Record<string, RemixiconComponentType>
+}
 
-export const taskIcons = {
+export type SessionTask = NonNullable<NonNullable<Session["metadata"]>["task"]>
+
+export const taskIcons: Record<SessionTask, RemixiconComponentType> = {
   build: RiHammerFill,
   data: RiDatabase2Fill,
   debug: RiBugFill,
@@ -77,8 +80,4 @@ export const taskIcons = {
   review: RiEyeFill,
   security: RiShieldFill,
   test: RiTestTubeFill,
-} satisfies Record<string, RemixiconComponentType>
-
-export type AgentState = keyof typeof stateIcons
-
-export type AgentTask = keyof typeof taskIcons
+}
