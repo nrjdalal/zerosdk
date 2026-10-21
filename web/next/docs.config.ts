@@ -22,6 +22,12 @@ const docsConfig = {
     ],
     UI: [
       {
+        "/docs/ui/ask-user-question": {
+          title: "AskUserQuestion",
+          description: "Reference for how an agent's questions reach the human.",
+        },
+      },
+      {
         "/docs/ui/icons": {
           title: "Icons",
           description: "Reference for the icons the UI uses.",
