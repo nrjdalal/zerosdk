@@ -3,6 +3,7 @@ import { mkdtempSync, rmSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 
+import { capture } from "../../../../packages/scripts/src/capture"
 import {
   cells,
   checkLink,
@@ -17,8 +18,7 @@ import {
   render,
   type Source,
   typeDeclaration,
-} from "../../../../packages/scripts/src/agent-schemas"
-import { capture } from "../../../../packages/scripts/src/capture"
+} from "../../../../packages/scripts/src/schema-sources"
 
 // The pure parsing and rendering, then the network flow against a local server standing in for the docs sites and the npm registry: the docs path alone, and the whole generator from package install to the written file, so neither needs the network.
 
@@ -138,7 +138,7 @@ export declare namespace ConfigAgent {
 }
 
 const tarballs = new Map<string, { bytes: ArrayBuffer; integrity: string; shasum: string }>()
-const work = mkdtempSync(join(tmpdir(), "agent-schemas-"))
+const work = mkdtempSync(join(tmpdir(), "schema-sources-"))
 
 const server = Bun.serve({
   fetch(request): Response {

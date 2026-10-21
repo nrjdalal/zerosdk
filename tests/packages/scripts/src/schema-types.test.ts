@@ -3,32 +3,32 @@ import { mkdtempSync, rmSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 
+import type { SchemaName } from "../../../../packages/scripts/src/schema-sources"
 import {
   generate,
   inSourceOrder,
   locate,
-  SCHEMAS,
-} from "../../../../packages/scripts/src/schema-type"
+  NAMES,
+} from "../../../../packages/scripts/src/schema-types"
 
-// The generator against the real schemas: each docs page's block has to be what it prints now, so a schema change that skips `bun run agent:type` or `bun run session:type` fails here rather than leaving its page behind.
+// The generator against the real schemas: each docs page's block has to be what it prints now, so a schema change that skips `bun run schema:types` fails here rather than leaving its page behind.
 
-const cache = mkdtempSync(join(tmpdir(), "schema-type-"))
-const generated = { agent: "", session: "" }
+const cache = mkdtempSync(join(tmpdir(), "schema-types-"))
+const generated = {} as Record<SchemaName, string>
 
 beforeAll(async () => {
-  for (const name of SCHEMAS) generated[name] = await generate({ cache, name })
+  for (const name of NAMES) generated[name] = await generate({ cache, name })
 })
 
 afterAll(() => rmSync(cache, { force: true, recursive: true }))
 
-describe("schema type", () => {
+describe("schema types", () => {
   test("is the block each schema's page shows", async () => {
-    for (const name of SCHEMAS)
-      expect(generated[name]).toBe(await Bun.file(locate(name).out).text())
+    for (const name of NAMES) expect(generated[name]).toBe(await Bun.file(locate(name).out).text())
   })
 
   test("groups the fields under the schema's comments, in its order", () => {
-    for (const name of SCHEMAS)
+    for (const name of NAMES)
       expect(generated[name].match(/^ *\/\/ .+$/gm)).toEqual([
         "  // required",
         "  // optional",

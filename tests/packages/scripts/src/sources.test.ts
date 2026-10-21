@@ -3,7 +3,7 @@ import { mkdtempSync, rmSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 
-import { SCHEMAS } from "../../../../packages/scripts/src/agent-schemas"
+import { SCHEMAS } from "../../../../packages/scripts/src/schema-sources"
 import {
   fetchSources,
   fileOf,
