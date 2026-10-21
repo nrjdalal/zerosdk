@@ -18,27 +18,47 @@ const { renderToStaticMarkup } = await import(Bun.resolveSync("react-dom/server"
 
 type Agent = AgentRow["agent"]
 
-const agent = (id: string, name: string, role: Agent["role"]): Agent => ({ id, name, role })
+const agent = (id: string, name: string, role: Agent["role"]): Agent => ({
+  description: `${name} agent`,
+  id,
+  metadata: { name },
+  role,
+})
 
 const mainAgents: AgentRow[] = [
-  { agent: agent("aB3dE9fG", "AgentZero", "main"), state: "running" },
-  { agent: agent("hJ2kL4mN", "AgentOne", "main"), state: "idle" },
+  { agent: agent("01a15d1f-2a28-7709-ab2d-b667e682dce6", "AgentZero", "main"), state: "running" },
+  { agent: agent("01a15d1f-2a2b-72d9-979f-034d4f840245", "AgentOne", "main"), state: "idle" },
 ]
 const orchestrators: AgentRow[] = [
-  { agent: agent("pQ5rS7tU", "Engineering", "orchestrator"), state: "idle" },
+  {
+    agent: agent("01a15d1f-2a2d-73cd-a39e-411bc732fb3f", "Engineering", "orchestrator"),
+    state: "idle",
+  },
 ]
 const subagents: SubagentRow[] = [
   {
-    agent: agent("cD4eF6gH", "Builder", "subagent"),
+    agent: agent("01a15d1f-2a34-7641-aa32-003fe284870e", "Builder", "subagent"),
     state: "waiting",
     subagents: [
-      { agent: agent("iJ7kL9mN", "Reviewer", "subagent"), state: "running", task: "review" },
-      { agent: agent("oP2qR3sT", "Tester", "subagent"), state: "idle", task: "test" },
+      {
+        agent: agent("01a15d1f-2a36-70db-abd7-fbef67f2d42c", "Reviewer", "subagent"),
+        state: "running",
+        task: "review",
+      },
+      {
+        agent: agent("01a15d1f-2a38-7503-b5df-ac1aa377b75a", "Tester", "subagent"),
+        state: "idle",
+        task: "test",
+      },
     ],
     task: "build",
     title: "ZS-12#45 Add tools",
   },
-  { agent: agent("uV5wX6yZ", "Builder", "subagent"), state: "completed", title: "ZS-15 Fix login" },
+  {
+    agent: agent("01a15d1f-2a31-70d8-9729-4deffa74724d", "Builder", "subagent"),
+    state: "completed",
+    title: "ZS-15 Fix login",
+  },
 ]
 const threads: ThreadRow[] = Array.from({ length: 7 }, (_, i) => ({
   agent: mainAgents[0]!.agent,

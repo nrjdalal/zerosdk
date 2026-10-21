@@ -15,45 +15,90 @@ const agent = (
   role: Agent["role"],
   model: Agent["model"],
   effort: Agent["effort"],
-): Agent => ({ effort, id, model, name, role })
+): Agent => ({ description: `${name} agent`, effort, id, metadata: { name }, model, role })
 
 const mainAgents: AgentRow[] = [
   {
-    agent: agent("aB3dE9fG", "AgentZero", "main", "anthropic/claude-opus-5-5", "high"),
+    agent: agent(
+      "01a15d1f-2a28-7709-ab2d-b667e682dce6",
+      "AgentZero",
+      "main",
+      "anthropic/claude-opus-5-5",
+      "high",
+    ),
     state: "running",
   },
-  { agent: agent("hJ2kL4mN", "AgentOne", "main", "zai/glm-5", "medium"), state: "idle" },
+  {
+    agent: agent("01a15d1f-2a2b-72d9-979f-034d4f840245", "AgentOne", "main", "zai/glm-5", "medium"),
+    state: "idle",
+  },
 ]
 
 const orchestrators: AgentRow[] = [
   {
-    agent: agent("pQ5rS7tU", "Engineering", "orchestrator", "anthropic/claude-opus-5-5", "high"),
+    agent: agent(
+      "01a15d1f-2a2d-73cd-a39e-411bc732fb3f",
+      "Engineering",
+      "orchestrator",
+      "anthropic/claude-opus-5-5",
+      "high",
+    ),
     state: "running",
   },
   {
-    agent: agent("vW8xY1zA", "Research", "orchestrator", "anthropic/claude-sonnet-5-5", "medium"),
+    agent: agent(
+      "01a15d1f-2a2f-7396-b56f-a0d97d1017a7",
+      "Research",
+      "orchestrator",
+      "anthropic/claude-sonnet-5-5",
+      "medium",
+    ),
     state: "idle",
   },
 ]
 
 const subagents: SubagentRow[] = [
   {
-    agent: agent("uV5wX6yZ", "Builder", "subagent", "anthropic/claude-sonnet-5-5", "high"),
+    agent: agent(
+      "01a15d1f-2a31-70d8-9729-4deffa74724d",
+      "Builder",
+      "subagent",
+      "anthropic/claude-sonnet-5-5",
+      "high",
+    ),
     state: "running",
     task: "build",
     title: "ZS-16#48 Common page",
   },
   {
-    agent: agent("cD4eF6gH", "Builder", "subagent", "anthropic/claude-sonnet-5-5", "high"),
+    agent: agent(
+      "01a15d1f-2a34-7641-aa32-003fe284870e",
+      "Builder",
+      "subagent",
+      "anthropic/claude-sonnet-5-5",
+      "high",
+    ),
     state: "waiting",
     subagents: [
       {
-        agent: agent("iJ7kL9mN", "Reviewer", "subagent", "anthropic/claude-opus-5-5", "xhigh"),
+        agent: agent(
+          "01a15d1f-2a36-70db-abd7-fbef67f2d42c",
+          "Reviewer",
+          "subagent",
+          "anthropic/claude-opus-5-5",
+          "xhigh",
+        ),
         state: "running",
         task: "review",
       },
       {
-        agent: agent("oP2qR3sT", "Tester", "subagent", "zai/glm-5", "medium"),
+        agent: agent(
+          "01a15d1f-2a38-7503-b5df-ac1aa377b75a",
+          "Tester",
+          "subagent",
+          "zai/glm-5",
+          "medium",
+        ),
         state: "idle",
         task: "test",
       },
@@ -62,7 +107,13 @@ const subagents: SubagentRow[] = [
     title: "ZS-12#45 Add tools",
   },
   {
-    agent: agent("aC8eG1iK", "Builder", "subagent", "anthropic/claude-sonnet-5-5", "high"),
+    agent: agent(
+      "01a15d1f-2a3a-7292-ab64-ea9bd95c5162",
+      "Builder",
+      "subagent",
+      "anthropic/claude-sonnet-5-5",
+      "high",
+    ),
     state: "completed",
     task: "build",
     title: "ZS-15 Fix login",
