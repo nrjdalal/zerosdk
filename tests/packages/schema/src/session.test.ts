@@ -15,6 +15,7 @@ describe("Session", () => {
     expect(Session.parse(minimal)).toEqual(minimal)
     const full = {
       ...minimal,
+      harnessSessionId: "9f2c6a1e-3b4d-4c5e-8f9a-0b1c2d3e4f5a",
       metadata: {
         branch: "feat/add-tools",
         issue: { key: "ZS-12", url: "https://tracker.example.com/ZS-12" },
@@ -23,7 +24,6 @@ describe("Session", () => {
         task: "build",
         title: "Add tools",
       },
-      harnessSessionId: "9f2c6a1e-3b4d-4c5e-8f9a-0b1c2d3e4f5a",
       parentId: "01a15d1f-2a2d-73cd-a39e-411bc732fb3f",
       prompt: "Add the tools an agent can use",
       resetsAt: 1792577520000,
