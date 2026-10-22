@@ -19,7 +19,7 @@ import {
 import { capture } from "@/capture"
 import { fetchOk } from "@/fetch-ok"
 
-// Reads how each TypeScript source defines the record each schema describes (an agent, a session, a message, a thread), from its npm types, the schema its repository generates, or, where it exports none, its docs table, and writes each comparison into its docs page; run with `bun run schema:sources`, which installs each package at its latest into .generated/schema-sources/.
+// Reads how each TypeScript source defines the record each schema describes (an agent, a session, a message, a thread, the settings), from its npm types, the schema its repository generates, or, where it exports none, its docs table, and writes each comparison into its docs page; run with `bun run schema:sources`, which installs each package at its latest into .generated/schema-sources/.
 
 const ROOT = resolve(import.meta.dir, "../../..")
 
@@ -296,6 +296,40 @@ const THREAD_NPM: NpmSource[] = [
 // Thread: Codex's thread, as on the Session page.
 const THREAD_GIT: GitSource[] = [CODEX_THREAD]
 
+// Settings: the type each source saves a person's choices for the whole app in; Claude's has about 200 keys, so only those ours match are read.
+const SETTINGS_NPM: NpmSource[] = [
+  {
+    module: "@opencode/schema/config",
+    pkg: "@opencode/schema",
+    product: "Anomaly OpenCode",
+    target: '(typeof Config.Info)["Encoded"]',
+    type: "Config",
+    url: "https://opencode.ai/v2/docs/config/",
+  },
+  {
+    module: "@anthropic-ai/claude-agent-sdk",
+    pkg: "@anthropic-ai/claude-agent-sdk",
+    product: "Claude Agent SDK",
+    target:
+      'Pick<Settings, "effortLevel" | "inputNeededNotifEnabled" | "model" | "permissions" | "teammateMode" | "theme">',
+    type: "Settings",
+    url: "https://code.claude.com/docs/en/settings",
+  },
+]
+
+// Settings: Codex publishes its config only in the app-server schema its repository generates.
+const SETTINGS_GIT: GitSource[] = [
+  {
+    path: "codex-rs/app-server-protocol/schema/typescript/v2/Config.ts",
+    pkg: "@openai/codex-sdk",
+    product: "OpenAI Codex",
+    repo: "openai/codex",
+    tag: "rust-v{version}",
+    type: "Config",
+    url: "https://learn.chatgpt.com/docs/config-file/config-reference",
+  },
+]
+
 // Each schema's sources and the page section they are written to.
 export const SCHEMAS = {
   agent: {
@@ -315,6 +349,12 @@ export const SCHEMAS = {
     git: SESSION_GIT,
     npm: SESSION_NPM,
     out: resolve(ROOT, "web/next/src/schemas/session.sources.mdx"),
+  },
+  settings: {
+    docs: [],
+    git: SETTINGS_GIT,
+    npm: SETTINGS_NPM,
+    out: resolve(ROOT, "web/next/src/schemas/settings.sources.mdx"),
   },
   thread: {
     docs: [],

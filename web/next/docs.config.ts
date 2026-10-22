@@ -37,6 +37,12 @@ const docsConfig = {
           description: "Reference for the Thread schema.",
         },
       },
+      {
+        "/docs/reference/settings": {
+          title: "Settings",
+          description: "Reference for the Settings schema.",
+        },
+      },
     ],
     UI: [
       {
