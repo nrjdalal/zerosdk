@@ -11,7 +11,7 @@ ZeroSDK runs each session of an agent as its own Claude Code CLI in a herdr pane
 2. **UI, server, bridge, CLI** (2026-10-20). Both the UI and the agents start new sessions through the server, agents through the `zerosdk` CLI, and the server records who started each one, since herdr keeps no parent.
 3. **Agents talk as Claude Code peers** (2026-10-20), through cross-session messaging; each session's unique name is its peer address.
 4. **CLIs first, the SDK later, and no ACP** (2026-10-20); the SDK comes as a second implementation of the same harness contract, with no change to the server.
-5. **herdr first, cmux later** (2026-10-20), behind one bridge contract. The bridge is chosen in a setup step, where each bridge and harness checks itself, and the choice is saved in the database, not in an env setting.
+5. **herdr first, cmux later** (2026-10-20), behind one bridge contract. The bridge is chosen in a setup step, where each bridge and harness checks itself, and the choice is saved in the database, not in an env setting, as the `bridge` and `harness` settings ([ADR 0013](../../docs/adr/0013-settings-are-one-typed-object-stored-a-row-per-setting.md)).
 6. **Hooks and the screen from the start** (2026-10-20), hooks as the main signal and the screen as the fallback, as ADR 0005 sets out.
 7. **Prompts are answered through the hook reply** (2026-10-20), with keys typed through the bridge as the fallback, as ADR 0006 sets out.
 8. **A permission flipper on each main agent** (2026-10-20): Ask me, Rules or Allow all, for that main agent and every session under it, as ADR 0006 sets out.

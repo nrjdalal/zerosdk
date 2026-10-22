@@ -1,7 +1,7 @@
 # Keep the factory's dynamic data local
 
 - Status: planned
-- Links: [ADR 0007](../../docs/adr/0007-one-local-postgres-and-no-sync-engine-yet.md) · [ADR 0008](../../docs/adr/0008-memory-and-skills-live-in-the-database-behind-a-cli.md) · [research](../../docs/research/0003-local-data.md) · [the harness and bridge plan](0004-harness-bridge.md) · PR #28
+- Links: [ADR 0007](../../docs/adr/0007-one-local-postgres-and-no-sync-engine-yet.md) · [ADR 0008](../../docs/adr/0008-memory-and-skills-live-in-the-database-behind-a-cli.md) · [ADR 0013](../../docs/adr/0013-settings-are-one-typed-object-stored-a-row-per-setting.md) · [research](../../docs/research/0003-local-data.md) · [the harness and bridge plan](0004-harness-bridge.md) · PR #28
 
 The factory is mostly dynamic: agents add and change memory, permission decisions, sessions, settings such as the chosen bridge, and skills all the time, and the UI reads them fast and live. The data stays on the user's machine, free and local first, with throwaway databases on demand and room for a remote Postgres later.
 
@@ -11,11 +11,12 @@ The factory is mostly dynamic: agents add and change memory, permission decision
 2. **Postgres runs in Docker** (2026-10-20), as `pglaunch` runs it today: open to the server, hooks and tools at once, with `LISTEN/NOTIFY` for change events and template databases for throwaways.
 3. **TanStack DB is the UI store** (2026-10-20), through its Query collection on the TanStack Query 5 the app already uses, despite `@tanstack/db` being pre-1.0.
 4. **Memory and skills live in the database behind the `zerosdk` CLI** (2026-10-20), as ADR 0008 sets out, with Claude Code's own memory off and each agent's own skills written out one way.
+5. **Settings are stored a row per setting** (2026-10-23), as ADR 0013 sets out: a `key`, a JSON `value` and `updatedAt`, read into one typed `Settings` object, with no row for a setting left at its default.
 
 ## Steps
 
 1. Point the app at a local Postgres in Docker, and keep one migrated, seeded template database to copy for each throwaway.
 2. Add `@tanstack/react-db` with its Query collection, and feed the sidebar's collections from the server's API.
 3. Push each change from the server to the UI over SSE or a WebSocket, from the server's own writes or from Postgres `LISTEN/NOTIFY`.
-4. Store memory and skills in tables behind the `memory` and `skills` routes the harness and bridge plan lays out, and write each agent's skills out when its session starts; store messages and threads ([ADR 0011](../../docs/adr/0011-a-session-s-messages-are-stored-whole-and-threads-group-them.md)) in tables too, a message unique on its session, `subpath` and `sessionSeq`, and on its harness line's uuid where it has one.
+4. Store memory and skills in tables behind the `memory` and `skills` routes the harness and bridge plan lays out, and write each agent's skills out when its session starts; store messages and threads ([ADR 0011](../../docs/adr/0011-a-session-s-messages-are-stored-whole-and-threads-group-them.md)) in tables too, a message unique on its session, `subpath` and `sessionSeq`, and on its harness line's uuid where it has one; and store settings in a table of their own, one row per key ([ADR 0013](../../docs/adr/0013-settings-are-one-typed-object-stored-a-row-per-setting.md)).
 5. Show the user every new table before any migration, as `AGENTS.md` requires.
