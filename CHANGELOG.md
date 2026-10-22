@@ -1,5 +1,25 @@
 # Changelog
 
+## v0.0.13
+
+[compare changes](https://github.com/nrjdalal/zerosdk/compare/v0.0.12...v0.0.13)
+
+### 🚀 Enhancements
+
+- **schema:** Add settings, the factory's saved choices ([#41](https://github.com/nrjdalal/zerosdk/pull/41))
+
+### 📖 Documentation
+
+- Plan a shared pool of Claude accounts, each signed in its own config directory ([#40](https://github.com/nrjdalal/zerosdk/pull/40))
+
+### 📦 Build
+
+- **deps:** Lift dompurify to 3.4.17 and ip-address to 10.7.4 past their advisories ([#38](https://github.com/nrjdalal/zerosdk/pull/38))
+
+### ❤️ Contributors
+
+- Neeraj Dalal @nrjdalal
+
 ## v0.0.12
 
 [compare changes](https://github.com/nrjdalal/zerosdk/compare/v0.0.11...v0.0.12)
