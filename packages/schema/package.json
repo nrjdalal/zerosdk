@@ -19,6 +19,10 @@
       "types": "./dist/session.d.mts",
       "default": "./dist/session.mjs"
     },
+    "./settings": {
+      "types": "./dist/settings.d.mts",
+      "default": "./dist/settings.mjs"
+    },
     "./thread": {
       "types": "./dist/thread.d.mts",
       "default": "./dist/thread.mjs"

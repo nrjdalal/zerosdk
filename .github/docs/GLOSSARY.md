@@ -66,8 +66,12 @@ One of the human's Claude accounts, such as a work or a personal one, that the f
 _Avoid_: login, profile, seat
 
 **Permission flipper**:
-A main agent's setting for how the factory answers permission requests from it and every agent under it: ask the human, follow saved rules, or allow all.
+A main agent's choice of how the factory answers permission requests from it and every agent under it: ask the human, follow saved rules, or allow all.
 _Avoid_: permission mode
+
+**Settings**:
+The choices saved for the whole factory, such as its bridge, harness and theme, changed while it runs; one of them is a setting. An agent's own choices win over them.
+_Avoid_: config, preferences
 
 **Status**:
 Where a session is in its life: pending, running, waiting, idle, paused, stuck, completed, failed or cancelled.
