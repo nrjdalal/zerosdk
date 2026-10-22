@@ -70,7 +70,7 @@ The server calls only the Harness contract, and only the CLI implementations use
 1. Write the two contracts as the Layout lists them, from section 10 of the research plus `check()` for the setup step, with the herdr bridge and the Claude Code CLI harness.
 2. Add the server routes the Layout lists (hooks, memory, sessions, setup, skills) and the setup page that runs each `check()` and saves the choice.
 3. Build the `zerosdk` CLI and the one skill that teaches its commands.
-4. Store each session's Claude UUID and full launch settings beside its ZeroSDK id, so a resume can pass them again.
+4. Set each session's `harnessSessionId` once the harness reports it, and write every line the harness adds to its transcript as a `Message` on the Stop and SessionEnd hooks (the new lines only, skipping one whose uuid is stored), so a resume rebuilds the transcript from the messages and names the session, and decide whether a message one agent sends another is tagged with its thread on the sending side only, since both sessions store it; the settings a resume must pass again are rebuilt from the Agent and Session until [plan 0006](0006-handover-and-compaction.md)'s run record keeps them ([ADR 0011](../../docs/adr/0011-a-session-s-messages-are-stored-whole-and-threads-group-them.md)).
 5. Compute the nine statuses in the harness from hook events, herdr's status and pattern events, and a no-progress timer.
 6. Answer permission requests in the server by the flipper, and mark the main checkout trusted before the first session starts.
 7. Keep the screen strings Claude Code prints (prompts, usage limits) in the Claude Code harness, with real screen captures as test fixtures.

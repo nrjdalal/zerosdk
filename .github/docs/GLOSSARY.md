@@ -36,7 +36,7 @@ _Avoid_: job
 ## Threads
 
 **Thread**:
-Something new the human asks AgentZero, to which the agents add each update as there is news about it; the sidebar lists threads so the human can come back to one and see what is new. It belongs to no session.
+One conversation kept apart from the others in a session: the messages about one thing the human asked, in order. One session can hold many threads, and one thread can carry messages from several agents' sessions. Each new message is routed to the thread it follows up, or starts a new one.
 _Avoid_: chat, conversation, session
 
 **Turn**:
@@ -44,6 +44,12 @@ One message from the human and all the work it starts, delegated work included; 
 
 **Session**:
 One agent's working context, from its start until it stops.
+
+**Message**:
+One thing said or done in a session, by the human or an agent, stored exactly as it was written.
+
+**Inbox**:
+The view of threads with unread messages, so the human never misses an update.
 
 ## Execution
 

@@ -16,7 +16,7 @@ Distinct from the audit reports, which `AGENTS.md` puts in `../audits/` and whic
 
 ## Backlog / ideas
 
-Nothing yet.
+- [0006 A successor that takes over before the context fills](0006-handover-and-compaction.md) - a successor starts at about 400k tokens and compacts while the agent works, then takes the session over; compactions are compared across compactors, and a run record comes first.
 
 ## Icebox
 
