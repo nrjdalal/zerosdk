@@ -36,7 +36,7 @@ _Avoid_: job
 ## Threads
 
 **Thread**:
-One conversation kept apart from the others in a session: the messages about one thing the human asked, in order. One session can hold many threads, and one thread can carry messages from several agents' sessions. Each new message is routed to the thread it follows up, or starts a new one.
+One conversation kept apart from the others in a session: the messages about one thing the human asked, in order, which can come from several agents' sessions. A session can hold many threads.
 _Avoid_: chat, conversation, session
 
 **Turn**:
