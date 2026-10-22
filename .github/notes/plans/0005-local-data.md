@@ -17,5 +17,5 @@ The factory is mostly dynamic: agents add and change memory, permission decision
 1. Point the app at a local Postgres in Docker, and keep one migrated, seeded template database to copy for each throwaway.
 2. Add `@tanstack/react-db` with its Query collection, and feed the sidebar's collections from the server's API.
 3. Push each change from the server to the UI over SSE or a WebSocket, from the server's own writes or from Postgres `LISTEN/NOTIFY`.
-4. Store memory and skills in tables behind the `memory` and `skills` routes the harness and bridge plan lays out, and write each agent's skills out when its session starts.
+4. Store memory and skills in tables behind the `memory` and `skills` routes the harness and bridge plan lays out, and write each agent's skills out when its session starts; store messages and threads ([ADR 0011](../../docs/adr/0011-a-session-s-messages-are-stored-whole-and-threads-group-them.md)) in tables too, a message unique on its session, `subpath` and `sessionSeq`, and on its harness line's uuid where it has one.
 5. Show the user every new table before any migration, as `AGENTS.md` requires.

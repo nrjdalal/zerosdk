@@ -27,9 +27,9 @@ The agents sidebar on `/docs/ui/sidebar` lists the human's [threads](../../docs/
 ## Left for real data
 
 - **Order while paging:** threads update live, so a thread on page 2 can jump to page 1 under the human. Keep the order of the moment the human leaves the first page until they return to it, and bring the page back within range when the list shrinks below it; the mockup's data is static, so it pages the order it is given.
-- **Unread** is per human and per thread: it needs a read marker stored with the human, cleared on opening the thread, and live updates to raise the count.
+- **Unread** counts a thread's messages stored after its `lastReadAt` ([ADR 0011](../../docs/adr/0011-a-session-s-messages-are-stored-whole-and-threads-group-them.md)), cleared on opening the thread, with live updates to raise the count; with more than one human, the marker moves to one per person and thread. A thread's status comes from the sessions working on it once the harness reports theirs.
 - **The menu's actions**, each wired to the thread once it has a store: Rename and Delete edit it, Pin and Archive move it out of the paged order, and Fork starts a new thread from it.
-- **A `Thread` schema** in `packages/schema`, chosen by the nine sources' consensus with the runtime work that gives threads real data; `ThreadRow` then maps from it.
+- **`ThreadRow` from the `Thread` and `Message` schemas** ([ADR 0011](../../docs/adr/0011-a-session-s-messages-are-stored-whole-and-threads-group-them.md)): the row's title, pin and unread count come from them once threads get real data.
 - **The thread view**, which opens on what the human asked, then what they have not read, then a reply to AgentZero, with the full history collapsed:
 
 ```

@@ -11,9 +11,17 @@
       "types": "./dist/agent.d.mts",
       "default": "./dist/agent.mjs"
     },
+    "./message": {
+      "types": "./dist/message.d.mts",
+      "default": "./dist/message.mjs"
+    },
     "./session": {
       "types": "./dist/session.d.mts",
       "default": "./dist/session.mjs"
+    },
+    "./thread": {
+      "types": "./dist/thread.d.mts",
+      "default": "./dist/thread.mjs"
     }
   },
   "scripts": {
