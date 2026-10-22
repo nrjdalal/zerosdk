@@ -19,7 +19,7 @@ import {
 import { capture } from "@/capture"
 import { fetchOk } from "@/fetch-ok"
 
-// Reads how each TypeScript source defines an agent and a session, from its npm types, the schema its repository generates, or, where it exports none, its docs table, and writes each comparison into its docs page; run with `bun run schema:sources`, which installs each package at its latest into .generated/schema-sources/.
+// Reads how each TypeScript source defines the record each schema describes (an agent, a session, a message, a thread), from its npm types, the schema its repository generates, or, where it exports none, its docs table, and writes each comparison into its docs page; run with `bun run schema:sources`, which installs each package at its latest into .generated/schema-sources/.
 
 const ROOT = resolve(import.meta.dir, "../../..")
 
@@ -199,18 +199,17 @@ const SESSION_NPM: NpmSource[] = [
   },
 ]
 
-// Session: Codex publishes its thread only in the app-server schema its repository generates.
-const SESSION_GIT: GitSource[] = [
-  {
-    path: "codex-rs/app-server-protocol/schema/typescript/v2/Thread.ts",
-    pkg: "@openai/codex-sdk",
-    product: "OpenAI Codex",
-    repo: "openai/codex",
-    tag: "rust-v{version}",
-    type: "Thread",
-    url: "https://learn.chatgpt.com/docs/app-server#threads",
-  },
-]
+// Codex publishes its thread, its record of one conversation, only in the app-server schema its repository generates; the Session and Thread pages both compare it.
+const CODEX_THREAD: GitSource = {
+  path: "codex-rs/app-server-protocol/schema/typescript/v2/Thread.ts",
+  pkg: "@openai/codex-sdk",
+  product: "OpenAI Codex",
+  repo: "openai/codex",
+  tag: "rust-v{version}",
+  type: "Thread",
+  url: "https://learn.chatgpt.com/docs/app-server#threads",
+}
+const SESSION_GIT: GitSource[] = [CODEX_THREAD]
 
 // Session: Claude Code lists its sessions as JSON, described by a table in its docs.
 const SESSION_DOCS: DocsSource[] = [
@@ -224,6 +223,78 @@ const SESSION_DOCS: DocsSource[] = [
   },
 ]
 
+// Message: the type each source stores one record of a conversation as.
+const MESSAGE_NPM: NpmSource[] = [
+  {
+    module: "@opencode/schema/session-message",
+    pkg: "@opencode/schema",
+    product: "Anomaly OpenCode",
+    type: "Info",
+    url: "https://opencode.ai/v2/docs/api",
+  },
+  {
+    module: "@anthropic-ai/claude-agent-sdk",
+    pkg: "@anthropic-ai/claude-agent-sdk",
+    product: "Claude Agent SDK",
+    type: "SessionStoreEntry",
+    url: "https://code.claude.com/docs/en/agent-sdk/session-storage#the-sessionstore-interface",
+  },
+  {
+    module: "agents/sessions",
+    pkg: "agents",
+    product: "Cloudflare Agents",
+    type: "SessionMessage",
+    url: "https://developers.cloudflare.com/agents/",
+  },
+  {
+    module: "@mastra/core/agent/message-list",
+    pkg: "@mastra/core",
+    product: "Mastra",
+    type: "MastraDBMessage",
+    url: "https://mastra.ai/docs/memory/overview",
+  },
+  {
+    module: "@openai/agents-core",
+    pkg: "@openai/agents-core",
+    product: "OpenAI Agents SDK",
+    type: "AgentInputItem",
+    url: "https://openai.github.io/openai-agents-js/guides/sessions/",
+  },
+  {
+    module: "ai",
+    pkg: "ai",
+    product: "Vercel AI SDK",
+    type: "UIMessage",
+    url: "https://ai-sdk.dev/docs/ai-sdk-ui/chatbot-message-persistence",
+  },
+]
+// Message: Codex publishes the item its threads store only in the app-server schema its repository generates.
+const MESSAGE_GIT: GitSource[] = [
+  {
+    path: "codex-rs/app-server-protocol/schema/typescript/v2/ThreadItemEntry.ts",
+    pkg: "@openai/codex-sdk",
+    product: "OpenAI Codex",
+    repo: "openai/codex",
+    tag: "rust-v{version}",
+    type: "ThreadItemEntry",
+    url: "https://learn.chatgpt.com/docs/app-server#threads",
+  },
+]
+
+// Thread: the type each source that keeps a conversation apart inside a larger one stores it as.
+const THREAD_NPM: NpmSource[] = [
+  {
+    module: "@mastra/core/memory",
+    pkg: "@mastra/core",
+    product: "Mastra",
+    type: "StorageThreadType",
+    url: "https://mastra.ai/docs/memory/overview",
+  },
+]
+
+// Thread: Codex's thread, as on the Session page.
+const THREAD_GIT: GitSource[] = [CODEX_THREAD]
+
 // Each schema's sources and the page section they are written to.
 export const SCHEMAS = {
   agent: {
@@ -232,11 +303,23 @@ export const SCHEMAS = {
     npm: AGENT_NPM,
     out: resolve(ROOT, "web/next/src/schemas/agent.sources.mdx"),
   },
+  message: {
+    docs: [],
+    git: MESSAGE_GIT,
+    npm: MESSAGE_NPM,
+    out: resolve(ROOT, "web/next/src/schemas/message.sources.mdx"),
+  },
   session: {
     docs: SESSION_DOCS,
     git: SESSION_GIT,
     npm: SESSION_NPM,
     out: resolve(ROOT, "web/next/src/schemas/session.sources.mdx"),
+  },
+  thread: {
+    docs: [],
+    git: THREAD_GIT,
+    npm: THREAD_NPM,
+    out: resolve(ROOT, "web/next/src/schemas/thread.sources.mdx"),
   },
 } satisfies Record<string, SchemaSources>
 export type SchemaName = keyof typeof SCHEMAS

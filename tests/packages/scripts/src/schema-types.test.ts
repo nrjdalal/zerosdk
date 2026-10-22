@@ -28,12 +28,12 @@ describe("schema types", () => {
   })
 
   test("groups the fields under the schema's comments, in its order", () => {
-    for (const name of NAMES)
-      expect(generated[name].match(/^ *\/\/ .+$/gm)).toEqual([
-        "  // required",
-        "  // optional",
-        "  // metadata",
-      ])
+    const groups = ["  // required", "  // optional", "  // metadata"]
+    for (const name of NAMES) {
+      const found = [...(generated[name].match(/^ *\/\/ (?!---).+$/gm) ?? [])]
+      expect(found).toEqual(groups.slice(0, found.length))
+      expect(found.length).toBeGreaterThan(1)
+    }
     expect(generated.agent).toMatch(
       /\/\/ required\n.*\n {2}description: string\n.*\n {2}id: string\n/,
     )

@@ -25,6 +25,18 @@ const docsConfig = {
           description: "Reference for the Session schema.",
         },
       },
+      {
+        "/docs/reference/message": {
+          title: "Message",
+          description: "Reference for the Message schema.",
+        },
+      },
+      {
+        "/docs/reference/thread": {
+          title: "Thread",
+          description: "Reference for the Thread schema.",
+        },
+      },
     ],
     UI: [
       {

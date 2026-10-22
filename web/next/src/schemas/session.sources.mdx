@@ -4,7 +4,7 @@
 
 [https://opencode.ai/v2/docs/api#session.get](https://opencode.ai/v2/docs/api#session.get)
 
-```ts twoslash title="@opencode/schema@2.1.2"
+```ts twoslash title="@opencode/schema@2.1.3"
 // @noErrors
 interface Json {}
 // ---cut---
@@ -71,7 +71,7 @@ type Session = {
 
 [https://code.claude.com/docs/en/agent-sdk/typescript#return-type-sdksessioninfo](https://code.claude.com/docs/en/agent-sdk/typescript#return-type-sdksessioninfo)
 
-```ts twoslash title="@anthropic-ai/claude-agent-sdk@0.3.306"
+```ts twoslash title="@anthropic-ai/claude-agent-sdk@0.3.308"
 // @noErrors
 /** Session metadata returned by listSessions and getSessionInfo. */
 type SDKSessionInfo = {
@@ -100,7 +100,7 @@ type SDKSessionInfo = {
 
 [https://code.claude.com/docs/en/agent-sdk/typescript#sdktaskstartedmessage](https://code.claude.com/docs/en/agent-sdk/typescript#sdktaskstartedmessage)
 
-```ts twoslash title="@anthropic-ai/claude-agent-sdk@0.3.306"
+```ts twoslash title="@anthropic-ai/claude-agent-sdk@0.3.308"
 // @noErrors
 type SDKTaskStartedMessage = {
   /** True for tasks that are not activity (every skip_transcript task, plus every live-update watcher, requested or auto-started); hosts should exclude them from activity indicators. */
@@ -135,7 +135,7 @@ type SDKTaskStartedMessage = {
 
 [https://code.claude.com/docs/en/agent-view#list-sessions-as-json](https://code.claude.com/docs/en/agent-view#list-sessions-as-json)
 
-```ts twoslash title="@anthropic-ai/claude-code@2.1.306 · docs"
+```ts twoslash title="@anthropic-ai/claude-code@2.1.308 · docs"
 // @noErrors
 /** One entry of `claude agents --json`, which lists the sessions agent view shows. */
 type session = {
@@ -166,7 +166,7 @@ type session = {
 
 [https://developers.cloudflare.com/agents/runtime/execution/agent-tools/#render-child-timelines-in-react](https://developers.cloudflare.com/agents/runtime/execution/agent-tools/#render-child-timelines-in-react)
 
-```ts twoslash title="agents@0.29.0"
+```ts twoslash title="agents@0.30.0"
 // @noErrors
 interface AgentToolDisplayMetadata {}
 interface AgentToolMilestone {}
@@ -219,7 +219,7 @@ type AgentToolRunState = {
 
 [https://mastra.ai/reference/agent-controller/session#display-state](https://mastra.ai/reference/agent-controller/session#display-state)
 
-```ts twoslash title="@mastra/core@1.78.0"
+```ts twoslash title="@mastra/core@1.79.0"
 // @noErrors
 /** State of an active subagent execution, tracked by the AgentController for UI consumption. */
 type ActiveSubagentState = {
@@ -328,7 +328,7 @@ type Thread = {
 
 [https://eve.dev/docs/reference/typescript-api#runtime-context-ctx](https://eve.dev/docs/reference/typescript-api#runtime-context-ctx)
 
-```ts twoslash title="eve@0.81.1"
+```ts twoslash title="eve@0.82.0"
 // @noErrors
 interface SessionAuth {}
 interface SessionTurn {}
@@ -359,7 +359,7 @@ type SessionContext = {
 
 [https://eve.dev/docs/reference/typescript-api#runtime-context-ctx](https://eve.dev/docs/reference/typescript-api#runtime-context-ctx)
 
-```ts twoslash title="eve@0.81.1"
+```ts twoslash title="eve@0.82.0"
 // @noErrors
 interface SessionTurn {}
 // ---cut---
