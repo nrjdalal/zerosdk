@@ -13,3 +13,4 @@ One architecture decision record per hard-to-reverse choice, in the order they w
 - [0009 An agent is built around Claude, and known by a UUID](0009-an-agent-is-built-around-claude-and-known-by-a-uuid.md)
 - [0010 A session keeps what most sources keep, and its labels in metadata](0010-a-session-keeps-what-most-sources-keep.md)
 - [0011 A session's messages are stored whole, and threads group them](0011-a-session-s-messages-are-stored-whole-and-threads-group-them.md)
+- [0012 Each Claude account signs in its own config directory, and the factory stores no token](0012-each-claude-account-signs-in-its-own-config-directory.md)

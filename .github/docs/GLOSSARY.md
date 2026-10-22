@@ -61,6 +61,10 @@ _Avoid_: engine, runner, runtime
 The program that hosts harnesses in terminal panes the factory can open, type into and read, such as herdr or cmux.
 _Avoid_: host, multiplexer, terminal, workspace
 
+**Account**:
+One of the human's Claude accounts, such as a work or a personal one, that the factory runs sessions under; together they form one shared pool.
+_Avoid_: login, profile, seat
+
 **Permission flipper**:
 A main agent's setting for how the factory answers permission requests from it and every agent under it: ask the human, follow saved rules, or allow all.
 _Avoid_: permission mode

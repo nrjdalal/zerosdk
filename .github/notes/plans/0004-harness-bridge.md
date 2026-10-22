@@ -15,7 +15,7 @@ ZeroSDK runs each session of an agent as its own Claude Code CLI in a herdr pane
 6. **Hooks and the screen from the start** (2026-10-20), hooks as the main signal and the screen as the fallback, as ADR 0005 sets out.
 7. **Prompts are answered through the hook reply** (2026-10-20), with keys typed through the bridge as the fallback, as ADR 0006 sets out.
 8. **A permission flipper on each main agent** (2026-10-20): Ask me, Rules or Allow all, for that main agent and every session under it, as ADR 0006 sets out.
-9. **No session waits on the workspace trust dialog** (2026-10-20): the server marks the repository's main checkout trusted once (`projects["<root>"].hasTrustDialogAccepted` in `~/.claude.json`), which covers its worktrees, since Claude Code keys a worktree's trust on the main checkout's root ([Claude Code](https://code.claude.com/docs/en/permissions#project-allow-rules-and-workspace-trust)).
+9. **No session waits on the workspace trust dialog** (2026-10-20): the server marks the repository's main checkout trusted once (`projects["<root>"].hasTrustDialogAccepted` in `~/.claude.json`), which covers its worktrees, since Claude Code keys a worktree's trust on the main checkout's root ([Claude Code](https://code.claude.com/docs/en/permissions#project-allow-rules-and-workspace-trust)). With a pool of Claude accounts, each signed in its own config directory, this is done once per account ([plan 0007](0007-claude-account-pool.md), [ADR 0012](../../docs/adr/0012-each-claude-account-signs-in-its-own-config-directory.md)).
 
 ## Layout
 
