@@ -13,6 +13,7 @@ Distinct from the audit reports, which `AGENTS.md` puts in `../audits/` and whic
 
 - [0004 Run agents through a harness and a bridge](0004-harness-bridge.md) - the server drives each agent as a Claude Code CLI in a herdr pane behind two contracts, with the SDK as a later route; nine decisions made, none left open.
 - [0005 Keep the factory's dynamic data local](0005-local-data.md) - one local Postgres with TanStack DB in the UI and server push, no sync engine yet; four decisions made, none left open.
+- [0007 Spread sessions across a pool of Claude accounts](0007-claude-account-pool.md) - several Claude accounts in one shared pool, each signed in its own config directory, picked by the usage running sessions and Anthropic's usage endpoint report; seven decisions made, three left open, and Anthropic's terms recorded in the ADR.
 
 ## Backlog / ideas
 
