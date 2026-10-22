@@ -268,6 +268,7 @@ const MESSAGE_NPM: NpmSource[] = [
     url: "https://ai-sdk.dev/docs/ai-sdk-ui/chatbot-message-persistence",
   },
 ]
+
 // Message: Codex publishes the item its threads store only in the app-server schema its repository generates.
 const MESSAGE_GIT: GitSource[] = [
   {

@@ -11,7 +11,7 @@ export const Message = z.object({
   sessionId: z.uuidv7(),
   /** Place of the message in its file of the session, from 0, so a resume writes it back in order, e.g. 41 */
   sessionSeq: z.int(),
-  /** Kind of message, as the harness names it for its lines, e.g. user */
+  /** Kind of message: the harness's own for its lines, or ZeroSDK's for its own, e.g. user */
   type: z.string(),
   // optional
   /** File of the session the message came from, left out for the main conversation; set for a subagent the harness started itself, e.g. subagents/agent-7c */
