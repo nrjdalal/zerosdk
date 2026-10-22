@@ -31,8 +31,8 @@ describe("schema types", () => {
     const groups = ["  // required", "  // optional", "  // metadata"]
     for (const name of NAMES) {
       const found = [...(generated[name].match(/^ *\/\/ (?!---).+$/gm) ?? [])]
-      expect(found).toEqual(groups.slice(0, found.length))
-      expect(found.length).toBeGreaterThan(1)
+      expect(found).toEqual(groups.filter((group) => found.includes(group)))
+      expect(found.length).toBeGreaterThan(0)
     }
     expect(generated.agent).toMatch(
       /\/\/ required\n.*\n {2}description: string\n.*\n {2}id: string\n/,

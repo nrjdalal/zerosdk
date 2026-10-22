@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.0.12
+
+[compare changes](https://github.com/nrjdalal/zerosdk/compare/v0.0.11...v0.0.12)
+
+### 🚀 Enhancements
+
+- **web:** Build the sidebar rows from sessions, and key the status and task icons by the schema ([#34](https://github.com/nrjdalal/zerosdk/pull/34))
+- **schema:** Add message and thread, and the harness session id on session ([#36](https://github.com/nrjdalal/zerosdk/pull/36))
+
+### 📦 Build
+
+- **deps:** Upgrade next from 16.4.0 to 16.4.2 for two security advisories, and check types with tsrs ([#37](https://github.com/nrjdalal/zerosdk/pull/37))
+
+### ❤️ Contributors
+
+- Neeraj Dalal @nrjdalal
+
 ## v0.0.11
 
 [compare changes](https://github.com/nrjdalal/zerosdk/compare/v0.0.10...v0.0.11)
