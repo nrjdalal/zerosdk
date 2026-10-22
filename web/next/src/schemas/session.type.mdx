@@ -15,6 +15,8 @@ export type Session = {
   /** Time the session last changed, in milliseconds since the epoch; the sidebar sorts by it, e.g. 1792573920000 */
   updatedAt: number
   // optional
+  /** Session id the harness gives the session, which it takes back to resume it; set once the harness has started, e.g. 9f2c6a1e-3b4d-4c5e-8f9a-0b1c2d3e4f5a */
+  harnessSessionId?: string
   /** Session that started this one, by its id; set only on a subagent's session, e.g. 0193b2c5-0f1e-7d2c-9b3a-4e5f6a7b8c9d */
   parentId?: string
   /** What the session was asked to do, in the words of whoever started it; a main agent's session has none, e.g. Fix the login redirect */

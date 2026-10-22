@@ -15,25 +15,25 @@ import { AgentsSidebarDemo } from "@/components/agents/sidebar-demo"
 
 ## Sections
 
-The orchestrators' and subagents' labels end with how many agents they hold, nested ones included. The threads' label pages through them instead.
+Each agent row is one session and the agent it runs, an `Agent` and its `Session`, grouped by the agent's role. A subagent's session nests under the topmost subagent session above it on its `parentId` chain, however deep it was started. The orchestrators' and subagents' labels end with how many sessions they hold, nested ones included. The threads' label pages through them instead.
 
-| Section       | Holds                                                                                            | Nests |
-| ------------- | ------------------------------------------------------------------------------------------------ | ----- |
-| Main agents   | The agents at the top of the team, in the header where the docs keep search                      | No    |
-| Threads       | The human's [threads](#threads), five to a page, in the order given: most recently updated first | No    |
-| Orchestrators | The persistent agents that each own one area of the work                                         | No    |
-| Subagents     | The agents started for one task, each with the subagents it runs nested below                    | Yes   |
+| Section       | Holds                                                                                             | Nests |
+| ------------- | ------------------------------------------------------------------------------------------------- | ----- |
+| Main agents   | The sessions of the agents at the top of the team, in the header where the docs keep search       | No    |
+| Threads       | The human's [threads](#threads), five to a page, in the order given: most recently updated first  | No    |
+| Orchestrators | The sessions of the persistent agents that each own one area of the work                          | No    |
+| Subagents     | The sessions of agents started for one task, each with the sessions started under it nested below | Yes   |
 
 ## Row
 
 A row reads from left to right.
 
-| Part     | Shows                                                                                                                                                                                    |
-| -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Status   | The agent's [task](/docs/ui/icons#task) while it runs, otherwise its [state](/docs/ui/icons#state); a closed row shows the first of its subagents that is running, and its own once open |
-| Title    | The agent's name, or its description when it has none, or for a subagent with an issue the issue's key and pull request number before its title, such as ZS-12#45 Add tools              |
-| Provider | The [provider](/docs/ui/icons#provider) of the agent's model                                                                                                                             |
-| Effort   | The agent's [effort](/docs/ui/icons#effort) level                                                                                                                                        |
+| Part     | Shows                                                                                                                                                                                        |
+| -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Status   | The session's [task](/docs/ui/icons#task) while it runs, otherwise its [status](/docs/ui/icons#status); a closed row shows the first of its subagents that is running, and its own once open |
+| Title    | The agent's name, or its description when it has none; a subagent's own row shows its session's title after the issue's key and pull request number, such as ZS-12#45 Add tools              |
+| Provider | The [provider](/docs/ui/icons#provider) of the agent's model                                                                                                                                 |
+| Effort   | The agent's [effort](/docs/ui/icons#effort) level                                                                                                                                            |
 
 ## Threads
 
@@ -41,7 +41,7 @@ A thread row shows less than an agent's: a main agent holds every thread, so its
 
 | Part   | Shows                                                                                                   |
 | ------ | ------------------------------------------------------------------------------------------------------- |
-| Status | The thread's [state](/docs/ui/icons#state): running, waiting, stuck, idle or completed                  |
+| Status | The thread's [status](/docs/ui/icons#status): running, waiting, stuck, idle or completed                |
 | Title  | What the human asked, which no update changes                                                           |
 | Unread | How many of the thread's updates the human has not read, at the right, and nothing once all of them are |
 | Menu   | The thread's actions, behind a ⋯ in the unread count's place                                            |
@@ -58,7 +58,7 @@ Past five threads, the label pages through them with an arrow on each side of th
 
 ## Hover
 
-Each part names what it shows: the status its task or state, the provider its model, and the effort its level. A row with subagents shows its toggle in its effort's place while the mouse is on it, while it has keyboard focus or is open, and always on a phone. A subagent's title names the agent running it, such as Builder: ZS-15 Fix login, and a name alone shows only when the row cuts it short. A thread's title names the agent holding it, such as AgentZero: Rewrite the pricing page copy, or AgentOne while it stands in. A thread's unread count gives way to its menu by the toggle's rules, so on a phone the menu shows and the count does not, and the menu stays while it is open.
+Each part names what it shows: the status icon its task or status, the provider its model, and the effort its level. A row with subagents shows its toggle in its effort's place while the mouse is on it, while it has keyboard focus or is open, and always on a phone. A subagent's title names the agent running it, such as Builder: ZS-15 Fix login, and a name alone shows only when the row cuts it short. A thread's title names the agent holding it, such as AgentZero: Rewrite the pricing page copy, or AgentOne while it stands in. A thread's unread count gives way to its menu by the toggle's rules, so on a phone the menu shows and the count does not, and the menu stays while it is open.
 
 ## Selection
 

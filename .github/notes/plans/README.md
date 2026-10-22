@@ -7,7 +7,7 @@ Distinct from the audit reports, which `AGENTS.md` puts in `../audits/` and whic
 ## In progress
 
 - [0001 Threads in the agents sidebar](0001-threads-agents-sidebar.md) - the mockup lists the human's threads above the orchestrators, five to a page with unread counts and a menu on each row; real data and the thread view are next (PR #25).
-- [0003 A Session schema for the agents sidebar](0003-session-schema.md) - the `Session` schema and its page are built ([ADR 0010](../../docs/adr/0010-a-session-keeps-what-most-sources-keep.md)); keying the icons by it and building the sidebar's rows from it are next.
+- [0003 A Session schema for the agents sidebar](0003-session-schema.md) - the `Session` schema, its page and the sidebar's rows built from it are done ([ADR 0010](../../docs/adr/0010-a-session-keeps-what-most-sources-keep.md)); the sign-in session table is settled when the sessions table is designed.
 
 ## Planned
 
@@ -16,7 +16,7 @@ Distinct from the audit reports, which `AGENTS.md` puts in `../audits/` and whic
 
 ## Backlog / ideas
 
-Nothing yet.
+- [0006 A successor that takes over before the context fills](0006-handover-and-compaction.md) - a successor starts at about 400k tokens and compacts while the agent works, then takes the session over; compactions are compared across compactors, and a run record comes first.
 
 ## Icebox
 
