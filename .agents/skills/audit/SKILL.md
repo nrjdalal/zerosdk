@@ -34,7 +34,7 @@ These name a version no `package.json` range covers:
 | Bun | `packageManager` in the root `package.json`, `FROM oven/bun:<version>-alpine` in both Dockerfiles, `bun-version:` in every workflow job | `npm view bun version` |
 | GitHub Actions | every `uses:` in `.github/workflows/` | `gh api repos/<owner>/<repo>/releases/latest --jq .tag_name` |
 | herdr | `HERDR_VERSION` and `HERDR_ASSETS` (a SHA-256 per platform) in `packages/cli/src/herdr.ts` | `gh api repos/herdrdev/herdr/releases/latest --jq .tag_name` |
-| Node (canonical starter only) | `node-version:` in `.github/workflows/cli-release.yml` | the newest LTS line at https://nodejs.org/en/about/previous-releases |
+| Node | `node-version:` in `.github/workflows/cli-release.yml` | the newest LTS line at https://nodejs.org/en/about/previous-releases |
 | Vercel's Bun runtime | `bunVersion` in `api/hono/vercel.json` and `web/next/vercel.json` | the values https://vercel.com/docs/functions/runtimes/bun lists |
 
 After each move, `git grep -nF '<old value>' -- ':!bun.lock' ':!CHANGELOG.md'` lists every copy left: the docs that quote it, and in the canonical starter the notes under `.github/notes/`. A hit that belongs to something else (a test fixture sharing the number) stays.
