@@ -15,3 +15,5 @@ One architecture decision record per hard-to-reverse choice, in the order they w
 - [0011 A session's messages are stored whole, and threads group them](0011-a-session-s-messages-are-stored-whole-and-threads-group-them.md)
 - [0012 Each Claude account signs in its own config directory, and the factory stores no token](0012-each-claude-account-signs-in-its-own-config-directory.md)
 - [0013 Settings are one typed object, stored a row per setting](0013-settings-are-one-typed-object-stored-a-row-per-setting.md)
+- [0014 ZeroSDK runs its own pinned herdr, in its own herdr session](0014-zerosdk-runs-its-own-pinned-herdr-in-its-own-herdr-session.md)
+- [0015 Agents start with permissions bypassed, and the flipper comes later](0015-agents-start-with-permissions-bypassed-and-the-flipper-comes-later.md)

@@ -7,3 +7,4 @@ Studies of primary sources, one note per study, in the order they were done.
 - [0003 Where ZeroSDK's local, dynamic data can live: stores, sync and throwaway databases (2026)](0003-local-data.md)
 - [0004 The isolated conversation unit: names, routing, fields and the update inbox, across the nine sources and the wider field (2026)](0004-threads-messages-and-inbox.md)
 - [0005 Factory-wide settings: names, shape, layers, fields and metadata, across the nine sources and the wider field (2026)](0005-settings.md)
+- [0006 The permission setting: names, shapes and modes, across the nine sources and the wider field (2026)](0006-permission-modes.md)

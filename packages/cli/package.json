@@ -1,0 +1,29 @@
+{
+  "name": "zerosdk-dev",
+  "version": "0.0.0",
+  "description": "Set up and check what ZeroSDK runs on.",
+  "homepage": "https://zerosdk.dev",
+  "author": {
+    "name": "Neeraj Dalal",
+    "email": "admin@nrjdalal.com",
+    "url": "https://nrjdalal.com"
+  },
+  "repository": "nrjdalal/zerosdk",
+  "bin": {
+    "zerosdk": "dist/index.mjs"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "scripts": {
+    "build": "tsdown",
+    "check-types": "tsrs --noEmit"
+  },
+  "devDependencies": {
+    "@packages/config": "workspace:*",
+    "@types/node": "catalog:",
+    "tsdown": "catalog:",
+    "tsrs": "catalog:"
+  }
+}
