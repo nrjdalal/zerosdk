@@ -369,12 +369,8 @@ type Config = {
  *   bun scripts/generate-sdk-types.ts
  */
 type Settings = {
-  /** Persisted effort level for supported models. */
-  effortLevel?: "high" | "low" | "medium" | "xhigh"
   /** Push to mobile when a permission prompt or question is waiting */
   inputNeededNotifEnabled?: boolean
-  /** Override the default model used by Claude Code */
-  model?: string
   /** Tool usage permissions configuration */
   permissions?: {
     [k: string]: unknown
