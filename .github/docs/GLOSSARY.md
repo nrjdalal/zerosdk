@@ -65,12 +65,16 @@ _Avoid_: host, multiplexer, terminal, workspace
 One of the human's Claude accounts, such as a work or a personal one, that the factory runs sessions under; together they form one shared pool.
 _Avoid_: login, profile, seat
 
+**Permission mode**:
+The way the harness handles a tool that needs permission: ask first, accept edits, plan, let a model decide, deny unless allowed, or bypass permissions.
+_Avoid_: approval mode, approval policy
+
 **Permission flipper**:
 A main agent's choice of how the factory answers permission requests from it and every agent under it: ask the human, follow saved rules, or allow all.
 _Avoid_: permission mode
 
 **Settings**:
-The choices saved for the whole factory, such as its bridge, harness and theme, changed while it runs; one of them is a setting. An agent's own choices win over them.
+The choices saved for the whole factory, such as its bridge, harness and theme, changed while it runs; one of them is a setting.
 _Avoid_: config, preferences
 
 **Status**:
