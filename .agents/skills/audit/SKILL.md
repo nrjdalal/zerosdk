@@ -32,16 +32,16 @@ These name a version no `package.json` range covers:
 | Pin | Where it lives | Latest release |
 | --- | --- | --- |
 | Bun | `packageManager` in the root `package.json`, `FROM oven/bun:<version>-alpine` in both Dockerfiles, `bun-version:` in every workflow job | `npm view bun version` |
-| CLI-executed packages (canonical starter only) | `GITPICK` in `packages/cli/src/git.ts`, `PGLAUNCH` in `packages/cli/src/db.ts` | `npm view <name> version` |
 | GitHub Actions | every `uses:` in `.github/workflows/` | `gh api repos/<owner>/<repo>/releases/latest --jq .tag_name` |
+| herdr | `HERDR_VERSION` and `HERDR_ASSETS` (a SHA-256 per platform) in `packages/cli/src/herdr.ts` | `gh api repos/herdrdev/herdr/releases/latest --jq .tag_name` |
 | Node (canonical starter only) | `node-version:` in `.github/workflows/cli-release.yml` | the newest LTS line at https://nodejs.org/en/about/previous-releases |
 | Vercel's Bun runtime | `bunVersion` in `api/hono/vercel.json` and `web/next/vercel.json` | the values https://vercel.com/docs/functions/runtimes/bun lists |
 
 After each move, `git grep -nF '<old value>' -- ':!bun.lock' ':!CHANGELOG.md'` lists every copy left: the docs that quote it, and in the canonical starter the notes under `.github/notes/`. A hit that belongs to something else (a test fixture sharing the number) stays.
 
 - **Bun:** `bun upgrade` first, so the local gates in step 4 run under the pinned release. `@types/bun` is a catalog entry, so step 1 moves it; it trails Bun's patch releases, so a lower patch there is expected.
-- **CLI-executed packages:** prove each by running it. A new gitpick fetches the same tree: run the old and the new version into two empty directories and `diff -r` them, then again as an overlay (`-o`) onto an existing checkout. A new pglaunch provisions and migrates through `init --db` against a running Docker.
 - **GitHub Actions:** a major tag is the pin, so only a new major moves it. Read that major's release notes against how each workflow uses the action: its inputs, privileged triggers such as `pull_request_target` and `workflow_run`, and any script that `require`s a module. A pull request runs its own copy of only its `pull_request` and `pull_request_review` workflows. `pull_request_target` runs the base branch's copy, a `push` workflow runs on the next `canary` push that matches its path filter, and a workflow on a pull request closed into `main` or on `workflow_run` runs at the next release. So each workflow whose action moved has its first real run after the PR, and that run is the one to watch.
+- **herdr:** the pin is a version and a SHA-256 for each of its four binaries, all taken from GitHub's digests (`gh api repos/herdrdev/herdr/releases/tags/v<version> --jq '.assets[] | [.name, .digest] | @tsv'`); a release that adds, renames or drops one of those assets changes `HERDR_ASSETS` to match. Read its changelog for changes to the CLI and socket API the bridge drives, then prove it: `bun run --cwd packages/cli build`, then with `HOME` set to one empty directory, `env -u npm_config_user_agent node packages/cli/dist/index.mjs` and then its `doctor` must print the new version (unsetting the user agent keeps the run from installing `zerosdk-dev` globally).
 - **Node:** the comment beside it names the npm floor it keeps, so it moves to a new LTS line, not to every release.
 - **Vercel's Bun runtime:** `bunVersion` names a release line, not a release, and Vercel moves the patch itself, so a Bun patch release changes nothing here. Move it only when the docs list a new line and the code is checked against that line's breaking changes; `web/next/content/docs/deployment/vercel.mdx` (canonical starter only) quotes the line and the accepted values.
 

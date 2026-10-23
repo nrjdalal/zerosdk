@@ -22,8 +22,8 @@ packages/env/     # type-safe env, one validated entry per consumer
 packages/config/  # TS base, tsdown factory, and site.ts (brand identity)
 packages/schema/  # Zod schemas the factory shares, one file per entity (agent.ts, message.ts, session.ts, settings.ts, thread.ts), fields grouped under `// required`, `// optional` and `// metadata`, A to Z within each; its `/docs/reference` page shows each as the type it is written as, which `bun run schema:types` prints with each field on one line, unformatted; a line the formatter would split, such as a long enum, stays whole under `// oxfmt-ignore`
 packages/scripts/ # build-only bun tooling (auth-schema, data-table-metrics, generate-env, provider-logos, release-version, schema-sources, schema-types, sources, terms); every new script lands here, never bundled
-packages/cli/     # the zerostarter scaffolding CLI (canonical repo only; init strips it)
-tests/            # the whole suite, mirroring each subject's path; *.e2e.test.ts drive a running stack (init strips the canonical suite; this repo keeps its own)
+packages/cli/     # the zerosdk command (a bare setup, doctor) under Node: `npx zerosdk-dev` installs it once, then it runs as `zerosdk`
+tests/            # the whole suite, mirroring each subject's path; *.e2e.test.ts drive a running stack (zerostarter's scaffold leaves its own suite out; this repo keeps its own)
 ```
 
 Read `AGENTS.md` first for the rules; `curl "$(bunx portless get zerosdk)/llms-full.txt"` dumps the whole codebase as one context file.
@@ -46,6 +46,8 @@ Read `AGENTS.md` first for the rules; `curl "$(bunx portless get zerosdk)/llms-f
 | Add a data table | colocate `data-columns.tsx` + `data-table.tsx` in the page's `components/` folder, composing `web/next/src/components/data-table.tsx` (reference: `(console)/console/(access)/users/`) | `design` skill |
 | Add a test | `tests/<path of the file under test>.test.ts`; run the suite with `bun run test`. An end-to-end test is `tests/<path of the router or page it drives>.e2e.test.ts` on the `tests/stack.ts` helper, run against a stack with `bun run test:e2e` | `docker-test` skill |
 | Add a build or tooling script | `packages/scripts/src/<name>.ts`, with its deps on that package | - |
+| Add or change a `zerosdk` command | `packages/cli/src/commands/<name>.ts` → its help line and dispatch in `src/index.ts`; output goes through `commands/_prompt.ts`, which draws it as zerostarter's CLI does | `runtime-apis` skill |
+| Move ZeroSDK's herdr to a new release | `HERDR_VERSION` and `HERDR_ASSETS` (a SHA-256 per platform) in `packages/cli/src/herdr.ts` | `audit` skill |
 | Name a concept, a field or a docs page | `.github/docs/GLOSSARY.md`; a new term is picked by the nine sources' consensus | `domain-modeling` skill |
 | Change a schema (`/docs/reference/agent`, `session`, `message`, `thread`, `settings`) | `packages/schema/src/<name>.ts` → `bun run schema:types` rewrites `web/next/src/schemas/<name>.type.mdx`, the type each page shows, and refreshes its Twoslash hovers (`twoslash:cache`); commit both, since a test fails while the two differ | `dev` skill (restart after) |
 | Refresh the schemas' sources (`/docs/reference/agent`, `session`, `message`, `thread`, `settings`) | `packages/scripts/src/schema-sources.ts` lists each schema's sources → `bun run schema:sources` rewrites `web/next/src/schemas/<name>.sources.mdx` for each and refreshes their Twoslash hovers (`twoslash:cache`); commit all | `dev` skill (restart after) |

@@ -22,13 +22,13 @@ The prefix is mandatory even in Bun-only code: it marks the import as a built-in
 
 | Area | Runtime | Rule |
 | --- | --- | --- |
-| `packages/cli/**` | Node | `node:` only. Published to npm, launched via `npx` (bin shebang `#!/usr/bin/env node`); `Bun.*` breaks every npx user. |
+| `packages/cli/**` | Node | `node:` only. The `zerosdk` command, launched via `npx` (bin shebang `#!/usr/bin/env node`); `Bun.*` breaks every npx user, and its tsconfig pins `types: ["node"]`, so a `Bun.*` call fails its type check. |
 | `web/next/**` | Node + Bun | `node:` only. `next dev` runs under the system Node locally; Docker (`bun server.js`) and Vercel (`bunVersion`, built via `bun run --bun`) run it under Bun. Stays portable. |
 | `packages/env/**` | Node + Bun | `node:` only. Imported by web (Node and Bun) and api (Bun); stays portable. Stricter for `web-next.ts` and the package index: client components import them, so they carry no `node:*` at all, prefixed or not. The `.env` load (`node:path` + `dotenv`) lives in `load-dotenv.ts`, which only the server targets import; a new server target imports `@/load-dotenv` first, and a script that reaches env through `web-next` or the index imports `@packages/env/load-dotenv` itself. |
 | `packages/schema/**` | Node + Bun | No `node:*` at all. Pure Zod schemas for the web (Node and Bun) and the api (Bun) to share; web client components may import them. |
 | `.github/workflows/*` (`actions/github-script`) | Node | `require("node:...")`. |
 
-Bun-first therefore applies to the Bun-only files: `.github/scripts/*.ts`, `packages/scripts/src/*.ts` (`bun x.ts`) and the end-to-end helper `tests/stack.ts` (`bun test`). The CLI test files run under `bun test` but mirror the CLI's `node:` style on purpose.
+Bun-first therefore applies to the Bun-only files: `.github/scripts/*.ts`, `packages/scripts/src/*.ts` (`bun x.ts`) and the end-to-end helper `tests/stack.ts` (`bun test`). The CLI's tests run under `bun test` and are Bun-first like every other test, while the built CLI they spawn runs under Node.
 
 ## Bun equivalents
 
