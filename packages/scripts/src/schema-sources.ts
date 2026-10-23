@@ -310,8 +310,7 @@ const SETTINGS_NPM: NpmSource[] = [
     module: "@anthropic-ai/claude-agent-sdk",
     pkg: "@anthropic-ai/claude-agent-sdk",
     product: "Claude Agent SDK",
-    target:
-      'Pick<Settings, "effortLevel" | "inputNeededNotifEnabled" | "model" | "permissions" | "teammateMode" | "theme">',
+    target: 'Pick<Settings, "inputNeededNotifEnabled" | "permissions" | "teammateMode" | "theme">',
     type: "Settings",
     url: "https://code.claude.com/docs/en/settings",
   },
