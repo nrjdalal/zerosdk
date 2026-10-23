@@ -8,11 +8,11 @@ export const Agent = z.object({
   /** Unique identifier for the agent, a UUID version 7; the harness writes it into Claude's name, so renaming the agent never breaks a session, e.g. 0193b2c4-7d1e-7a3f-9c2e-5b8a1d4e6f70 */
   id: z.uuidv7(),
   // optional
-  /** Reasoning effort for the agent's model, from low to max; the levels available depend on the model, and left out, the factory's settings decide, e.g. high */
+  /** Reasoning effort for the agent's model, from low to max; the levels available depend on the model, and left out, Claude uses the session's, e.g. high */
   effort: z.enum(["low", "medium", "high", "xhigh", "max"]).optional(),
   /** MCP servers the agent can reach, by the name of a server configured elsewhere, e.g. github */
   mcpServers: z.array(z.string()).optional(),
-  /** Model the agent runs on, as provider/model with the provider's own model id; left out, the factory's settings decide, e.g. anthropic/claude-opus-5-5 */
+  /** Model the agent runs on, as provider/model with the provider's own model id; left out, Claude picks one, e.g. anthropic/claude-opus-5-5 */
   model: z.string().optional(),
   /** Place of the agent in the team; a main agent sits at the top, above the orchestrators; an orchestrator is persistent, owns one area of the work and splits it into tasks for subagents; a subagent is started for one task and ends when it is done, and an agent with no role is one, e.g. orchestrator */
   role: z.enum(["main", "orchestrator", "subagent"]).default("subagent"),
