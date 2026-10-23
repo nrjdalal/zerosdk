@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.0.14
+
+[compare changes](https://github.com/nrjdalal/zerosdk/compare/v0.0.13...v0.0.14)
+
+### 🚀 Enhancements
+
+- **schema:** Start agents in claude's bypass permission mode, and drop model and effort ([#42](https://github.com/nrjdalal/zerosdk/pull/42))
+- **cli:** Add the zerosdk command, which installs itself and herdr and checks both with doctor ([#44](https://github.com/nrjdalal/zerosdk/pull/44))
+
+### ❤️ Contributors
+
+- Neeraj Dalal @nrjdalal
+
 ## v0.0.13
 
 [compare changes](https://github.com/nrjdalal/zerosdk/compare/v0.0.12...v0.0.13)
