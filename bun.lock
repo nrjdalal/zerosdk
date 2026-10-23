@@ -77,6 +77,19 @@
         "typescript": "catalog:",
       },
     },
+    "packages/cli": {
+      "name": "zerosdk-dev",
+      "version": "0.0.0",
+      "bin": {
+        "zerosdk": "dist/index.mjs",
+      },
+      "devDependencies": {
+        "@packages/config": "workspace:*",
+        "@types/node": "catalog:",
+        "tsdown": "catalog:",
+        "tsrs": "catalog:",
+      },
+    },
     "packages/config": {
       "name": "@packages/config",
       "version": "0.0.0",
@@ -2434,6 +2447,8 @@
     "yuku-parser": ["yuku-parser@0.18.1", "", { "dependencies": { "@yuku-toolchain/types": "^0.18.1", "yuku-core": "0.18.1" } }, "sha512-t5pANCF6k9rgJre7jk8DMAU4lEoI1oWWZgXk0fcvmCYQquFVWv0rf6Awwt56nnPiHb0E24dhtrpfgf9ChTCbrQ=="],
 
     "zbsearch": ["zbsearch@4.0.1", "", {}, "sha512-lmnEEnb93QQcNv7qARDr7jBVPxYdZbZ9XdZ0dbZ0qaOvGne4jJMW4fjwPfVaUKQXv3FNWvGbDwRDgyaSb1pc8w=="],
+
+    "zerosdk-dev": ["zerosdk-dev@workspace:packages/cli"],
 
     "zod": ["zod@4.6.5", "", {}, "sha512-v5l/aFXZQeai4awLbOpSoHecE9UiMrnfx75tEXLjNonXVARxQ5mOeipTjROUchszUNCqnE+hqAMujRsRHsut2Q=="],
 

@@ -8,10 +8,10 @@ Distinct from the audit reports, which `AGENTS.md` puts in `../audits/` and whic
 
 - [0001 Threads in the agents sidebar](0001-threads-agents-sidebar.md) - the mockup lists the human's threads above the orchestrators, five to a page with unread counts and a menu on each row; real data and the thread view are next (PR #25).
 - [0003 A Session schema for the agents sidebar](0003-session-schema.md) - the `Session` schema, its page and the sidebar's rows built from it are done ([ADR 0010](../../docs/adr/0010-a-session-keeps-what-most-sources-keep.md)); the sign-in session table is settled when the sessions table is designed.
+- [0004 Run agents through a harness and a bridge](0004-harness-bridge.md) - the server drives each agent as a Claude Code CLI in a herdr pane behind two contracts, with the SDK as a later route; `npx zerosdk-dev` installs the `zerosdk` command and ZeroSDK's own pinned herdr, and `zerosdk doctor` checks both ([ADR 0014](../../docs/adr/0014-zerosdk-runs-its-own-pinned-herdr-in-its-own-herdr-session.md)), and the contracts, the routes and the rest of the setup are next; fourteen decisions made, none left open.
 
 ## Planned
 
-- [0004 Run agents through a harness and a bridge](0004-harness-bridge.md) - the server drives each agent as a Claude Code CLI in a herdr pane behind two contracts, with the SDK as a later route; nine decisions made, none left open.
 - [0005 Keep the factory's dynamic data local](0005-local-data.md) - one local Postgres with TanStack DB in the UI and server push, no sync engine yet; five decisions made, none left open.
 - [0007 Spread sessions across a pool of Claude accounts](0007-claude-account-pool.md) - several Claude accounts in one shared pool, each signed in its own config directory, picked by the usage running sessions and Anthropic's usage endpoint report; seven decisions made, three left open, and Anthropic's terms recorded in the ADR.
 

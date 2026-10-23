@@ -1,0 +1,14 @@
+# ZeroSDK runs its own pinned herdr, in its own herdr session
+
+ZeroSDK installs herdr itself, at a version it pins: the setup a bare `zerosdk` runs downloads herdr 0.9.5's release asset for the machine from GitHub, checks it against the SHA-256 written in `packages/cli/src/herdr.ts` (GitHub's digest of that asset), and only then places it at `~/.zerosdk/bin/herdr`. ZeroSDK runs that copy alone, always by its full path: it never puts the folder on PATH and never runs a herdr the human installed, which `zerosdk doctor` names and leaves alone. So the bridge always drives the one herdr build it was written and tested against, the human upgrading their own herdr cannot break the factory, and a download that does not match is never run. Two copies would still meet in herdr's default server, the socket `~/.config/herdr/herdr.sock` that every herdr client uses unless told otherwise, so ZeroSDK runs its copy in a herdr named session, `zerosdk`, which herdr gives "its own panes, tabs, workspaces, sockets, and runtime state" ([herdr](https://herdr.dev/docs/persistence-remote/#named-sessions)). It passes `--session zerosdk` on every call rather than setting `HERDR_SESSION`: herdr reads the flag first, then the `HERDR_SOCKET_PATH` it sets inside each of its own panes, and only then `HERDR_SESSION` ([herdr](https://herdr.dev/docs/socket-api/)), so a ZeroSDK started from one of the human's herdr panes still reaches its own server. So by default, ZeroSDK's panes stay out of the human's herdr and the two versions run separate servers. The isolation is herdr's, not a wall: the human's `herdr session list` still shows `zerosdk`, since every named session lives under `~/.config/herdr/sessions/`, and attaching to it from the human's own binary connects a client of another version. The `zerosdk` session also reads herdr's one global config file.
+
+## Consequences
+
+Moving to a new herdr is a change to this pin: its version and every asset's SHA-256, then the bridge's checks against it; the `audit` skill lists it with the other pins. herdr publishes its Windows build only as a zip, which ZeroSDK does not install yet. A copy changed by anything else, `herdr update` among them, no longer matches its hash, and `zerosdk doctor` reports it until `zerosdk` runs again and puts the pinned build back.
+
+## Considered Options
+
+- **The herdr on PATH:** whatever version the human has installed, or none; the bridge would meet CLI and socket API changes it was never tested on.
+- **herdr's own installer, Homebrew or mise:** each installs the latest release onto PATH and keeps it updated, which is the human's herdr, not a pinned one.
+- **`~/.zerosdk/bin` on PATH:** the human's shell would then choose between two herdrs by PATH order.
+- **herdr's default session:** shared with the human's own herdr, as above.
